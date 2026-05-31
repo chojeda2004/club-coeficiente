@@ -358,42 +358,19 @@
         }
 
         // ── Guardar en Google Sheets ────────────────────────────────────────
-        
-async function save() {
-
-            const res = await fetch(API_URL);
-            const cloudPlayers = await res.json();
-
-            const mapa = new Map();
-
-            cloudPlayers.forEach(p => {
-                mapa.set(String(p.id), {
-                    id: String(p.id),
-                    username: p.username,
-                    photo: p.photo,
-                    elo: Number(p.elo) || 0,
-                    score: Number(p.score) || 0,
-                    country: p.country || ''
-                });
-            });
-
-            players.forEach(p => {
-                mapa.set(String(p.id), p);
-            });
-
-            const datosFinales = [...mapa.values()];
-
-            await fetch(API_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(datosFinales)
-            });
-
-            players = datosFinales;
-            showSaved();
-        }
-);
+        async function save(player) {
+    try {
+        await fetch(API_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(player)
+        });
+        showSaved();
+    } catch (e) {
+        console.error('Error guardando:', e);
+    }
+});
                 showSaved();
             } catch(e) { console.error('Error guardando:', e); }
         }
@@ -533,7 +510,7 @@ async function save() {
             }
 
             players.push({ id: Date.now().toString(), username: data.username, photo: data.photo, elo: data.elo, score, country: data.country || '' });
-            await save();
+            await save(p);
             render();
             document.getElementById('fChessLink').value = '';
             document.getElementById('fScore').value = '';
@@ -547,7 +524,7 @@ async function save() {
             const p = players.find(x => x.id === id);
             if (!p) return;
             const data = await fetchChessData(p.username);
-            if (data) { p.photo = data.photo; p.elo = data.elo; p.country = data.country || p.country || ''; await save(); render(); }
+            if (data) { p.photo = data.photo; p.elo = data.elo; p.country = data.country || p.country || ''; await save(p); render(); }
         }
 
         async function updateAll() {
@@ -562,7 +539,7 @@ async function save() {
                 count++;
                 msg.textContent = `Actualizando ${count} / ${players.length}...`;
             }
-            await save();
+            await save(p);
             render();
             btn.disabled = false;
             msg.textContent = `✓ ${players.length} jugadores actualizados`;
@@ -576,14 +553,14 @@ async function save() {
             const p = players.find(x => x.id === id);
             if (!p) return;
             p.score = val;
-            await save();
+            await save(p);
             render();
         }
 
         async function del(id) {
             if (confirm('¿Eliminar a este competidor?')) {
                 players = players.filter(p => p.id !== id);
-                await save();
+                await save(p);
                 render();
             }
         }
