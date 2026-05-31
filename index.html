@@ -255,9 +255,11 @@
                 <button class="btn-action" id="addBtn" onclick="addPlayer()">Vincular y Registrar</button>
                 <div id="addMsg" style="margin-top:1rem;text-align:center;"></div>
                 <div id="adminRows" style="margin-top:2rem;"></div>
-                <div style="margin-top:2rem;text-align:right;">
+                <div style="margin-top:2rem;display:flex;justify-content:space-between;align-items:center;">
+                    <button class="btn-action" id="updateAllBtn" style="width:auto;padding:0.6rem 1.2rem;font-size:0.7rem;" onclick="updateAll()">↻ Actualizar Todos</button>
                     <button class="admin-btn" style="font-size:0.6rem;padding:0.5rem 1rem;" onclick="doLogout()">Cerrar Sesión</button>
                 </div>
+                <div id="updateAllMsg" style="margin-top:0.8rem;text-align:center;font-size:0.85rem;color:var(--accent-primary)"></div>
             </div>
         </div>
     </div>
@@ -464,6 +466,24 @@
             if (data) { p.photo = data.photo; p.elo = data.elo; p.country = data.country || p.country || ''; await save(); render(); }
         }
 
+        async function updateAll() {
+            const btn = document.getElementById('updateAllBtn');
+            const msg = document.getElementById('updateAllMsg');
+            btn.disabled = true;
+            msg.textContent = `Actualizando 0 / ${players.length}...`;
+            let count = 0;
+            for (const p of players) {
+                const data = await fetchChessData(p.username);
+                if (data) { p.photo = data.photo; p.elo = data.elo; p.country = data.country || p.country || ''; }
+                count++;
+                msg.textContent = `Actualizando ${count} / ${players.length}...`;
+            }
+            await save();
+            render();
+            btn.disabled = false;
+            msg.textContent = `✓ ${players.length} jugadores actualizados`;
+        }
+
         async function editScore(id, currentScore) {
             const nuevo = prompt(`Nuevo puntaje para este jugador:`, currentScore);
             if (nuevo === null) return;
@@ -510,3 +530,4 @@
     </script>
 </body>
 </html>
+
