@@ -184,7 +184,7 @@
         }
         .arow {
             display: grid;
-            grid-template-columns: 50px 40px 1fr auto auto;
+            grid-template-columns: 50px 40px 1fr auto auto auto;
             align-items: center; gap: 1rem; padding: 1rem;
             background: rgba(255,255,255,0.03);
             border-radius: 8px; margin-bottom: 0.5rem;
@@ -279,7 +279,10 @@
             { name: 'Principiante', cls: 'tier-learner',     icon: '🔰', min: 0   }
         ];
 
-        function getTier(score) { return TIERS.find(t => score >= t.min) || TIERS[TIERS.length - 1]; }
+        function getTier(score) {
+            for (const t of TIERS) { if (score >= t.min) return t; }
+            return TIERS[TIERS.length - 1];
+        }
 
         // ── Cargar desde Google Sheets ──────────────────────────────────────
         async function load() {
@@ -388,6 +391,7 @@
                             <div style="font-weight:600">${p.username}</div>
                             <div style="font-size:0.8rem;color:var(--text-muted)">${p.score} pts | ELO ${p.elo || 'N/A'}</div>
                         </div>
+                        <button class="btn-action" style="padding:0.4rem 0.8rem;font-size:0.6rem;width:auto;background:#f59e0b" onclick="editScore('${p.id}', ${p.score})">✏️</button>
                         <button class="btn-action" style="padding:0.4rem 0.8rem;font-size:0.6rem;width:auto;" onclick="updatePlayerData('${p.id}')">↻</button>
                         <button class="btn-action" style="padding:0.4rem 0.8rem;font-size:0.6rem;width:auto;background:#ef4444" onclick="del('${p.id}')">✕</button>
                     </div>`).join('');
@@ -452,6 +456,18 @@
             if (data) { p.photo = data.photo; p.elo = data.elo; await save(); render(); }
         }
 
+        async function editScore(id, currentScore) {
+            const nuevo = prompt(`Nuevo puntaje para este jugador:`, currentScore);
+            if (nuevo === null) return;
+            const val = parseInt(nuevo);
+            if (isNaN(val)) { alert('Ingresa un número válido'); return; }
+            const p = players.find(x => x.id === id);
+            if (!p) return;
+            p.score = val;
+            await save();
+            render();
+        }
+
         async function del(id) {
             if (confirm('¿Eliminar a este competidor?')) {
                 players = players.filter(p => p.id !== id);
@@ -485,3 +501,6 @@
         load();
     </script>
 </body>
+</html>
+
+   
