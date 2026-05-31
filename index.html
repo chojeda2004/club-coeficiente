@@ -294,7 +294,8 @@
                     username: r.username,
                     photo:    r.photo,
                     elo:      Number(r.elo) || 0,
-                    score:    Number(r.score) || 0
+                    score:    Number(r.score) || 0,
+                    country:  r.country || ''
                 }));
             } catch(e) {
                 console.error('Error cargando datos:', e);
@@ -310,7 +311,7 @@
                     method: 'POST',
                     mode: 'no-cors',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(players)
+                    body: JSON.stringify(players.map(p => ({...p, country: p.country || ''})))
                 });
                 showSaved();
             } catch(e) { console.error('Error guardando:', e); }
@@ -361,7 +362,9 @@
                                 <img src="${p.photo || NO_AVATAR}" alt="${p.username}" onerror="this.src='${NO_AVATAR}'">
                             </div>
                             <div class="pinfo">
-                                <div class="pname">${p.username}</div>
+                                <div class="pname">
+                                    ${p.country ? `<img src="https://flagcdn.com/20x15/${p.country}.png" alt="${p.country}" style="border-radius:2px;vertical-align:middle;margin-right:6px;">` : ''}${p.username}
+                                </div>
                                 <div class="pmeta">
                                     <span class="pelo">ELO ${p.elo || '---'}</span>
                                     <a class="pchess" href="https://www.chess.com/member/${p.username}" target="_blank">Perfil</a>
@@ -411,7 +414,12 @@
                 if (stats.chess_rapid) elo = stats.chess_rapid.last.rating;
                 else if (stats.chess_blitz) elo = stats.chess_blitz.last.rating;
                 else if (stats.chess_bullet) elo = stats.chess_bullet.last.rating;
-                return { username: profile.username, photo: profile.avatar || NO_AVATAR, elo };
+                let country = '';
+                if (profile.country) {
+                    const cc = profile.country.split('/').pop().toLowerCase();
+                    country = cc;
+                }
+                return { username: profile.username, photo: profile.avatar || NO_AVATAR, elo, country };
             } catch(e) { return null; }
         }
 
@@ -438,7 +446,7 @@
                 return;
             }
 
-            players.push({ id: Date.now().toString(), username: data.username, photo: data.photo, elo: data.elo, score });
+            players.push({ id: Date.now().toString(), username: data.username, photo: data.photo, elo: data.elo, score, country: data.country || '' });
             await save();
             render();
             document.getElementById('fChessLink').value = '';
@@ -453,7 +461,7 @@
             const p = players.find(x => x.id === id);
             if (!p) return;
             const data = await fetchChessData(p.username);
-            if (data) { p.photo = data.photo; p.elo = data.elo; await save(); render(); }
+            if (data) { p.photo = data.photo; p.elo = data.elo; p.country = data.country || p.country || ''; await save(); render(); }
         }
 
         async function editScore(id, currentScore) {
@@ -502,5 +510,3 @@
     </script>
 </body>
 </html>
-
-   
