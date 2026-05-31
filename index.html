@@ -359,18 +359,13 @@
 
         // ── Guardar en Google Sheets ────────────────────────────────────────
         async function save(player) {
-    try {
-        await fetch(API_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(player)
-        });
-        showSaved();
-    } catch (e) {
-        console.error('Error guardando:', e);
-    }
-});
+            try {
+                await fetch(API_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(player)
+                });
                 showSaved();
             } catch(e) { console.error('Error guardando:', e); }
         }
@@ -509,8 +504,9 @@
                 return;
             }
 
-            players.push({ id: Date.now().toString(), username: data.username, photo: data.photo, elo: data.elo, score, country: data.country || '' });
-            await save(p);
+            const newPlayer = { id: Date.now().toString(), username: data.username, photo: data.photo, elo: data.elo, score, country: data.country || '' };
+            players.push(newPlayer);
+            await save(newPlayer);
             render();
             document.getElementById('fChessLink').value = '';
             document.getElementById('fScore').value = '';
@@ -535,11 +531,10 @@
             let count = 0;
             for (const p of players) {
                 const data = await fetchChessData(p.username);
-                if (data) { p.photo = data.photo; p.elo = data.elo; p.country = data.country || p.country || ''; }
+                if (data) { p.photo = data.photo; p.elo = data.elo; p.country = data.country || p.country || ''; await save(p); }
                 count++;
                 msg.textContent = `Actualizando ${count} / ${players.length}...`;
             }
-            await save(p);
             render();
             btn.disabled = false;
             msg.textContent = `✓ ${players.length} jugadores actualizados`;
@@ -559,8 +554,9 @@
 
         async function del(id) {
             if (confirm('¿Eliminar a este competidor?')) {
+                const p = players.find(x => x.id === id);
                 players = players.filter(p => p.id !== id);
-                await save(p);
+                if (p) await save({ ...p, _delete: true });
                 render();
             }
         }
