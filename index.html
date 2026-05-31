@@ -358,14 +358,42 @@
         }
 
         // ── Guardar en Google Sheets ────────────────────────────────────────
-        async function save() {
-            try {
-                await fetch(API_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(players.map(p => ({...p, country: p.country || ''})))
+        
+async function save() {
+
+            const res = await fetch(API_URL);
+            const cloudPlayers = await res.json();
+
+            const mapa = new Map();
+
+            cloudPlayers.forEach(p => {
+                mapa.set(String(p.id), {
+                    id: String(p.id),
+                    username: p.username,
+                    photo: p.photo,
+                    elo: Number(p.elo) || 0,
+                    score: Number(p.score) || 0,
+                    country: p.country || ''
                 });
+            });
+
+            players.forEach(p => {
+                mapa.set(String(p.id), p);
+            });
+
+            const datosFinales = [...mapa.values()];
+
+            await fetch(API_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(datosFinales)
+            });
+
+            players = datosFinales;
+            showSaved();
+        }
+);
                 showSaved();
             } catch(e) { console.error('Error guardando:', e); }
         }
