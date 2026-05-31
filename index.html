@@ -10,7 +10,7 @@
         :root {
             --bg-main: #0f172a;
             --bg-card: rgba(30, 41, 59, 0.7);
-            --accent-prima ry: #38bdf8;
+            --accent-primary: #38bdf8;
             --accent-secondary: #818cf8;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
@@ -272,14 +272,14 @@
         let players = [], loggedIn = false;
 
         const TIERS = [
-            { name: 'Gran Maestro', cls: 'tier-grandmaster', icon: '👑', range: [1, 1] },
-            { name: 'Maestro',      cls: 'tier-master',      icon: '⭐', range: [2, 5] },
-            { name: 'Experto',      cls: 'tier-expert',      icon: '🔥', range: [6, 10] },
-            { name: 'Amateur',      cls: 'tier-amateur',     icon: '⚡', range: [11, 20] },
-            { name: 'Aprendiz',     cls: 'tier-learner',     icon: '🔰', range: [21, Infinity] }
+            { name: 'Gran Maestro', cls: 'tier-grandmaster', icon: '👑', min: 150 },
+            { name: 'Maestro',      cls: 'tier-master',      icon: '⭐', min: 96  },
+            { name: 'Experto',      cls: 'tier-expert',      icon: '🔥', min: 75  },
+            { name: 'Amateur',      cls: 'tier-amateur',     icon: '⚡', min: 55  },
+            { name: 'Principiante', cls: 'tier-learner',     icon: '🔰', min: 0   }
         ];
 
-        function getTier(pos) { return TIERS.find(t => pos >= t.range[0] && pos <= t.range[1]); }
+        function getTier(score) { return TIERS.find(t => score >= t.min) || TIERS[TIERS.length - 1]; }
 
         // ── Cargar desde Google Sheets ──────────────────────────────────────
         async function load() {
@@ -341,7 +341,7 @@
             const groups = {};
             TIERS.forEach(t => groups[t.cls] = []);
             sorted.forEach((p, i) => {
-                const t = getTier(i + 1);
+                const t = getTier(p.score);
                 groups[t.cls].push({ ...p, pos: i + 1, tier: t });
             });
 
@@ -485,4 +485,3 @@
         load();
     </script>
 </body>
-</html>
