@@ -114,8 +114,19 @@
         .rank-num { font-family: 'Orbitron', sans-serif; font-size: 1.8rem; font-weight: 900; color: var(--text-muted); text-align: center; }
         .tier-grandmaster .rank-num { color: var(--gm-color); font-size: 2.2rem; }
 
-        .avatar { width: 54px; height: 54px; border-radius: 12px; background: #334155; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 2px solid rgba(255,255,255,0.1); }
-        .avatar img { width: 100%; height: 100%; object-fit: cover; }
+        /* Avatar con pieza de ajedrez SVG */
+        .avatar {
+            width: 54px; height: 54px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            border: 2px solid rgba(255,255,255,0.15);
+            font-size: 2rem; line-height: 1;
+            flex-shrink: 0;
+        }
+        .tier-grandmaster .avatar { background: rgba(251,191,36,0.15); border-color: rgba(251,191,36,0.4); }
+        .tier-master .avatar     { background: rgba(6,182,212,0.15);   border-color: rgba(6,182,212,0.4); }
+        .tier-expert .avatar     { background: rgba(168,85,247,0.15);  border-color: rgba(168,85,247,0.4); }
+        .tier-amateur .avatar    { background: rgba(16,185,129,0.15);  border-color: rgba(16,185,129,0.4); }
+        .tier-learner .avatar    { background: rgba(100,116,139,0.15); border-color: rgba(100,116,139,0.4); }
 
         .pinfo .pname { font-size: 1.2rem; font-weight: 700; color: #fff; }
         .pmeta { display: flex; align-items: center; gap: 1rem; font-size: 0.85rem; color: var(--text-muted); }
@@ -130,7 +141,6 @@
         }
         .score-wrap .lbl { font-size: 0.7rem; text-transform: uppercase; color: var(--text-muted); }
 
-        /* Botón actualizar */
         .refresh-btn {
             display: flex; align-items: center; gap: 0.5rem;
             margin: 0 auto 2rem;
@@ -147,7 +157,6 @@
         .refresh-btn.spinning svg { animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* Admin */
         .admin-toggle { text-align: center; margin-top: 4rem; }
         .admin-btn {
             background: rgba(15,23,42,0.6);
@@ -184,13 +193,18 @@
         }
         .arow {
             display: grid;
-            grid-template-columns: 50px 40px 1fr auto auto auto;
+            grid-template-columns: 50px 44px 1fr auto auto auto;
             align-items: center; gap: 1rem; padding: 1rem;
             background: rgba(255,255,255,0.03);
             border-radius: 8px; margin-bottom: 0.5rem;
         }
-        .arow .avatar-mini { width: 40px; height: 40px; border-radius: 6px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); }
-        .arow .avatar-mini img { width: 100%; height: 100%; object-fit: cover; }
+        .arow .avatar-mini {
+            width: 44px; height: 44px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.6rem;
+            background: rgba(56,189,248,0.1);
+            border: 1px solid rgba(56,189,248,0.2);
+        }
         .loader { display: none; text-align: center; margin: 1rem 0; color: var(--accent-primary); font-weight: 600; }
 
         .saving-indicator {
@@ -203,44 +217,35 @@
         }
         .saving-indicator.show { opacity: 1; }
 
-        .search-wrap {
-            position: relative;
-            margin-bottom: 1.5rem;
-        }
-        .search-wrap svg {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-            pointer-events: none;
-        }
+        .search-wrap { position: relative; margin-bottom: 1.5rem; }
+        .search-wrap svg { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; }
         .search-input {
-            width: 100%;
-            background: rgba(15, 23, 42, 0.6);
+            width: 100%; background: rgba(15, 23, 42, 0.6);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(56, 189, 248, 0.2);
-            border-radius: 12px;
-            color: #fff;
+            border-radius: 12px; color: #fff;
             padding: 0.85rem 1rem 0.85rem 2.8rem;
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 1rem;
-            font-weight: 500;
-            outline: none;
-            transition: border-color 0.2s;
+            font-family: 'Rajdhani', sans-serif; font-size: 1rem; font-weight: 500;
+            outline: none; transition: border-color 0.2s;
         }
         .search-input::placeholder { color: var(--text-muted); }
         .search-input:focus { border-color: rgba(56, 189, 248, 0.5); }
-        .search-clear {
-            position: absolute; right: 1rem; top: 50%; transform: translateY(-50%);
-            background: none; border: none; color: var(--text-muted);
-            cursor: pointer; font-size: 1.1rem; display: none;
+        .search-clear { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; display: none; }
+
+        /* Selector de pieza */
+        .piece-selector { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+        .piece-btn {
+            width: 44px; height: 44px; border-radius: 8px; border: 2px solid rgba(255,255,255,0.1);
+            background: rgba(30,41,59,0.5); font-size: 1.6rem; cursor: pointer;
+            transition: all 0.2s; display: flex; align-items: center; justify-content: center;
         }
+        .piece-btn:hover, .piece-btn.selected { border-color: var(--accent-primary); background: rgba(56,189,248,0.15); }
+        .piece-label { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.4rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
 
         @media (max-width: 640px) {
             .player-card { grid-template-columns: 40px 50px 1fr; gap: 1rem; }
             .score-wrap { grid-column: 1 / -1; padding-left: 105px; display: flex; align-items: baseline; gap: 0.5rem; }
-            .arow { grid-template-columns: 40px 40px 1fr auto; }
+            .arow { grid-template-columns: 40px 44px 1fr auto; }
         }
     </style>
 </head>
@@ -286,12 +291,27 @@
             </div>
             <div id="adminSec" style="display:none">
                 <h3 style="margin-bottom:1rem;font-family:'Orbitron';color:var(--accent-primary)">Registrar Competidor</h3>
-                <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:1.5rem;">Pega el enlace del perfil de Chess.com y asigna su puntaje del club.</p>
-                <div style="display:grid;gap:1rem;">
-                    <input class="finput" id="fChessLink" placeholder="Enlace del perfil (ej: https://www.chess.com/member/usuario)">
+                <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:1.5rem;">Pega el enlace del perfil de Lichess y elige el ícono de pieza para el jugador.</p>
+                <div style="display:grid;gap:0rem;">
+                    <input class="finput" id="fChessLink" placeholder="Enlace del perfil (ej: https://lichess.org/@/usuario)">
                     <input class="finput" type="number" id="fScore" placeholder="Puntaje del Club (Manual)">
                 </div>
-                <div id="loader" class="loader">Obteniendo datos de Chess.com...</div>
+                <div class="piece-label">Ícono de pieza para el jugador:</div>
+                <div class="piece-selector" id="pieceSelectorAdd">
+                    <button class="piece-btn selected" data-piece="♟" onclick="selectPiece(this,'add')">♟</button>
+                    <button class="piece-btn" data-piece="♞" onclick="selectPiece(this,'add')">♞</button>
+                    <button class="piece-btn" data-piece="♝" onclick="selectPiece(this,'add')">♝</button>
+                    <button class="piece-btn" data-piece="♜" onclick="selectPiece(this,'add')">♜</button>
+                    <button class="piece-btn" data-piece="♛" onclick="selectPiece(this,'add')">♛</button>
+                    <button class="piece-btn" data-piece="♚" onclick="selectPiece(this,'add')">♚</button>
+                    <button class="piece-btn" data-piece="♙" onclick="selectPiece(this,'add')">♙</button>
+                    <button class="piece-btn" data-piece="♘" onclick="selectPiece(this,'add')">♘</button>
+                    <button class="piece-btn" data-piece="♗" onclick="selectPiece(this,'add')">♗</button>
+                    <button class="piece-btn" data-piece="♖" onclick="selectPiece(this,'add')">♖</button>
+                    <button class="piece-btn" data-piece="♕" onclick="selectPiece(this,'add')">♕</button>
+                    <button class="piece-btn" data-piece="♔" onclick="selectPiece(this,'add')">♔</button>
+                </div>
+                <div id="loader" class="loader">Obteniendo datos de Lichess...</div>
                 <button class="btn-action" id="addBtn" onclick="addPlayer()">Vincular y Registrar</button>
                 <div id="addMsg" style="margin-top:1rem;text-align:center;"></div>
                 <div id="adminRows" style="margin-top:2rem;"></div>
@@ -309,9 +329,21 @@
     <script>
         const PASS = '73777127';
         const API_URL = 'https://script.google.com/macros/s/AKfycbydXprmWOwO_RjLcFubXdkxkPJmgVv73UJ-BjySMzOAwrzTaTm47-iu-zPZAZv0pQ6uAw/exec';
-        const NO_AVATAR = 'https://www.chess.com/bundles/web/images/noavatar_l.84a924a6.gif';
+
+        // Piezas de ajedrez disponibles como avatares
+        const PIECES = ['♟','♞','♝','♜','♛','♚','♙','♘','♗','♖','♕','♔'];
+        const DEFAULT_PIECE = '♟';
 
         let players = [], loggedIn = false, searchQuery = '';
+        let selectedPieceAdd = DEFAULT_PIECE;
+
+        function selectPiece(btn, ctx) {
+            const container = document.getElementById(ctx === 'add' ? 'pieceSelectorAdd' : `pieceSelectorEdit_${ctx}`);
+            if (!container) return;
+            container.querySelectorAll('.piece-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            if (ctx === 'add') selectedPieceAdd = btn.dataset.piece;
+        }
 
         function onSearch(val) {
             searchQuery = val.trim().toLowerCase();
@@ -337,7 +369,6 @@
             return TIERS[TIERS.length - 1];
         }
 
-        // ── Cargar desde Google Sheets ──────────────────────────────────────
         async function load() {
             try {
                 const res = await fetch(API_URL);
@@ -345,7 +376,7 @@
                 players = data.map(r => ({
                     id:       String(r.id),
                     username: r.username,
-                    photo:    r.photo,
+                    piece:    r.piece || DEFAULT_PIECE,
                     elo:      Number(r.elo) || 0,
                     score:    Number(r.score) || 0,
                     country:  r.country || ''
@@ -357,7 +388,6 @@
             render();
         }
 
-        // ── Guardar en Google Sheets ────────────────────────────────────────
         async function save(player) {
             try {
                 await fetch(API_URL, {
@@ -401,7 +431,7 @@
 
             const groups = {};
             TIERS.forEach(t => groups[t.cls] = []);
-            filtered.forEach((p, i) => {
+            filtered.forEach(p => {
                 const pos = sorted.indexOf(p) + 1;
                 const t = getTier(p.score);
                 groups[t.cls].push({ ...p, pos, tier: t });
@@ -413,19 +443,18 @@
                 if (!g.length) return;
                 html += `<div class="tier-section ${t.cls}"><div class="tier-header">${t.icon} ${t.name}</div><div class="players-grid">`;
                 g.forEach(p => {
+                    const piece = p.piece || DEFAULT_PIECE;
                     html += `
                         <div class="player-card">
                             <div class="rank-num">${p.pos}</div>
-                            <div class="avatar">
-                                <img src="${p.photo || NO_AVATAR}" alt="${p.username}" onerror="this.src='${NO_AVATAR}'">
-                            </div>
+                            <div class="avatar">${piece}</div>
                             <div class="pinfo">
                                 <div class="pname">
                                     ${p.country ? `<img src="https://flagcdn.com/20x15/${p.country}.png" alt="${p.country}" style="border-radius:2px;vertical-align:middle;margin-right:6px;">` : ''}${p.username}
                                 </div>
                                 <div class="pmeta">
                                     <span class="pelo">ELO ${p.elo || '---'}</span>
-                                    <a class="pchess" href="https://www.chess.com/member/${p.username}" target="_blank">Perfil</a>
+                                    <a class="pchess" href="https://lichess.org/@/${p.username}" target="_blank">Perfil Lichess</a>
                                 </div>
                             </div>
                             <div class="score-wrap">
@@ -447,7 +476,7 @@
                 sorted.map((p, i) => `
                     <div class="arow">
                         <div style="font-family:'Orbitron';font-weight:700;color:var(--accent-primary)">#${i+1}</div>
-                        <div class="avatar-mini"><img src="${p.photo || NO_AVATAR}" alt="${p.username}" onerror="this.src='${NO_AVATAR}'"></div>
+                        <div class="avatar-mini">${p.piece || DEFAULT_PIECE}</div>
                         <div>
                             <div style="font-weight:600">${p.username}</div>
                             <div style="font-size:0.8rem;color:var(--text-muted)">${p.score} pts | ELO ${p.elo || 'N/A'}</div>
@@ -458,26 +487,37 @@
                     </div>`).join('');
         }
 
-        async function fetchChessData(username) {
+        // ── Obtener datos de Lichess ────────────────────────────────────────
+        async function fetchLichessData(username) {
             try {
-                await new Promise(r => setTimeout(r, 500));
-                const [profileRes, statsRes] = await Promise.all([
-                    fetch(`https://api.chess.com/pub/player/${username}`),
-                    fetch(`https://api.chess.com/pub/player/${username}/stats`)
-                ]);
-                if (!profileRes.ok) return null;
-                const profile = await profileRes.json();
-                const stats = await statsRes.json();
+                const res = await fetch(`https://lichess.org/api/user/${username}`, {
+                    headers: { 'Accept': 'application/json' }
+                });
+                if (!res.ok) return null;
+                const data = await res.json();
+
+                // ELO: tomar el mayor rating disponible (rapid > blitz > bullet > classical)
                 let elo = 0;
-                if (stats.chess_rapid) elo = stats.chess_rapid.last.rating;
-                else if (stats.chess_blitz) elo = stats.chess_blitz.last.rating;
-                else if (stats.chess_bullet) elo = stats.chess_bullet.last.rating;
-                let country = '';
-                if (profile.country) {
-                    const cc = profile.country.split('/').pop().toLowerCase();
-                    country = cc;
+                const perfs = data.perfs || {};
+                const order = ['rapid','blitz','bullet','classical','correspondence'];
+                for (const mode of order) {
+                    if (perfs[mode] && perfs[mode].rating) {
+                        elo = perfs[mode].rating;
+                        break;
+                    }
                 }
-                return { username: profile.username, photo: profile.avatar || NO_AVATAR, elo, country };
+
+                // País
+                let country = '';
+                if (data.profile && data.profile.country) {
+                    country = data.profile.country.toLowerCase();
+                }
+
+                return {
+                    username: data.username,
+                    elo,
+                    country
+                };
             } catch(e) { return null; }
         }
 
@@ -488,23 +528,32 @@
             const loader = document.getElementById('loader');
             const btn    = document.getElementById('addBtn');
 
-            if (!link) { msg.style.color = '#ef4444'; msg.textContent = 'Pega un enlace de Chess.com'; return; }
+            if (!link) { msg.style.color = '#ef4444'; msg.textContent = 'Pega un enlace de Lichess'; return; }
 
-            let username = link.replace(/\/$/, '').split('/').pop();
+            // Extraer username del enlace (acepta lichess.org/@/user o solo el nombre)
+            let username = link.replace(/\/$/, '').split('/').pop().replace('@','');
+
             loader.style.display = 'block';
             btn.disabled = true;
             msg.textContent = '';
 
-            const data = await fetchChessData(username);
+            const data = await fetchLichessData(username);
             if (!data) {
                 msg.style.color = '#ef4444';
-                msg.textContent = 'Error: Usuario no encontrado o perfil privado.';
+                msg.textContent = 'Error: Usuario no encontrado o perfil privado en Lichess.';
                 loader.style.display = 'none';
                 btn.disabled = false;
                 return;
             }
 
-            const newPlayer = { id: Date.now().toString(), username: data.username, photo: data.photo, elo: data.elo, score, country: data.country || '' };
+            const newPlayer = {
+                id: Date.now().toString(),
+                username: data.username,
+                piece: selectedPieceAdd,
+                elo: data.elo,
+                score,
+                country: data.country || ''
+            };
             players.push(newPlayer);
             await save(newPlayer);
             render();
@@ -519,8 +568,13 @@
         async function updatePlayerData(id) {
             const p = players.find(x => x.id === id);
             if (!p) return;
-            const data = await fetchChessData(p.username);
-            if (data) { p.photo = data.photo; p.elo = data.elo; p.country = data.country || p.country || ''; await save(p); render(); }
+            const data = await fetchLichessData(p.username);
+            if (data) {
+                p.elo = data.elo;
+                p.country = data.country || p.country || '';
+                await save(p);
+                render();
+            }
         }
 
         async function updateAll() {
@@ -530,10 +584,15 @@
             msg.textContent = `Actualizando 0 / ${players.length}...`;
             let count = 0;
             for (const p of players) {
-                const data = await fetchChessData(p.username);
-                if (data) { p.photo = data.photo; p.elo = data.elo; p.country = data.country || p.country || ''; await save(p); }
+                const data = await fetchLichessData(p.username);
+                if (data) {
+                    p.elo = data.elo;
+                    p.country = data.country || p.country || '';
+                    await save(p);
+                }
                 count++;
                 msg.textContent = `Actualizando ${count} / ${players.length}...`;
+                await new Promise(r => setTimeout(r, 300)); // respetar rate limit Lichess
             }
             render();
             btn.disabled = false;
@@ -555,7 +614,7 @@
         async function del(id) {
             if (confirm('¿Eliminar a este competidor?')) {
                 const p = players.find(x => x.id === id);
-                players = players.filter(p => p.id !== id);
+                players = players.filter(x => x.id !== id);
                 if (p) await save({ ...p, _delete: true });
                 render();
             }
@@ -587,3 +646,4 @@
     </script>
 </body>
 </html>
+
