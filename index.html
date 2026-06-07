@@ -325,14 +325,18 @@
             background: #1e293b; border-radius: 20px; padding: 2rem;
             margin-top: 3rem; border: 1px solid rgba(255,255,255,0.1);
             box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            max-height: 85vh; overflow-y: auto;
         }
         .admin-table { width: 100%; border-collapse: collapse; margin-bottom: 2rem; color: #fff; }
         .admin-table th, .admin-table td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .admin-input { background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 5px 10px; border-radius: 5px; width: 100%; }
-        .admin-actions { display: flex; gap: 10px; margin-top: 2rem; }
-        .btn-primary { background: var(--accent-primary); color: #000; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: 700; }
+        .admin-select { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 5px; border-radius: 5px; cursor: pointer; }
+        .admin-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 2rem; }
+        .btn-primary { background: var(--accent-primary); color: #000; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: 700; transition: transform 0.2s; }
+        .btn-primary:hover { transform: scale(1.02); }
         .btn-danger { background: #ef4444; color: #fff; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
         .btn-secondary { background: rgba(255,255,255,0.1); color: #fff; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; }
+        .btn-warning { background: #f59e0b; color: #000; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: 700; }
 
         @media (max-width: 768px) {
             .podium-wrap { flex-direction: column; align-items: center; min-height: auto; gap: 1rem; }
@@ -341,6 +345,7 @@
             .player-card { grid-template-columns: 40px 50px 1fr; gap: 1rem; }
             .score-wrap { grid-column: 1 / -1; text-align: left; display: flex; align-items: center; gap: 10px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; }
             .score-wrap .pts { font-size: 1.5rem; }
+            .admin-actions { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -382,10 +387,17 @@
             </div>
             
             <div id="adminContent">
+                <div style="margin-bottom: 1.5rem; display: flex; gap: 10px;">
+                    <button onclick="bulkRefreshStats()" id="bulkRefreshBtn" class="btn-warning" style="flex: 1;">
+                        🔄 ACTUALIZAR STATS DE TODOS (LICHESS)
+                    </button>
+                </div>
+
                 <table class="admin-table">
                     <thead>
                         <tr>
                             <th>Usuario Lichess</th>
+                            <th>Pieza</th>
                             <th>Puntos Club</th>
                             <th>Acciones</th>
                         </tr>
@@ -393,18 +405,29 @@
                     <tbody id="adminTableBody"></tbody>
                 </table>
                 
-                <div style="background:rgba(0,0,0,0.2); padding:1.5rem; border-radius:15px;">
+                <div style="background:rgba(0,0,0,0.2); padding:1.5rem; border-radius:15px; margin-bottom: 2rem;">
                     <h4 style="margin-bottom:1rem;">Añadir Nuevo Jugador</h4>
-                    <div style="display:grid; grid-template-columns: 1fr 1fr auto; gap:10px;">
+                    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr auto; gap:10px;">
                         <input type="text" id="newUsername" placeholder="Usuario Lichess" class="admin-input">
-                        <input type="number" id="newScore" placeholder="Puntos Iniciales" class="admin-input">
+                        <select id="newPiece" class="admin-select">
+                            <option value="♟">Peón (♟)</option>
+                            <option value="♞">Caballo (♞)</option>
+                            <option value="♝">Alfil (♝)</option>
+                            <option value="♜">Torre (♜)</option>
+                            <option value="♛">Reina (♛)</option>
+                            <option value="♚">Rey (♚)</option>
+                        </select>
+                        <input type="number" id="newScore" placeholder="Puntos" class="admin-input">
                         <button onclick="addPlayer()" class="btn-primary">Añadir</button>
                     </div>
                 </div>
 
                 <div class="admin-actions">
-                    <button id="saveBtn" onclick="syncWithSheet()" class="btn-primary" style="width:100%; padding:15px; font-size:1.1rem;">
-                        💾 GUARDAR CAMBIOS EN LA NUBE
+                    <button id="saveBtn" onclick="syncWithSheet()" class="btn-primary" style="padding:15px; font-size:1.1rem;">
+                        💾 GUARDAR EN LA NUBE
+                    </button>
+                    <button onclick="exportData()" class="btn-secondary" style="padding:15px; font-size:1.1rem;">
+                        📥 EXPORTAR JSON (BACKUP)
                     </button>
                 </div>
             </div>
@@ -416,9 +439,9 @@
     <script>
         const API_URL = 'https://script.google.com/macros/s/AKfycbydXprmWOwO_RjLcFubXdkxkPJmgVv73UJ-BjySMzOAwrzTaTm47-iu-zPZAZv0pQ6uAw/exec';
         const DEFAULT_PIECE = '♟';
+        const CHESS_PIECES = ['♟', '♞', '♝', '♜', '♛', '♚'];
         
         let players = [];
-        let firstLoad = true;
         const lichessCache = {};
 
         const TIERS = [
@@ -455,14 +478,15 @@
                 const data = await res.json();
                 players = data.map(p => ({
                     ...p,
-                    username: p.username || p.usuario || '', // Manejar diferentes nombres de columna
+                    username: p.username || p.usuario || '',
                     score: Number(p.score || p.puntos) || 0,
+                    piece: p.piece || p.pieza || DEFAULT_PIECE,
                     elo: Number(p.elo) || 0
                 })).filter(p => p.username);
                 
                 render();
                 
-                // Cargar stats extendidas en segundo plano
+                // Carga inicial silenciosa de stats
                 for (let p of players) {
                     const lData = await fetchLichessData(p.username);
                     if (lData) {
@@ -545,7 +569,6 @@
 
             TIERS.forEach(tier => {
                 const tierPlayers = filtered.filter(p => {
-                    // Encontrar a qué tier pertenece el jugador basado en su score
                     const playerTier = TIERS.find(t => p.score >= t.min);
                     return playerTier && playerTier.name === tier.name;
                 });
@@ -620,8 +643,19 @@
             
             players.forEach((p, index) => {
                 const tr = document.createElement('tr');
+                
+                // Generar opciones de piezas
+                let pieceOptions = CHESS_PIECES.map(piece => 
+                    `<option value="${piece}" ${p.piece === piece ? 'selected' : ''}>${piece}</option>`
+                ).join('');
+
                 tr.innerHTML = `
-                    <td>${p.username}</td>
+                    <td><strong>${p.username}</strong></td>
+                    <td>
+                        <select onchange="updatePlayerPiece(${index}, this.value)" class="admin-select">
+                            ${pieceOptions}
+                        </select>
+                    </td>
                     <td>
                         <input type="number" value="${p.score}" 
                                onchange="updatePlayerScore(${index}, this.value)" 
@@ -637,11 +671,17 @@
 
         function updatePlayerScore(index, value) {
             players[index].score = Number(value);
-            render(); // Actualizar ranking visualmente
+            render(); 
+        }
+
+        function updatePlayerPiece(index, value) {
+            players[index].piece = value;
+            render();
         }
 
         function addPlayer() {
             const user = document.getElementById('newUsername').value.trim();
+            const piece = document.getElementById('newPiece').value;
             const score = Number(document.getElementById('newScore').value) || 0;
             
             if (!user) return alert("Ingresa un usuario");
@@ -649,7 +689,7 @@
                 return alert("El jugador ya existe");
             }
             
-            players.push({ username: user, score: score });
+            players.push({ username: user, piece: piece, score: score });
             document.getElementById('newUsername').value = '';
             document.getElementById('newScore').value = '';
             
@@ -665,6 +705,36 @@
             }
         }
 
+        async function bulkRefreshStats() {
+            const btn = document.getElementById('bulkRefreshBtn');
+            const originalText = btn.innerText;
+            btn.innerText = "⏳ ACTUALIZANDO DATOS...";
+            btn.disabled = true;
+
+            try {
+                for (let p of players) {
+                    // Forzar limpieza de cache para datos frescos
+                    const key = p.username.toLowerCase();
+                    delete lichessCache[key];
+                    
+                    const lData = await fetchLichessData(p.username);
+                    if (lData) {
+                        p.elo = lData.elo;
+                        p.country = lData.country;
+                        p.games = lData.games;
+                        p.winrate = lData.winrate;
+                    }
+                }
+                render();
+                alert("Estadísticas de Lichess actualizadas correctamente para todos los jugadores.");
+            } catch (e) {
+                alert("Error al actualizar: " + e.message);
+            } finally {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
+        }
+
         async function syncWithSheet() {
             const btn = document.getElementById('saveBtn');
             const originalText = btn.innerText;
@@ -672,21 +742,22 @@
             btn.disabled = true;
 
             try {
-                // Preparar datos para enviar (solo username y score)
+                // Preparar datos incluyendo la pieza
                 const dataToSave = players.map(p => ({
                     username: p.username,
-                    score: p.score
+                    score: p.score,
+                    piece: p.piece
                 }));
 
-                const response = await fetch(API_URL, {
+                await fetch(API_URL, {
                     method: 'POST',
-                    mode: 'no-cors', // Google Apps Script suele requerir no-cors para POST simples
+                    mode: 'no-cors',
                     cache: 'no-cache',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(dataToSave)
                 });
 
-                alert("Cambios enviados. Nota: Si la hoja no se actualiza, verifica los permisos del script de Google.");
+                alert("Cambios enviados a la nube.");
             } catch (e) {
                 console.error(e);
                 alert("Error al sincronizar: " + e.message);
@@ -694,6 +765,16 @@
                 btn.innerText = originalText;
                 btn.disabled = false;
             }
+        }
+
+        function exportData() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(players));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href",     dataStr);
+            downloadAnchorNode.setAttribute("download", "ranking_backup.json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
         }
 
         // Inicializar
