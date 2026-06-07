@@ -7,85 +7,98 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            background: #050505;
-            font-family: 'Rajdhani', sans-serif;
-            color: #f8fafc;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
+        body { background: #050505; font-family: 'Rajdhani', sans-serif; color: #f8fafc; min-height: 100vh; overflow-x: hidden; }
         .bg-elements { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
         .grid-pattern { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,77,0,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,77,0,0.05) 1px, transparent 1px); background-size: 50px 50px; }
         .wrap { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 2rem 1rem; }
-
-        .action-bar {
-            display: grid; grid-template-columns: 1fr auto; gap: 15px;
-            margin-bottom: 4rem;
-            background: rgba(20,20,20,0.9); padding: 20px;
-            border-radius: 20px; border: 2px solid #ff4d00;
-            box-shadow: 0 0 20px rgba(255,77,0,0.3);
-        }
-        .search-box-v2 input {
-            width: 100%; background: #000; border: 2px solid #333;
-            border-radius: 12px; padding: 15px 25px; color: #ffae00;
-            font-family: 'Orbitron', sans-serif; font-size: 1.1rem; outline: none;
-        }
+        .action-bar { display: grid; grid-template-columns: 1fr auto; gap: 15px; margin-bottom: 4rem; background: rgba(20,20,20,0.9); padding: 20px; border-radius: 20px; border: 2px solid #ff4d00; box-shadow: 0 0 20px rgba(255,77,0,0.3); }
+        .search-box-v2 input { width: 100%; background: #000; border: 2px solid #333; border-radius: 12px; padding: 15px 25px; color: #ffae00; font-family: 'Orbitron', sans-serif; font-size: 1.1rem; outline: none; }
         .search-box-v2 input:focus { border-color: #ff4d00; }
-        .mega-refresh-btn {
-            background: #ff4d00; color: #000; border: none; padding: 0 30px;
-            border-radius: 12px; cursor: pointer; font-family: 'Orbitron', sans-serif;
-            font-weight: 900; display: flex; align-items: center; gap: 10px;
-        }
+        .mega-refresh-btn { background: #ff4d00; color: #000; border: none; padding: 0 30px; border-radius: 12px; cursor: pointer; font-family: 'Orbitron', sans-serif; font-weight: 900; display: flex; align-items: center; gap: 10px; }
         .mega-refresh-btn:hover { background: #ffae00; }
-
-        /* ── Podio ── */
         .podium-wrap { display: flex; align-items: flex-end; justify-content: center; gap: 2rem; min-height: 480px; margin-bottom: 5rem; }
         .podium-slot { flex: 1; max-width: 250px; position: relative; opacity: 0; transition: opacity 0.4s; }
-
-        /* Wrapper que contiene canvas + card para el #1 */
         .fire-frame-wrap { position: relative; display: inline-block; width: 100%; }
-        .fire-canvas {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 10;
-            border-radius: 24px;
-        }
-
-        .podium-card {
-            background: #000; border: 2px solid #333;
-            border-radius: 24px; padding: 2.5rem 1rem;
-            text-align: center; position: relative; z-index: 5;
-        }
+        .fire-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; border-radius: 24px; }
+        .podium-card { background: #000; border: 2px solid #333; border-radius: 24px; padding: 2.5rem 1rem; text-align: center; position: relative; z-index: 5; }
         .podium-1 .podium-card { border-color: #ff6000; }
-
-        .avatar-mega {
-            width: 90px; height: 90px; margin: 0 auto 1.5rem;
-            background: #111; border: 3px solid #ff4d00;
-            border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 4rem;
-        }
+        .avatar-mega { width: 90px; height: 90px; margin: 0 auto 1.5rem; background: #111; border: 3px solid #ff4d00; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 4rem; }
         .podium-1 .avatar-mega { width: 120px; height: 120px; font-size: 5.5rem; border-color: #ffae00; }
-
-        /* ── Ranking List ── */
-        .player-card {
-            display: grid; grid-template-columns: 60px 80px 1fr auto;
-            align-items: center; gap: 1.5rem;
-            background: rgba(15,23,42,0.9); border: 1px solid #222;
-            border-radius: 16px; padding: 1.2rem 2rem; margin-bottom: 1rem; transition: 0.2s;
-        }
+        .player-card { display: grid; grid-template-columns: 60px 80px 1fr auto; align-items: center; gap: 1.5rem; background: rgba(15,23,42,0.9); border: 1px solid #222; border-radius: 16px; padding: 1.2rem 2rem; margin-bottom: 1rem; transition: 0.2s; }
         .player-card:hover { border-color: #ff4d00; background: #000; transform: scale(1.02); box-shadow: 0 0 30px rgba(255,77,0,0.2); }
         .list-avatar { width: 65px; height: 65px; background: #000; border: 2px solid #444; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 2.8rem; }
         .player-card:hover .list-avatar { border-color: #ff4d00; }
         .pts-mega { font-family: 'Orbitron', sans-serif; font-size: 2.5rem; font-weight: 900; color: #fff; }
         .player-card:hover .pts-mega { color: #ffae00; }
-
-        /* ── Admin ── */
         .admin-panel { background: #000; border: 4px solid #ff4d00; border-radius: 30px; padding: 2rem; margin-top: 4rem; }
         .admin-btn { position: fixed; bottom: 20px; right: 20px; opacity: 0.5; cursor: pointer; font-size: 30px; z-index: 100; }
+
+        /* ── Nuevo: sección de registro por link ── */
+        .link-register {
+            background: rgba(255,77,0,0.07);
+            border: 2px solid #ff4d00;
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .link-register h3 {
+            font-family: 'Orbitron', sans-serif;
+            color: #ffae00;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            letter-spacing: 3px;
+        }
+        .link-row { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; align-items: center; }
+        .link-row input {
+            background: #000; color: #fff;
+            border: 1px solid #ff4d00;
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 1rem;
+            font-family: 'Rajdhani', sans-serif;
+            outline: none;
+        }
+        .link-row input:focus { border-color: #ffae00; }
+        .fetch-btn {
+            background: #ff4d00; color: #000; border: none;
+            padding: 12px 20px; border-radius: 10px;
+            font-family: 'Orbitron', sans-serif; font-weight: 900;
+            cursor: pointer; font-size: 0.85rem; white-space: nowrap;
+        }
+        .fetch-btn:hover { background: #ffae00; }
+        .fetch-btn:disabled { background: #555; color: #333; cursor: not-allowed; }
+
+        /* Preview card del jugador fetched */
+        .preview-card {
+            display: none;
+            margin-top: 1.2rem;
+            background: #0a0a0a;
+            border: 1px solid #ff4d00;
+            border-radius: 14px;
+            padding: 1.2rem 1.5rem;
+            gap: 1.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .preview-card.visible { display: flex; }
+        .preview-avatar { font-size: 3rem; background: #111; border: 2px solid #ffae00; border-radius: 12px; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; }
+        .preview-info { flex: 1; }
+        .preview-info .pname { font-family: 'Orbitron', sans-serif; font-size: 1.2rem; color: #fff; font-weight: 900; }
+        .preview-info .pstats { color: #ffae00; font-size: 1rem; margin-top: 4px; }
+        .preview-info .pgames { color: #aaa; font-size: 0.95rem; margin-top: 2px; }
+        .preview-piece-select { background: #000; color: #fff; border: 1px solid #ff4d00; border-radius: 8px; padding: 8px; font-size: 1.2rem; }
+        .preview-score-input { background: #000; color: #ffae00; border: 1px solid #ff4d00; border-radius: 8px; padding: 8px 12px; width: 80px; font-family: 'Orbitron', sans-serif; font-size: 1.1rem; text-align: center; }
+        .add-confirm-btn { background: #00c853; color: #000; border: none; border-radius: 10px; padding: 10px 20px; font-family: 'Orbitron', sans-serif; font-weight: 900; cursor: pointer; font-size: 0.9rem; }
+        .add-confirm-btn:hover { background: #69f0ae; }
+
+        .fetch-error { color: #ff4444; font-family: 'Orbitron', sans-serif; font-size: 0.85rem; margin-top: 10px; display: none; }
+        .fetch-error.visible { display: block; }
 
         @media (max-width: 768px) {
             .podium-wrap { flex-direction: column; align-items: center; min-height: auto; }
             .player-card { grid-template-columns: 40px 60px 1fr; padding: 1rem; }
             .pts-mega { grid-column: 1 / -1; text-align: right; }
+            .link-row { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -112,23 +125,51 @@
 
     <div id="adminPanel" style="display:none;" class="admin-panel">
         <h2 style="font-family:'Orbitron'; color:#ff4d00; margin-bottom:2rem; text-align:center;">NÚCLEO DE MANDO</h2>
-        <button onclick="bulkRefreshStats()" id="bulkRefreshBtn" style="width:100%; padding:20px; background:#ffae00; border:none; font-family:'Orbitron'; font-weight:900; font-size:1.5rem; cursor:pointer; margin-bottom:2rem; border-radius:15px;">⚡ SINCRONIZACIÓN TOTAL ⚡</button>
-        <table style="width:100%; color:#fff; border-collapse:collapse;">
-            <thead><tr style="border-bottom:3px solid #ff4d00; text-align:left;"><th style="padding:15px;">GUERRERO</th><th>PIEZA</th><th>PODER</th><th>X</th></tr></thead>
-            <tbody id="adminTableBody"></tbody>
-        </table>
-        <div style="margin-top:2rem; padding:1.5rem; background:rgba(255,77,0,0.1); border-radius:20px; border:1px solid #ff4d00;">
-            <div style="display:grid; grid-template-columns:1fr 1fr 1fr auto; gap:10px;">
-                <input type="text" id="newUsername" placeholder="USER" style="background:#000; color:#fff; border:1px solid #ff4d00; padding:10px;">
-                <select id="newPiece" style="background:#000; color:#fff; border:1px solid #ff4d00;">
-                    <option value="♟">♟ PEÓN</option><option value="♞">♞ CABALLO</option>
-                    <option value="♝">♝ ALFIL</option><option value="♜">♜ TORRE</option>
-                    <option value="♛">♛ REINA</option><option value="♚">♚ REY</option>
+
+        <!-- ══ REGISTRO POR LINK ══ -->
+        <div class="link-register">
+            <h3>⚡ REGISTRAR POR LINK DE LICHESS</h3>
+            <div class="link-row">
+                <input type="text" id="lichessLinkInput" placeholder="https://lichess.org/@/NombreJugador" />
+                <button class="fetch-btn" id="fetchBtn" onclick="fetchFromLink()">BUSCAR</button>
+            </div>
+            <div class="fetch-error" id="fetchError">Usuario no encontrado. Verifica el link.</div>
+
+            <!-- Preview del jugador encontrado -->
+            <div class="preview-card" id="previewCard">
+                <div class="preview-avatar" id="previewAvatar">♟</div>
+                <div class="preview-info">
+                    <div class="pname" id="previewName">—</div>
+                    <div class="pstats" id="previewStats">—</div>
+                    <div class="pgames" id="previewGames">—</div>
+                </div>
+                <select class="preview-piece-select" id="previewPiece">
+                    <option value="♟">♟</option><option value="♞">♞</option>
+                    <option value="♝">♝</option><option value="♜">♜</option>
+                    <option value="♛">♛</option><option value="♚">♚</option>
                 </select>
-                <input type="number" id="newScore" placeholder="PTS" style="background:#000; color:#fff; border:1px solid #ff4d00;">
-                <button onclick="addPlayer()" style="background:#ff4d00; color:#000; border:none; padding:0 20px; font-weight:900; cursor:pointer;">AÑADIR</button>
+                <input type="number" class="preview-score-input" id="previewScore" placeholder="PTS" value="0" />
+                <button class="add-confirm-btn" onclick="confirmAddFromLink()">✓ AÑADIR</button>
             </div>
         </div>
+
+        <!-- ══ SINCRONIZACIÓN TOTAL ══ -->
+        <button onclick="bulkRefreshStats()" id="bulkRefreshBtn" style="width:100%; padding:20px; background:#ffae00; border:none; font-family:'Orbitron'; font-weight:900; font-size:1.5rem; cursor:pointer; margin-bottom:2rem; border-radius:15px;">⚡ SINCRONIZACIÓN TOTAL ⚡</button>
+
+        <!-- ══ TABLA DE JUGADORES ══ -->
+        <table style="width:100%; color:#fff; border-collapse:collapse;">
+            <thead><tr style="border-bottom:3px solid #ff4d00; text-align:left;">
+                <th style="padding:15px;">JUGADOR</th>
+                <th>ELO</th>
+                <th>WR</th>
+                <th>PARTIDAS</th>
+                <th>PIEZA</th>
+                <th>PTS</th>
+                <th>X</th>
+            </tr></thead>
+            <tbody id="adminTableBody"></tbody>
+        </table>
+
         <button id="saveBtn" onclick="syncWithSheet()" style="width:100%; margin-top:2rem; padding:20px; background:#ff4d00; color:#000; font-family:'Orbitron'; font-weight:900; font-size:1.2rem; border:none; border-radius:15px; cursor:pointer;">💾 GUARDAR EN EL NÚCLEO</button>
         <button onclick="closeAdmin()" style="width:100%; margin-top:1rem; background:none; color:#ff4d00; border:none; cursor:pointer; font-weight:900;">CERRAR</button>
     </div>
@@ -141,6 +182,8 @@ const DEFAULT_PIECE = '♟';
 const CHESS_PIECES = ['♟','♞','♝','♜','♛','♚'];
 let players = [];
 const lichessCache = {};
+let pendingFetchedPlayer = null; // jugador traído del link, esperando confirmación
+
 const TIERS = [
     { name:'Gran Maestro', icon:'👑', min:150 },
     { name:'Maestro',      icon:'⭐', min:96  },
@@ -149,272 +192,285 @@ const TIERS = [
     { name:'Principiante', icon:'🔰', min:0   }
 ];
 
-/* ══════════════════════════════════════
-   FIRE BORDER — canvas particle system
-   ══════════════════════════════════════ */
-let fireAnimId = null;
+/* ══════════════════ FETCH FROM LICHESS LINK ══════════════════ */
+function extractUsername(input) {
+    input = input.trim();
+    // Acepta: link completo, @/user, o solo el nombre
+    const match = input.match(/lichess\.org\/@?\/?([\w-]+)/i)
+                || input.match(/^@\/?([^/\s]+)/)
+                || (input.match(/^[\w-]+$/) ? [null, input] : null);
+    return match ? match[1] : null;
+}
 
+async function fetchFromLink() {
+    const input    = document.getElementById('lichessLinkInput').value;
+    const errorEl  = document.getElementById('fetchError');
+    const preview  = document.getElementById('previewCard');
+    const btn      = document.getElementById('fetchBtn');
+
+    errorEl.classList.remove('visible');
+    preview.classList.remove('visible');
+    pendingFetchedPlayer = null;
+
+    const username = extractUsername(input);
+    if (!username) { errorEl.textContent = 'Link inválido. Pega el link completo del perfil.'; errorEl.classList.add('visible'); return; }
+
+    btn.disabled = true; btn.textContent = '...';
+
+    try {
+        const res = await fetch(`https://lichess.org/api/user/${username}`);
+        if (!res.ok) throw new Error('not found');
+        const data = await res.json();
+
+        const perfs    = data.perfs || {};
+        const rapid    = perfs.rapid?.rating  || 0;
+        const blitz    = perfs.blitz?.rating  || 0;
+        const bullet   = perfs.bullet?.rating || 0;
+        const elo      = rapid || blitz || bullet;
+        const total    = data.count?.all  || 0;
+        const wins     = data.count?.win  || 0;
+        const losses   = data.count?.loss || 0;
+        const draws    = data.count?.draw || 0;
+        const winrate  = total > 0 ? Math.round((wins / total) * 100) : 0;
+        const country  = data.profile?.country?.toLowerCase() || '';
+
+        // Guardar datos del jugador pendiente
+        pendingFetchedPlayer = { username: data.username, elo, winrate, country, total, wins, losses, draws };
+
+        // Mostrar preview
+        document.getElementById('previewAvatar').textContent = DEFAULT_PIECE;
+        document.getElementById('previewName').textContent   = data.username;
+        document.getElementById('previewStats').textContent  =
+            `ELO ${elo || '—'}  |  WR ${winrate}%  |  Rapid ${rapid}  Blitz ${blitz}  Bullet ${bullet}`;
+        document.getElementById('previewGames').textContent  =
+            `${total.toLocaleString()} partidas jugadas — ${wins}W / ${draws}D / ${losses}L`;
+        document.getElementById('previewScore').value = 0;
+
+        preview.classList.add('visible');
+        // Limpiar input
+        document.getElementById('lichessLinkInput').value = '';
+
+    } catch(e) {
+        errorEl.textContent = 'Usuario no encontrado. Verifica el link.';
+        errorEl.classList.add('visible');
+    } finally {
+        btn.disabled = false; btn.textContent = 'BUSCAR';
+    }
+}
+
+// Confirmar y añadir el jugador al ranking
+function confirmAddFromLink() {
+    if (!pendingFetchedPlayer) return;
+    const piece = document.getElementById('previewPiece').value;
+    const score = Number(document.getElementById('previewScore').value) || 0;
+
+    // Evitar duplicados
+    if (players.find(p => p.username.toLowerCase() === pendingFetchedPlayer.username.toLowerCase())) {
+        alert('Este jugador ya está en el ranking.');
+        return;
+    }
+
+    players.push({ ...pendingFetchedPlayer, piece, score });
+    lichessCache[pendingFetchedPlayer.username.toLowerCase()] = pendingFetchedPlayer;
+
+    document.getElementById('previewCard').classList.remove('visible');
+    pendingFetchedPlayer = null;
+
+    render();
+    renderAdmin();
+}
+
+// Enter en el input también lanza la búsqueda
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('lichessLinkInput')?.addEventListener('keydown', e => { if(e.key==='Enter') fetchFromLink(); });
+});
+
+/* ══════════════════ FIRE BORDER ══════════════════ */
+let fireAnimId = null;
 function startFireBorder(canvas) {
     const ctx = canvas.getContext('2d');
     let W, H;
-
-    function resize() {
-        W = canvas.offsetWidth;
-        H = canvas.offsetHeight;
-        canvas.width  = W;
-        canvas.height = H;
-    }
+    function resize() { W = canvas.offsetWidth; H = canvas.offsetHeight; canvas.width = W; canvas.height = H; }
     resize();
-    const ro = new ResizeObserver(resize);
-    ro.observe(canvas.parentElement);
-
-    // Partículas que corren a lo largo del perímetro
-    const BORDER = 18;       // grosor del "carril" de fuego
-    const COUNT  = 220;      // cantidad de partículas
-
+    const ro = new ResizeObserver(resize); ro.observe(canvas.parentElement);
+    const BORDER = 18, COUNT = 220;
     function perimeterPoint(t) {
-        // t ∈ [0,1) recorre el perímetro en sentido horario
-        const r = 20; // border-radius
-        const top    = W - 2*r;
-        const right  = H - 2*r;
-        const bottom = W - 2*r;
-        const left   = H - 2*r;
-        const arcs   = Math.PI * r;       // cuarto de circunferencia × 4
-        const total  = 2*(top+right) + 4*arcs;
-        let d = t * total;
-
-        // top edge (izq → der)
-        if (d < top) return { x: r + d, y: 0 };
-        d -= top;
-        // top-right arc
-        if (d < arcs) { const a = -Math.PI/2 + (d/arcs)*(Math.PI/2); return { x: W-r+Math.cos(a)*r, y: r+Math.sin(a)*r }; }
-        d -= arcs;
-        // right edge (arr → abj)
-        if (d < right) return { x: W, y: r + d };
-        d -= right;
-        // bottom-right arc
-        if (d < arcs) { const a = (d/arcs)*(Math.PI/2); return { x: W-r+Math.cos(a)*r, y: H-r+Math.sin(a)*r }; }
-        d -= arcs;
-        // bottom edge (der → izq)
-        if (d < bottom) return { x: W-r-d, y: H };
-        d -= bottom;
-        // bottom-left arc
-        if (d < arcs) { const a = Math.PI/2 + (d/arcs)*(Math.PI/2); return { x: r+Math.cos(a)*r, y: H-r+Math.sin(a)*r }; }
-        d -= arcs;
-        // left edge (abj → arr)
-        if (d < left) return { x: 0, y: H-r-d };
-        d -= left;
-        // top-left arc
-        const a = Math.PI + (d/arcs)*(Math.PI/2);
-        return { x: r+Math.cos(a)*r, y: r+Math.sin(a)*r };
+        const r=20, top=W-2*r, right=H-2*r, bottom=W-2*r, left=H-2*r, arcs=Math.PI*r, total=2*(top+right)+4*arcs;
+        let d=t*total;
+        if(d<top) return {x:r+d,y:0}; d-=top;
+        if(d<arcs){const a=-Math.PI/2+(d/arcs)*(Math.PI/2);return{x:W-r+Math.cos(a)*r,y:r+Math.sin(a)*r};} d-=arcs;
+        if(d<right) return{x:W,y:r+d}; d-=right;
+        if(d<arcs){const a=(d/arcs)*(Math.PI/2);return{x:W-r+Math.cos(a)*r,y:H-r+Math.sin(a)*r};} d-=arcs;
+        if(d<bottom) return{x:W-r-d,y:H}; d-=bottom;
+        if(d<arcs){const a=Math.PI/2+(d/arcs)*(Math.PI/2);return{x:r+Math.cos(a)*r,y:H-r+Math.sin(a)*r};} d-=arcs;
+        if(d<left) return{x:0,y:H-r-d}; d-=left;
+        const a=Math.PI+(d/arcs)*(Math.PI/2); return{x:r+Math.cos(a)*r,y:r+Math.sin(a)*r};
     }
-
-    // Normal hacia el interior en cada punto del perímetro
     function perimeterNormal(t) {
-        const eps = 0.002;
-        const a = perimeterPoint((t - eps + 1) % 1);
-        const b = perimeterPoint((t + eps) % 1);
-        const dx = b.x - a.x, dy = b.y - a.y;
-        const len = Math.sqrt(dx*dx+dy*dy) || 1;
-        // normal apuntando hacia adentro
-        return { nx: dy/len, ny: -dx/len };
+        const eps=0.002,a=perimeterPoint((t-eps+1)%1),b=perimeterPoint((t+eps)%1);
+        const dx=b.x-a.x,dy=b.y-a.y,len=Math.sqrt(dx*dx+dy*dy)||1;
+        return{nx:dy/len,ny:-dx/len};
     }
-
     class Particle {
-        constructor() { this.reset(true); }
-        reset(rand) {
-            this.t      = rand ? Math.random() : this.t;           // posición en perímetro
-            this.speed  = 0.0003 + Math.random() * 0.0004;        // velocidad de avance
-            const pt    = perimeterPoint(this.t);
-            const nm    = perimeterNormal(this.t);
-            this.x      = pt.x + nm.nx * (Math.random() * BORDER * 0.4);
-            this.y      = pt.y + nm.ny * (Math.random() * BORDER * 0.4);
-            this.vx     = nm.nx * (0.3 + Math.random() * 0.7);   // deriva hacia interior
-            this.vy     = nm.ny * (0.3 + Math.random() * 0.7) - 0.8; // siempre un poco hacia arriba
-            this.life   = 0;
-            this.maxLife = 35 + Math.random() * 45;
-            this.size   = 3 + Math.random() * 6;
-            this.hue    = 20 + Math.random() * 30;                // naranja-amarillo
+        constructor(){this.reset(true);}
+        reset(rand){
+            this.t=rand?Math.random():this.t; this.speed=0.0003+Math.random()*0.0004;
+            const pt=perimeterPoint(this.t),nm=perimeterNormal(this.t);
+            this.x=pt.x+nm.nx*(Math.random()*BORDER*0.4); this.y=pt.y+nm.ny*(Math.random()*BORDER*0.4);
+            this.vx=nm.nx*(0.3+Math.random()*0.7); this.vy=nm.ny*(0.3+Math.random()*0.7)-0.8;
+            this.life=0; this.maxLife=35+Math.random()*45; this.size=3+Math.random()*6; this.hue=20+Math.random()*30;
         }
-        update() {
-            this.t   = (this.t + this.speed) % 1;
-            const pt = perimeterPoint(this.t);
-            const nm = perimeterNormal(this.t);
-            // reposicionar base sobre el perímetro y añadir deriva
-            this.x   = pt.x + nm.nx * 3 + this.vx * (this.life * 0.4);
-            this.y   = pt.y + nm.ny * 3 + this.vy * (this.life * 0.4);
-            this.vy -= 0.04;   // flotación
-            this.vx += (Math.random()-0.5) * 0.05; // turbulencia lateral
-            this.life++;
-            if (this.life > this.maxLife) this.reset(false);
+        update(){
+            this.t=(this.t+this.speed)%1;
+            const pt=perimeterPoint(this.t),nm=perimeterNormal(this.t);
+            this.x=pt.x+nm.nx*3+this.vx*(this.life*0.4); this.y=pt.y+nm.ny*3+this.vy*(this.life*0.4);
+            this.vy-=0.04; this.vx+=(Math.random()-0.5)*0.05; this.life++;
+            if(this.life>this.maxLife)this.reset(false);
         }
-        draw(ctx) {
-            const progress = this.life / this.maxLife;
-            const alpha    = progress < 0.2 ? progress/0.2 : 1 - (progress-0.2)/0.8;
-            const size     = this.size * (1 - progress * 0.4);
-            const grad = ctx.createRadialGradient(this.x,this.y,0, this.x,this.y,size*2.5);
-            grad.addColorStop(0,   `hsla(${this.hue+20},100%,90%,${alpha})`);
-            grad.addColorStop(0.3, `hsla(${this.hue},100%,60%,${alpha*0.9})`);
-            grad.addColorStop(0.7, `hsla(${this.hue-15},100%,40%,${alpha*0.6})`);
-            grad.addColorStop(1,   `hsla(${this.hue-20},100%,20%,0)`);
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, size*2.5, 0, Math.PI*2);
-            ctx.fillStyle = grad;
-            ctx.fill();
+        draw(ctx){
+            const p=this.life/this.maxLife,alpha=p<0.2?p/0.2:1-(p-0.2)/0.8,size=this.size*(1-p*0.4);
+            const g=ctx.createRadialGradient(this.x,this.y,0,this.x,this.y,size*2.5);
+            g.addColorStop(0,`hsla(${this.hue+20},100%,90%,${alpha})`);
+            g.addColorStop(0.3,`hsla(${this.hue},100%,60%,${alpha*0.9})`);
+            g.addColorStop(0.7,`hsla(${this.hue-15},100%,40%,${alpha*0.6})`);
+            g.addColorStop(1,`hsla(${this.hue-20},100%,20%,0)`);
+            ctx.beginPath(); ctx.arc(this.x,this.y,size*2.5,0,Math.PI*2); ctx.fillStyle=g; ctx.fill();
         }
     }
-
-    const particles = Array.from({length: COUNT}, () => new Particle());
-
-    function frame() {
-        ctx.clearRect(0, 0, W, H);
-        // glow base sobre el borde
-        ctx.save();
-        ctx.shadowColor = '#ff6000';
-        ctx.shadowBlur  = 18;
-        ctx.strokeStyle = 'rgba(255,120,0,0.25)';
-        ctx.lineWidth   = BORDER;
-        ctx.beginPath();
-        ctx.roundRect(BORDER/2, BORDER/2, W-BORDER, H-BORDER, 22);
-        ctx.stroke();
-        ctx.restore();
-
-        particles.forEach(p => { p.update(); p.draw(ctx); });
-        fireAnimId = requestAnimationFrame(frame);
+    const particles=Array.from({length:COUNT},()=>new Particle());
+    function frame(){
+        ctx.clearRect(0,0,W,H);
+        ctx.save(); ctx.shadowColor='#ff6000'; ctx.shadowBlur=18; ctx.strokeStyle='rgba(255,120,0,0.25)'; ctx.lineWidth=BORDER;
+        ctx.beginPath(); ctx.roundRect(BORDER/2,BORDER/2,W-BORDER,H-BORDER,22); ctx.stroke(); ctx.restore();
+        particles.forEach(p=>{p.update();p.draw(ctx);});
+        fireAnimId=requestAnimationFrame(frame);
     }
-    if (fireAnimId) cancelAnimationFrame(fireAnimId);
-    fireAnimId = requestAnimationFrame(frame);
+    if(fireAnimId)cancelAnimationFrame(fireAnimId);
+    fireAnimId=requestAnimationFrame(frame);
 }
 
-/* ════════════════════════ DATA & RENDER ════════════════════════ */
+/* ══════════════════ LICHESS DATA ══════════════════ */
 async function fetchLichessData(username) {
-    const key = username.toLowerCase();
-    if (lichessCache[key]) return lichessCache[key];
+    const key=username.toLowerCase();
+    if(lichessCache[key])return lichessCache[key];
     try {
-        const res  = await fetch(`https://lichess.org/api/user/${username}`);
-        if (!res.ok) return null;
-        const data = await res.json();
-        const perfs = data.perfs || {};
-        const elo  = perfs.rapid?.rating || perfs.blitz?.rating || perfs.bullet?.rating || 0;
-        const result = { elo, country: data.profile?.country?.toLowerCase() || '', winrate: data.count?.all > 0 ? Math.round((data.count.win/data.count.all)*100) : 0 };
-        lichessCache[key] = result;
-        return result;
-    } catch(e) { return null; }
+        const res=await fetch(`https://lichess.org/api/user/${username}`);
+        if(!res.ok)return null;
+        const data=await res.json();
+        const perfs=data.perfs||{};
+        const elo=perfs.rapid?.rating||perfs.blitz?.rating||perfs.bullet?.rating||0;
+        const total=data.count?.all||0, wins=data.count?.win||0, losses=data.count?.loss||0, draws=data.count?.draw||0;
+        const result={elo,country:data.profile?.country?.toLowerCase()||'',winrate:total>0?Math.round((wins/total)*100):0,total,wins,losses,draws};
+        lichessCache[key]=result; return result;
+    } catch(e){return null;}
 }
 
 async function load() {
     try {
-        const res  = await fetch(API_URL);
-        const data = await res.json();
-        players = data.map(p => ({
-            ...p,
-            username: p.username || p.usuario || '',
-            score:    Number(p.score || p.puntos) || 0,
-            piece:    p.piece || p.pieza || DEFAULT_PIECE,
-            elo:      Number(p.elo) || 0
-        })).filter(p => p.username);
+        const res=await fetch(API_URL);
+        const data=await res.json();
+        players=data.map(p=>({...p,username:p.username||p.usuario||'',score:Number(p.score||p.puntos)||0,piece:p.piece||p.pieza||DEFAULT_PIECE,elo:Number(p.elo)||0})).filter(p=>p.username);
         render();
-        for (let p of players) {
-            const lData = await fetchLichessData(p.username);
-            if (lData) { p.elo = lData.elo; p.winrate = lData.winrate; p.country = lData.country; }
-        }
+        for(let p of players){const lData=await fetchLichessData(p.username);if(lData){p.elo=lData.elo;p.winrate=lData.winrate;p.country=lData.country;p.total=lData.total;p.wins=lData.wins;p.losses=lData.losses;p.draws=lData.draws;}}
         render();
-    } catch(e) { console.error(e); }
+    } catch(e){console.error(e);}
 }
 
+/* ══════════════════ RENDER ══════════════════ */
 function renderPodium(sorted) {
-    const root = document.getElementById('podiumRoot');
-    if (sorted.length < 3) { root.innerHTML = ''; return; }
-    const top = sorted.slice(0,3);
-    const visualOrder = [top[1], top[0], top[2]];
-    const crowns = ['🥈','👑','🥉'];
-    let html = `<div class="podium-wrap">`;
-    visualOrder.forEach((p, i) => {
-        const realPos = sorted.indexOf(p);
-        const crown   = crowns[i];
-        const flag    = p.country ? `<img src="https://flagcdn.com/w20/${p.country}.png" alt="">` : '';
-        const isFirst = realPos === 0;
-        html += `
-            <div class="podium-slot podium-${realPos+1}" id="podium-slot-${realPos}">
-                ${isFirst ? `<div class="fire-frame-wrap" id="fire-wrap">` : ``}
-                <div class="podium-card">
-                    <span style="font-size:3rem;display:block;margin-bottom:10px;">${crown}</span>
-                    <div class="avatar-mega">${p.piece||DEFAULT_PIECE}</div>
-                    <div style="font-size:1.4rem;font-weight:900;">${flag} ${p.username}</div>
-                    <div class="pts-mega" style="color:#ffae00;">${p.score}</div>
-                    <div style="color:#ff4d00;font-weight:700;margin-top:10px;">ELO ${p.elo||'---'}</div>
-                </div>
-                ${isFirst ? `<canvas class="fire-canvas" id="fireCanvas"></canvas></div>` : ``}
-                <div style="font-family:'Orbitron';font-size:2rem;font-weight:900;margin-top:15px;color:#ff4d00;text-align:center;">#${realPos+1}</div>
-            </div>`;
+    const root=document.getElementById('podiumRoot');
+    if(sorted.length<3){root.innerHTML='';return;}
+    const top=sorted.slice(0,3),visualOrder=[top[1],top[0],top[2]],crowns=['🥈','👑','🥉'];
+    let html=`<div class="podium-wrap">`;
+    visualOrder.forEach((p,i)=>{
+        const realPos=sorted.indexOf(p),crown=crowns[i],isFirst=realPos===0;
+        const flag=p.country?`<img src="https://flagcdn.com/w20/${p.country}.png" alt="">`:'' ;
+        html+=`<div class="podium-slot podium-${realPos+1}" id="podium-slot-${realPos}">
+            ${isFirst?`<div class="fire-frame-wrap" id="fire-wrap">`:''}
+            <div class="podium-card">
+                <span style="font-size:3rem;display:block;margin-bottom:10px;">${crown}</span>
+                <div class="avatar-mega">${p.piece||DEFAULT_PIECE}</div>
+                <div style="font-size:1.4rem;font-weight:900;">${flag} ${p.username}</div>
+                <div class="pts-mega" style="color:#ffae00;">${p.score}</div>
+                <div style="color:#ff4d00;font-weight:700;margin-top:10px;">ELO ${p.elo||'---'}</div>
+            </div>
+            ${isFirst?`<canvas class="fire-canvas" id="fireCanvas"></canvas></div>`:''}
+            <div style="font-family:'Orbitron';font-size:2rem;font-weight:900;margin-top:15px;color:#ff4d00;text-align:center;">#${realPos+1}</div>
+        </div>`;
     });
-    html += `</div>`;
-    root.innerHTML = html;
-
-    // Iniciar animación de fuego
-    requestAnimationFrame(() => {
-        const canvas = document.getElementById('fireCanvas');
-        if (canvas) startFireBorder(canvas);
-    });
-
-    // Fade-in
-    setTimeout(() => {
-        [1,0,2].forEach((idx,i) => {
-            const el = document.getElementById(`podium-slot-${idx}`);
-            if (el) setTimeout(() => { el.style.opacity = '1'; }, i*200);
-        });
-    }, 100);
+    html+=`</div>`; root.innerHTML=html;
+    requestAnimationFrame(()=>{const c=document.getElementById('fireCanvas');if(c)startFireBorder(c);});
+    setTimeout(()=>{[1,0,2].forEach((idx,i)=>{const el=document.getElementById(`podium-slot-${idx}`);if(el)setTimeout(()=>{el.style.opacity='1';},i*200);});},100);
 }
 
 function render() {
-    const sorted   = [...players].sort((a,b) => b.score - a.score);
-    const query    = document.getElementById('searchInput').value.toLowerCase();
-    const filtered = sorted.filter(p => p.username.toLowerCase().includes(query));
-    if (!query) renderPodium(sorted);
-    else document.getElementById('podiumRoot').innerHTML = '';
-    const root = document.getElementById('rankingRoot');
-    let html = '';
-    TIERS.forEach(tier => {
-        const tp = filtered.filter(p => { const pt = TIERS.find(t => p.score >= t.min); return pt && pt.name === tier.name; });
-        if (!tp.length) return;
-        html += `<div style="margin-bottom:2rem;"><div style="font-family:'Orbitron';font-size:1.5rem;color:#ff4d00;margin-bottom:1rem;border-left:5px solid #ff4d00;padding-left:10px;">${tier.icon} ${tier.name}</div>`;
-        tp.forEach(p => {
-            const pos  = sorted.indexOf(p) + 1;
-            const flag = p.country ? `<img src="https://flagcdn.com/w20/${p.country}.png" alt="">` : '';
-            html += `<div class="player-card">
+    const sorted=[...players].sort((a,b)=>b.score-a.score);
+    const query=document.getElementById('searchInput').value.toLowerCase();
+    const filtered=sorted.filter(p=>p.username.toLowerCase().includes(query));
+    if(!query)renderPodium(sorted); else document.getElementById('podiumRoot').innerHTML='';
+    const root=document.getElementById('rankingRoot');
+    let html='';
+    TIERS.forEach(tier=>{
+        const tp=filtered.filter(p=>{const pt=TIERS.find(t=>p.score>=t.min);return pt&&pt.name===tier.name;});
+        if(!tp.length)return;
+        html+=`<div style="margin-bottom:2rem;"><div style="font-family:'Orbitron';font-size:1.5rem;color:#ff4d00;margin-bottom:1rem;border-left:5px solid #ff4d00;padding-left:10px;">${tier.icon} ${tier.name}</div>`;
+        tp.forEach(p=>{
+            const pos=sorted.indexOf(p)+1;
+            const flag=p.country?`<img src="https://flagcdn.com/w20/${p.country}.png" alt="">`:'';
+            html+=`<div class="player-card">
                 <div style="font-family:'Orbitron';font-size:1.8rem;font-weight:900;color:#444;">#${pos}</div>
                 <div class="list-avatar">${p.piece||DEFAULT_PIECE}</div>
                 <div>
                     <div style="font-size:1.5rem;font-weight:900;">${flag} ${p.username}</div>
-                    <div style="color:#ffae00;font-weight:700;">ELO ${p.elo||'---'} | ${p.winrate||0}% WR</div>
+                    <div style="color:#ffae00;font-weight:700;">ELO ${p.elo||'---'} | ${p.winrate||0}% WR | ${(p.total||0).toLocaleString()} partidas</div>
                 </div>
                 <div class="pts-mega">${p.score}</div>
             </div>`;
         });
-        html += `</div>`;
+        html+=`</div>`;
     });
-    root.innerHTML = html;
+    root.innerHTML=html;
 }
 
-function onSearch() { render(); }
-async function refreshRanking() { const btn=document.getElementById('refreshBtn'); btn.disabled=true; await load(); btn.disabled=false; }
-function checkAdmin() { const pass=prompt("ACCESO:"); if(pass==='73777127'){document.getElementById('adminPanel').style.display='block';renderAdmin();document.getElementById('adminPanel').scrollIntoView({behavior:'smooth'});} }
-function closeAdmin() { document.getElementById('adminPanel').style.display='none'; }
-function renderAdmin() {
-    const tbody=document.getElementById('adminTableBody'); tbody.innerHTML='';
-    players.forEach((p,index) => {
+function onSearch(){render();}
+async function refreshRanking(){const btn=document.getElementById('refreshBtn');btn.disabled=true;await load();btn.disabled=false;}
+
+function checkAdmin(){const pass=prompt("ACCESO:");if(pass==='73777127'){document.getElementById('adminPanel').style.display='block';renderAdmin();document.getElementById('adminPanel').scrollIntoView({behavior:'smooth'});}}
+function closeAdmin(){document.getElementById('adminPanel').style.display='none';}
+
+function renderAdmin(){
+    const tbody=document.getElementById('adminTableBody');tbody.innerHTML='';
+    players.forEach((p,index)=>{
         const tr=document.createElement('tr');
+        tr.style.borderBottom='1px solid #222';
         let opts=CHESS_PIECES.map(pc=>`<option value="${pc}" ${p.piece===pc?'selected':''}>${pc}</option>`).join('');
-        tr.innerHTML=`<td style="padding:15px;"><strong>${p.username}</strong></td><td><select onchange="updatePlayerPiece(${index},this.value)" style="background:#000;color:#fff;border:1px solid #ff4d00;">${opts}</select></td><td><input type="number" value="${p.score}" onchange="updatePlayerScore(${index},this.value)" style="width:70px;background:#000;color:#fff;border:1px solid #ff4d00;"></td><td><button onclick="removePlayer(${index})" style="background:#ff4d00;color:#000;border:none;padding:5px 10px;cursor:pointer;font-weight:900;">X</button></td>`;
+        tr.innerHTML=`
+            <td style="padding:12px;font-weight:900;">${p.username}<br><small style="color:#888;font-weight:400;">${p.country?'🌐 '+p.country.toUpperCase():''}</small></td>
+            <td style="color:#ffae00;padding:8px;">${p.elo||'—'}</td>
+            <td style="color:#ffae00;padding:8px;">${p.winrate||0}%</td>
+            <td style="color:#aaa;padding:8px;">${(p.total||0).toLocaleString()}</td>
+            <td><select onchange="updatePlayerPiece(${index},this.value)" style="background:#000;color:#fff;border:1px solid #ff4d00;font-size:1.2rem;">${opts}</select></td>
+            <td><input type="number" value="${p.score}" onchange="updatePlayerScore(${index},this.value)" style="width:65px;background:#000;color:#fff;border:1px solid #ff4d00;padding:4px;"></td>
+            <td><button onclick="removePlayer(${index})" style="background:#ff4d00;color:#000;border:none;padding:5px 10px;cursor:pointer;font-weight:900;border-radius:6px;">X</button></td>`;
         tbody.appendChild(tr);
     });
 }
-function updatePlayerScore(i,v) { players[i].score=Number(v); render(); }
-function updatePlayerPiece(i,v) { players[i].piece=v; render(); }
-function addPlayer() { const u=document.getElementById('newUsername').value.trim(),pc=document.getElementById('newPiece').value,s=Number(document.getElementById('newScore').value)||0; if(!u)return; players.push({username:u,piece:pc,score:s}); render();renderAdmin(); }
-function removePlayer(i) { if(confirm("¿ELIMINAR?")){players.splice(i,1);render();renderAdmin();} }
-async function bulkRefreshStats() { const btn=document.getElementById('bulkRefreshBtn'); btn.innerText="⚡ SINCRONIZANDO...";btn.disabled=true; try{for(let p of players){delete lichessCache[p.username.toLowerCase()];const lData=await fetchLichessData(p.username);if(lData){p.elo=lData.elo;p.winrate=lData.winrate;}}render();}finally{btn.innerText="⚡ SINCRONIZACIÓN TOTAL ⚡";btn.disabled=false;} }
-async function syncWithSheet() { const btn=document.getElementById('saveBtn');btn.innerText="⏳ SUBIENDO...";btn.disabled=true; try{await fetch(API_URL,{method:'POST',mode:'no-cors',body:JSON.stringify(players.map(p=>({username:p.username,score:p.score,piece:p.piece})))});alert("GUARDADO.");}finally{btn.innerText="💾 GUARDAR EN EL NÚCLEO";btn.disabled=false;} }
+
+function updatePlayerScore(i,v){players[i].score=Number(v);render();}
+function updatePlayerPiece(i,v){players[i].piece=v;render();}
+function removePlayer(i){if(confirm("¿ELIMINAR?")){players.splice(i,1);render();renderAdmin();}}
+
+async function bulkRefreshStats(){
+    const btn=document.getElementById('bulkRefreshBtn');btn.innerText="⚡ SINCRONIZANDO...";btn.disabled=true;
+    try{for(let p of players){delete lichessCache[p.username.toLowerCase()];const lData=await fetchLichessData(p.username);if(lData){p.elo=lData.elo;p.winrate=lData.winrate;p.total=lData.total;p.wins=lData.wins;p.losses=lData.losses;p.draws=lData.draws;}}render();renderAdmin();}
+    finally{btn.innerText="⚡ SINCRONIZACIÓN TOTAL ⚡";btn.disabled=false;}
+}
+
+async function syncWithSheet(){
+    const btn=document.getElementById('saveBtn');btn.innerText="⏳ SUBIENDO...";btn.disabled=true;
+    try{await fetch(API_URL,{method:'POST',mode:'no-cors',body:JSON.stringify(players.map(p=>({username:p.username,score:p.score,piece:p.piece})))});alert("GUARDADO.");}
+    finally{btn.innerText="💾 GUARDAR EN EL NÚCLEO";btn.disabled=false;}
+}
 
 load();
 </script>
