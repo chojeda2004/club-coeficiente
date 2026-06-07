@@ -124,7 +124,7 @@
         .podium-slot { 
             display: flex; flex-direction: column; align-items: center; 
             flex: 1; max-width: 240px; 
-            opacity: 0; /* Controlado por JS para escalonamiento */
+            opacity: 0; 
         }
         
         .podium-card {
@@ -318,12 +318,21 @@
         .spinning svg { animation: spin 1s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        /* ── Admin / Login (simplificado para este ejemplo) ── */
-        .admin-btn { position: fixed; bottom: 20px; right: 20px; opacity: 0.5; cursor: pointer; }
+        /* ── Admin Panel ── */
+        .admin-btn { position: fixed; bottom: 20px; right: 20px; opacity: 0.5; cursor: pointer; font-size: 24px; z-index: 100; transition: opacity 0.3s; }
+        .admin-btn:hover { opacity: 1; }
         .admin-panel {
             background: #1e293b; border-radius: 20px; padding: 2rem;
             margin-top: 3rem; border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
+        .admin-table { width: 100%; border-collapse: collapse; margin-bottom: 2rem; color: #fff; }
+        .admin-table th, .admin-table td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .admin-input { background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 5px 10px; border-radius: 5px; width: 100%; }
+        .admin-actions { display: flex; gap: 10px; margin-top: 2rem; }
+        .btn-primary { background: var(--accent-primary); color: #000; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: 700; }
+        .btn-danger { background: #ef4444; color: #fff; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
+        .btn-secondary { background: rgba(255,255,255,0.1); color: #fff; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; }
 
         @media (max-width: 768px) {
             .podium-wrap { flex-direction: column; align-items: center; min-height: auto; gap: 1rem; }
@@ -353,7 +362,7 @@
 
         <div class="search-container anim-reveal-up" style="animation-delay: 0.2s">
             <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Buscar jugador..." oninput="onSearch(this.value)">
+                <input type="text" id="searchInput" placeholder="Buscar jugador..." oninput="onSearch()">
             </div>
         </div>
 
@@ -365,9 +374,40 @@
         <div id="podiumRoot"></div>
         <div id="rankingRoot"></div>
 
+        <!-- Panel de Administración -->
         <div id="adminPanel" style="display:none;" class="admin-panel">
-            <h3 style="font-family:'Orbitron'; margin-bottom:1.5rem;">Panel de Administración</h3>
-            <div id="adminContent"></div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                <h3 style="font-family:'Orbitron';">Panel de Administración</h3>
+                <button onclick="closeAdmin()" class="btn-secondary">Cerrar</button>
+            </div>
+            
+            <div id="adminContent">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Usuario Lichess</th>
+                            <th>Puntos Club</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminTableBody"></tbody>
+                </table>
+                
+                <div style="background:rgba(0,0,0,0.2); padding:1.5rem; border-radius:15px;">
+                    <h4 style="margin-bottom:1rem;">Añadir Nuevo Jugador</h4>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr auto; gap:10px;">
+                        <input type="text" id="newUsername" placeholder="Usuario Lichess" class="admin-input">
+                        <input type="number" id="newScore" placeholder="Puntos Iniciales" class="admin-input">
+                        <button onclick="addPlayer()" class="btn-primary">Añadir</button>
+                    </div>
+                </div>
+
+                <div class="admin-actions">
+                    <button id="saveBtn" onclick="syncWithSheet()" class="btn-primary" style="width:100%; padding:15px; font-size:1.1rem;">
+                        💾 GUARDAR CAMBIOS EN LA NUBE
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -415,9 +455,11 @@
                 const data = await res.json();
                 players = data.map(p => ({
                     ...p,
-                    score: Number(p.score) || 0,
+                    username: p.username || p.usuario || '', // Manejar diferentes nombres de columna
+                    score: Number(p.score || p.puntos) || 0,
                     elo: Number(p.elo) || 0
-                }));
+                })).filter(p => p.username);
+                
                 render();
                 
                 // Cargar stats extendidas en segundo plano
@@ -430,7 +472,7 @@
                         p.winrate = lData.winrate;
                     }
                 }
-                render(); // Re-renderizar con datos de Lichess
+                render(); 
             } catch(e) { console.error("Error cargando datos", e); }
         }
 
@@ -439,11 +481,9 @@
             if (sorted.length < 3) { root.innerHTML = ''; return; }
 
             const top = sorted.slice(0, 3);
-            // Orden visual: 2, 1, 3
             const visualOrder = [top[1], top[0], top[2]];
             const crowns = ['👑', '🥈', '🥉'];
-            const labels = ['2', '1', '3'];
-
+            
             let html = `
                 <div class="podium-section">
                     <p class="podium-title">PODIO DE HONOR</p>
@@ -451,13 +491,13 @@
             `;
 
             visualOrder.forEach((p, i) => {
-                const realPos = sorted.indexOf(p); // 0, 1 o 2
+                const realPos = sorted.indexOf(p); 
                 const cls = `podium-${realPos + 1}`;
                 const crown = crowns[realPos];
                 const flag = p.country ? `<img src="https://flagcdn.com/w20/${p.country}.png" alt="flag">` : '';
                 
                 html += `
-                    <div class="podium-slot ${cls}" id="podium-slot-${realPos}">
+                    <div class="podium-slot ${cls}" id="podium-slot-${realPos}" style="opacity:0;">
                         <div class="podium-card">
                             <span class="podium-crown">${crown}</span>
                             <div class="podium-avatar">${p.piece || DEFAULT_PIECE}</div>
@@ -479,12 +519,10 @@
             html += `</div></div>`;
             root.innerHTML = html;
 
-            // Disparar animaciones escalonadas
             setTimeout(() => {
-                [1, 2, 0].forEach((idx, i) => { // Orden de animación: 2do, 3ro, luego el Ganador
+                [1, 0, 2].forEach((idx, i) => { 
                     const el = document.getElementById(`podium-slot-${idx}`);
                     if (el) {
-                        el.style.transition = 'all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
                         setTimeout(() => {
                             el.style.opacity = '1';
                             el.classList.add('anim-pop');
@@ -507,7 +545,9 @@
 
             TIERS.forEach(tier => {
                 const tierPlayers = filtered.filter(p => {
-                    for (const t of TIERS) { if (p.score >= t.min) return t.name === tier.name; }
+                    // Encontrar a qué tier pertenece el jugador basado en su score
+                    const playerTier = TIERS.find(t => p.score >= t.min);
+                    return playerTier && playerTier.name === tier.name;
                 });
 
                 if (tierPlayers.length > 0) {
@@ -557,11 +597,102 @@
             btn.classList.remove('spinning');
         }
 
+        // ── Funciones de Administración ──
+
         function checkAdmin() {
             const pass = prompt("Contraseña de administrador:");
             if (pass === '73777127') {
                 document.getElementById('adminPanel').style.display = 'block';
+                renderAdmin();
                 document.getElementById('adminPanel').scrollIntoView({ behavior: 'smooth' });
+            } else if (pass !== null) {
+                alert("Contraseña incorrecta");
+            }
+        }
+
+        function closeAdmin() {
+            document.getElementById('adminPanel').style.display = 'none';
+        }
+
+        function renderAdmin() {
+            const tbody = document.getElementById('adminTableBody');
+            tbody.innerHTML = '';
+            
+            players.forEach((p, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${p.username}</td>
+                    <td>
+                        <input type="number" value="${p.score}" 
+                               onchange="updatePlayerScore(${index}, this.value)" 
+                               class="admin-input" style="width:80px">
+                    </td>
+                    <td>
+                        <button onclick="removePlayer(${index})" class="btn-danger">Eliminar</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function updatePlayerScore(index, value) {
+            players[index].score = Number(value);
+            render(); // Actualizar ranking visualmente
+        }
+
+        function addPlayer() {
+            const user = document.getElementById('newUsername').value.trim();
+            const score = Number(document.getElementById('newScore').value) || 0;
+            
+            if (!user) return alert("Ingresa un usuario");
+            if (players.find(p => p.username.toLowerCase() === user.toLowerCase())) {
+                return alert("El jugador ya existe");
+            }
+            
+            players.push({ username: user, score: score });
+            document.getElementById('newUsername').value = '';
+            document.getElementById('newScore').value = '';
+            
+            render();
+            renderAdmin();
+        }
+
+        function removePlayer(index) {
+            if (confirm(`¿Eliminar a ${players[index].username}?`)) {
+                players.splice(index, 1);
+                render();
+                renderAdmin();
+            }
+        }
+
+        async function syncWithSheet() {
+            const btn = document.getElementById('saveBtn');
+            const originalText = btn.innerText;
+            btn.innerText = "⏳ GUARDANDO...";
+            btn.disabled = true;
+
+            try {
+                // Preparar datos para enviar (solo username y score)
+                const dataToSave = players.map(p => ({
+                    username: p.username,
+                    score: p.score
+                }));
+
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // Google Apps Script suele requerir no-cors para POST simples
+                    cache: 'no-cache',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dataToSave)
+                });
+
+                alert("Cambios enviados. Nota: Si la hoja no se actualiza, verifica los permisos del script de Google.");
+            } catch (e) {
+                console.error(e);
+                alert("Error al sincronizar: " + e.message);
+            } finally {
+                btn.innerText = originalText;
+                btn.disabled = false;
             }
         }
 
