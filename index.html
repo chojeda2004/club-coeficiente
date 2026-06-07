@@ -114,7 +114,6 @@
         .rank-num { font-family: 'Orbitron', sans-serif; font-size: 1.8rem; font-weight: 900; color: var(--text-muted); text-align: center; }
         .tier-grandmaster .rank-num { color: var(--gm-color); font-size: 2.2rem; }
 
-        /* Avatar con pieza de ajedrez SVG */
         .avatar {
             width: 54px; height: 54px; border-radius: 12px;
             display: flex; align-items: center; justify-content: center;
@@ -232,7 +231,6 @@
         .search-input:focus { border-color: rgba(56, 189, 248, 0.5); }
         .search-clear { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; display: none; }
 
-        /* Selector de pieza */
         .piece-selector { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
         .piece-btn {
             width: 44px; height: 44px; border-radius: 8px; border: 2px solid rgba(255,255,255,0.1);
@@ -330,9 +328,42 @@
         const PASS = '73777127';
         const API_URL = 'https://script.google.com/macros/s/AKfycbydXprmWOwO_RjLcFubXdkxkPJmgVv73UJ-BjySMzOAwrzTaTm47-iu-zPZAZv0pQ6uAw/exec';
 
-        // Piezas de ajedrez disponibles como avatares
         const PIECES = ['♟','♞','♝','♜','♛','♚','♙','♘','♗','♖','♕','♔'];
         const DEFAULT_PIECE = '♟';
+
+        // FIX 1: Tabla de codepoints para normalizar piezas que lleguen corruptas del backend
+        const PIECE_CODEPOINTS = {
+            '9823': '♟', '9822': '♞', '9821': '♝', '9820': '♜', '9819': '♛', '9818': '♚',
+            '9817': '♙', '9816': '♘', '9815': '♗', '9814': '♖', '9813': '♕', '9812': '♔'
+        };
+
+        // FIX 2: Convierte una pieza a su representación segura en unicode escape para enviar al backend
+        function pieceToSafe(piece) {
+            if (!piece) return DEFAULT_PIECE;
+            // Enviar como U+XXXX string para que el backend no corrompa el caracter
+            const cp = piece.codePointAt(0);
+            return 'U+' + cp.toString(16).toUpperCase().padStart(4, '0');
+        }
+
+        // FIX 3: Convierte de vuelta del formato seguro a caracter de pieza
+        function safeToPiece(val) {
+            if (!val) return DEFAULT_PIECE;
+            // Si ya es un caracter de pieza directamente
+            if (PIECES.includes(val)) return val;
+            // Si viene como "U+XXXX"
+            if (val.startsWith('U+')) {
+                const cp = parseInt(val.slice(2), 16);
+                return String.fromCodePoint(cp);
+            }
+            // Si viene como codepoint numérico en string
+            if (PIECE_CODEPOINTS[val]) return PIECE_CODEPOINTS[val];
+            // Si viene como numero directamente
+            const num = parseInt(val);
+            if (!isNaN(num) && PIECE_CODEPOINTS[String(num)]) return PIECE_CODEPOINTS[String(num)];
+            // Intento directo: si el string tiene longitud de 1-2 chars puede ser el simbolo
+            if (val.length <= 2) return val;
+            return DEFAULT_PIECE;
+        }
 
         let players = [], loggedIn = false, searchQuery = '';
         let selectedPieceAdd = DEFAULT_PIECE;
@@ -376,7 +407,8 @@
                 players = data.map(r => ({
                     id:       String(r.id),
                     username: r.username,
-                    piece:    r.piece || DEFAULT_PIECE,
+                    // FIX: usar safeToPiece para manejar cualquier formato que devuelva el backend
+                    piece:    safeToPiece(r.piece),
                     elo:      Number(r.elo) || 0,
                     score:    Number(r.score) || 0,
                     country:  r.country || ''
@@ -390,11 +422,16 @@
 
         async function save(player) {
             try {
+                // FIX: serializar la pieza como formato seguro antes de enviar
+                const payload = {
+                    ...player,
+                    piece: pieceToSafe(player.piece)
+                };
                 await fetch(API_URL, {
                     method: 'POST',
                     mode: 'no-cors',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(player)
+                    body: JSON.stringify(payload)
                 });
                 showSaved();
             } catch(e) { console.error('Error guardando:', e); }
@@ -415,7 +452,6 @@
             btn.disabled = false;
         }
 
-        // ── Render público ──────────────────────────────────────────────────
         function render() {
             const sorted = [...players].sort((a, b) => b.score - a.score);
             const filtered = searchQuery
@@ -469,7 +505,6 @@
             if (loggedIn) renderAdmin(sorted);
         }
 
-        // ── Panel admin ─────────────────────────────────────────────────────
         function renderAdmin(sorted) {
             const ar = document.getElementById('adminRows');
             ar.innerHTML = `<h4 style="margin:1.5rem 0 1rem;font-family:'Orbitron';font-size:0.8rem;color:var(--text-muted)">Lista de Competidores</h4>` +
@@ -487,7 +522,6 @@
                     </div>`).join('');
         }
 
-        // ── Obtener datos de Lichess ────────────────────────────────────────
         async function fetchLichessData(username) {
             try {
                 const res = await fetch(`https://lichess.org/api/user/${username}`, {
@@ -496,7 +530,6 @@
                 if (!res.ok) return null;
                 const data = await res.json();
 
-                // ELO: tomar el mayor rating disponible (rapid > blitz > bullet > classical)
                 let elo = 0;
                 const perfs = data.perfs || {};
                 const order = ['rapid','blitz','bullet','classical','correspondence'];
@@ -507,17 +540,12 @@
                     }
                 }
 
-                // País
                 let country = '';
                 if (data.profile && data.profile.country) {
                     country = data.profile.country.toLowerCase();
                 }
 
-                return {
-                    username: data.username,
-                    elo,
-                    country
-                };
+                return { username: data.username, elo, country };
             } catch(e) { return null; }
         }
 
@@ -530,7 +558,6 @@
 
             if (!link) { msg.style.color = '#ef4444'; msg.textContent = 'Pega un enlace de Lichess'; return; }
 
-            // Extraer username del enlace (acepta lichess.org/@/user o solo el nombre)
             let username = link.replace(/\/$/, '').split('/').pop().replace('@','');
 
             loader.style.display = 'block';
@@ -549,7 +576,7 @@
             const newPlayer = {
                 id: Date.now().toString(),
                 username: data.username,
-                piece: selectedPieceAdd,
+                piece: selectedPieceAdd,   // se convierte a safe en save()
                 elo: data.elo,
                 score,
                 country: data.country || ''
@@ -570,6 +597,7 @@
             if (!p) return;
             const data = await fetchLichessData(p.username);
             if (data) {
+                // FIX: solo actualizar elo y country, NUNCA tocar piece
                 p.elo = data.elo;
                 p.country = data.country || p.country || '';
                 await save(p);
@@ -586,13 +614,14 @@
             for (const p of players) {
                 const data = await fetchLichessData(p.username);
                 if (data) {
+                    // FIX: solo actualizar elo y country, NUNCA tocar piece
                     p.elo = data.elo;
                     p.country = data.country || p.country || '';
                     await save(p);
                 }
                 count++;
                 msg.textContent = `Actualizando ${count} / ${players.length}...`;
-                await new Promise(r => setTimeout(r, 300)); // respetar rate limit Lichess
+                await new Promise(r => setTimeout(r, 300));
             }
             render();
             btn.disabled = false;
@@ -646,4 +675,3 @@
     </script>
 </body>
 </html>
-
