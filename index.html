@@ -31,35 +31,109 @@
         .wrap { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 2rem 1rem; }
 
         /* ── Animaciones ── */
-        @keyframes aggressiveShake {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            25% { transform: translate(-2px, 1px) rotate(-2deg); }
-            50% { transform: translate(2px, -1px) rotate(2deg); }
-            75% { transform: translate(-2px, -1px) rotate(-1deg); }
-        }
         @keyframes flameWaver {
-            0%, 100% { transform: scaleY(1) skewX(0deg); opacity: 0.8; }
-            25% { transform: scaleY(1.1) skewX(-2deg); opacity: 1; }
-            50% { transform: scaleY(0.9) skewX(2deg); opacity: 0.9; }
-            75% { transform: scaleY(1.05) skewX(-1deg); opacity: 1; }
-        }
-        @keyframes fireGlowEffect {
-            0%, 100% { box-shadow: 0 0 30px #ff4d00, 0 0 60px #ffae00, inset 0 0 20px #ff4d00; }
-            50% { box-shadow: 0 0 50px #ffae00, 0 0 90px #ff4d00, inset 0 0 30px #ffae00; }
+            0%   { transform: scaleY(1)    skewX(0deg);   opacity: 0.85; }
+            20%  { transform: scaleY(1.08) skewX(-3deg);  opacity: 1;    }
+            40%  { transform: scaleY(0.95) skewX(3deg);   opacity: 0.9;  }
+            60%  { transform: scaleY(1.05) skewX(-2deg);  opacity: 1;    }
+            80%  { transform: scaleY(0.98) skewX(2deg);   opacity: 0.88; }
+            100% { transform: scaleY(1)    skewX(0deg);   opacity: 0.85; }
         }
 
-        /* ── Header ── */
-        header { text-align: center; margin-bottom: 3rem; }
-        .main-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: clamp(2.5rem, 10vw, 5rem);
-            font-weight: 900;
-            color: #fff;
-            text-shadow: 0 0 20px #ff4d00;
-            letter-spacing: 10px;
+        /* Llama que rodea la tarjeta — pseudo-elementos en el wrapper */
+        .podium-1 { position: relative; }
+
+        /* Capa de fuego exterior — blob grande que "envuelve" */
+        .podium-1 .flame-ring {
+            position: absolute;
+            inset: -18px;
+            border-radius: 36px;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        /* llamas SVG animadas en el canvas */
+        .podium-1 .flame-ring canvas {
+            width: 100%; height: 100%;
+            display: block;
         }
 
-        /* ── Barra de Acción ESTABLE ── */
+        /* Resplandor de borde pulsante */
+        @keyframes borderFirePulse {
+            0%   { box-shadow: 0 0 0px 3px #ff4d00, 0 0 20px 6px #ff6a00, 0 0 40px 10px #ffae0055; }
+            50%  { box-shadow: 0 0 0px 5px #ffae00, 0 0 30px 10px #ff4d00, 0 0 60px 20px #ffae0077; }
+            100% { box-shadow: 0 0 0px 3px #ff4d00, 0 0 20px 6px #ff6a00, 0 0 40px 10px #ffae0055; }
+        }
+
+        .podium-card {
+            background: #000;
+            border: 2px solid #333;
+            border-radius: 24px;
+            padding: 2.5rem 1rem;
+            text-align: center;
+            position: relative;
+            z-index: 5;
+            transition: transform 0.3s;
+        }
+
+        .podium-1 .podium-card {
+            border-color: #ff4d00;
+            animation: borderFirePulse 1.8s ease-in-out infinite;
+        }
+
+        /* Llamas SVG dibujadas encima de los bordes */
+        .flame-svg-top {
+            position: absolute;
+            top: -55px; left: -5%;
+            width: 110%; height: 70px;
+            z-index: 6;
+            pointer-events: none;
+            animation: flameWaver 0.6s ease-in-out infinite alternate;
+            transform-origin: bottom center;
+        }
+        .flame-svg-bottom {
+            position: absolute;
+            bottom: -55px; left: -5%;
+            width: 110%; height: 70px;
+            z-index: 6;
+            pointer-events: none;
+            transform: scaleY(-1);
+            animation: flameWaver 0.5s ease-in-out infinite alternate-reverse;
+            transform-origin: top center;
+        }
+        .flame-svg-left {
+            position: absolute;
+            left: -55px; top: -5%;
+            width: 70px; height: 110%;
+            z-index: 6;
+            pointer-events: none;
+            transform: rotate(-90deg);
+            animation: flameWaver 0.7s ease-in-out infinite alternate;
+            transform-origin: right center;
+        }
+        .flame-svg-right {
+            position: absolute;
+            right: -55px; top: -5%;
+            width: 70px; height: 110%;
+            z-index: 6;
+            pointer-events: none;
+            transform: rotate(90deg);
+            animation: flameWaver 0.65s ease-in-out infinite alternate-reverse;
+            transform-origin: left center;
+        }
+
+        .avatar-mega {
+            width: 90px; height: 90px;
+            margin: 0 auto 1.5rem;
+            background: #111;
+            border: 3px solid #ff4d00;
+            border-radius: 20px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 4rem;
+        }
+        .podium-1 .avatar-mega { width: 120px; height: 120px; font-size: 5.5rem; border-color: #ffae00; }
+
+        /* ── Barra de Acción ── */
         .action-bar {
             display: grid;
             grid-template-columns: 1fr auto;
@@ -70,7 +144,6 @@
             border-radius: 20px;
             border: 2px solid #ff4d00;
             box-shadow: 0 0 20px rgba(255, 77, 0, 0.3);
-            /* Eliminada la animación de shake aquí para estabilidad */
         }
 
         .search-box-v2 input {
@@ -103,62 +176,9 @@
         }
         .mega-refresh-btn:hover { background: #ffae00; transform: scale(1.05); }
 
-        /* ── Podio con LLAMAS ── */
+        /* ── Podio ── */
         .podium-wrap { display: flex; align-items: flex-end; justify-content: center; gap: 2rem; min-height: 450px; margin-bottom: 5rem; }
         .podium-slot { flex: 1; max-width: 250px; position: relative; opacity: 0; }
-        
-        .podium-card {
-            background: #000;
-            border: 2px solid #333;
-            border-radius: 24px;
-            padding: 2.5rem 1rem;
-            text-align: center;
-            position: relative;
-            z-index: 5;
-            transition: transform 0.3s;
-        }
-
-        /* Efecto de Fuego para el Ganador */
-        .podium-1 .podium-card {
-            border-color: #ff4d00;
-            animation: fireGlowEffect 1.5s infinite alternate;
-        }
-
-        /* LLAMAS ANIMADAS DETRÁS DEL GANADOR */
-        .podium-1::before {
-            content: '';
-            position: absolute;
-            bottom: 0; left: 50%;
-            width: 120%; height: 140%;
-            background: radial-gradient(ellipse at bottom, #ffae00 0%, #ff4d00 40%, transparent 80%);
-            transform: translateX(-50%);
-            filter: blur(20px);
-            z-index: 1;
-            animation: flameWaver 0.5s infinite alternate;
-            border-radius: 50% 50% 20% 20%;
-        }
-        .podium-1::after {
-            content: '🔥 🔥 🔥';
-            position: absolute;
-            top: -50px; left: 50%;
-            transform: translateX(-50%);
-            font-size: 2.5rem;
-            z-index: 10;
-            animation: aggressiveShake 0.1s infinite;
-        }
-
-        .avatar-mega {
-            width: 90px; height: 90px;
-            margin: 0 auto 1.5rem;
-            background: #111;
-            border: 3px solid #ff4d00;
-            border-radius: 20px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 4rem;
-            animation: aggressiveShake 0.2s infinite;
-            text-shadow: 0 0 20px #ff4d00;
-        }
-        .podium-1 .avatar-mega { width: 120px; height: 120px; font-size: 5.5rem; border-color: #ffae00; animation-duration: 0.1s; }
 
         /* ── Ranking List ── */
         .player-card {
@@ -187,13 +207,8 @@
             border-radius: 12px;
             display: flex; align-items: center; justify-content: center;
             font-size: 2.8rem;
-            animation: aggressiveShake 0.4s infinite;
         }
-        .player-card:hover .list-avatar {
-            border-color: #ff4d00;
-            color: #ffae00;
-            animation-duration: 0.1s;
-        }
+        .player-card:hover .list-avatar { border-color: #ff4d00; color: #ffae00; }
 
         .pts-mega { font-family: 'Orbitron', sans-serif; font-size: 2.5rem; font-weight: 900; color: #fff; }
         .player-card:hover .pts-mega { color: #ffae00; text-shadow: 0 0 15px #ff4d00; }
@@ -213,14 +228,14 @@
     <div class="bg-elements"><div class="grid-pattern"></div></div>
 
     <div class="wrap">
-        <header>
-            <h1 class="main-title">CLUB COEFICIENTE</h1>
-            <p style="color: #ff4d00; font-family: 'Orbitron'; letter-spacing: 8px; font-weight: 900;">RANKING FUEGO ETERNO</p>
+        <header style="text-align:center; margin-bottom:3rem;">
+            <h1 style="font-family:'Orbitron',sans-serif; font-size:clamp(2.5rem,10vw,5rem); font-weight:900; color:#fff; text-shadow:0 0 20px #ff4d00; letter-spacing:10px;">CLUB COEFICIENTE</h1>
+            <p style="color:#ff4d00; font-family:'Orbitron'; letter-spacing:8px; font-weight:900;">RANKING FUEGO ETERNO</p>
         </header>
 
         <div class="action-bar">
             <div class="search-box-v2">
-                <input type="text" id="searchInput" placeholder="BUSCAR GUERRERO..." oninput="onSearch()">
+                <input type="text" id="searchInput" placeholder="BUSCAR JUGADOR..." oninput="onSearch()">
             </div>
             <button id="refreshBtn" class="mega-refresh-btn" onclick="refreshRanking()">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"></path></svg>
@@ -271,20 +286,44 @@
 
     <div class="admin-btn" onclick="checkAdmin()">⚙️</div>
 
+    <!-- SVG de llamas reutilizable (oculto, se clona en JS) -->
+    <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+      <symbol id="flame-strip" viewBox="0 0 300 70" preserveAspectRatio="none">
+        <!-- fila de llamas de distintos tamaños -->
+        <defs>
+          <radialGradient id="fg1" cx="50%" cy="100%" r="80%">
+            <stop offset="0%" stop-color="#ffef00"/>
+            <stop offset="35%" stop-color="#ff8c00"/>
+            <stop offset="70%" stop-color="#ff3800"/>
+            <stop offset="100%" stop-color="#ff380000"/>
+          </radialGradient>
+        </defs>
+        <!-- llamas como paths bezier -->
+        <path d="M0,70 C10,40 20,10 30,0 C38,12 42,45 50,70Z" fill="url(#fg1)" opacity="0.95"/>
+        <path d="M40,70 C52,30 60,5 72,0 C80,15 84,42 95,70Z" fill="url(#fg1)" opacity="0.9"/>
+        <path d="M85,70 C94,45 100,20 108,8 C116,20 118,48 128,70Z" fill="url(#fg1)" opacity="0.95"/>
+        <path d="M118,70 C126,38 134,10 144,2 C152,12 155,44 166,70Z" fill="url(#fg1)" opacity="0.88"/>
+        <path d="M155,70 C164,36 172,8 182,0 C190,14 193,45 204,70Z" fill="url(#fg1)" opacity="0.93"/>
+        <path d="M194,70 C202,42 210,14 220,4 C228,16 230,46 242,70Z" fill="url(#fg1)" opacity="0.9"/>
+        <path d="M232,70 C241,38 250,10 260,2 C268,14 270,45 282,70Z" fill="url(#fg1)" opacity="0.95"/>
+        <path d="M270,70 C278,42 284,18 294,6 C300,20 300,55 300,70Z" fill="url(#fg1)" opacity="0.88"/>
+      </symbol>
+    </svg>
+
     <script>
         const API_URL = 'https://script.google.com/macros/s/AKfycbydXprmWOwO_RjLcFubXdkxkPJmgVv73UJ-BjySMzOAwrzTaTm47-iu-zPZAZv0pQ6uAw/exec';
         const DEFAULT_PIECE = '♟';
         const CHESS_PIECES = ['♟', '♞', '♝', '♜', '♛', '♚'];
-        
+
         let players = [];
         const lichessCache = {};
 
         const TIERS = [
-            { name: 'Gran Maestro', cls: 'tier-grandmaster', icon: '👑', min: 150 },
-            { name: 'Maestro',      cls: 'tier-master',      icon: '⭐', min: 96  },
-            { name: 'Experto',      cls: 'tier-expert',      icon: '🔥', min: 75  },
-            { name: 'Amateur',      cls: 'tier-amateur',     icon: '⚡', min: 55  },
-            { name: 'Principiante', cls: 'tier-learner',     icon: '🔰', min: 0   }
+            { name: 'Gran Maestro', icon: '👑', min: 150 },
+            { name: 'Maestro',      icon: '⭐', min: 96  },
+            { name: 'Experto',      icon: '🔥', min: 75  },
+            { name: 'Amateur',      icon: '⚡', min: 55  },
+            { name: 'Principiante', icon: '🔰', min: 0   }
         ];
 
         async function fetchLichessData(username) {
@@ -306,6 +345,58 @@
             } catch(e) { return null; }
         }
 
+        /* ─── Llamas SVG en los 4 lados ─── */
+        function buildFlamesSVG(side) {
+            const svgNS = 'http://www.w3.org/2000/svg';
+            const svg = document.createElementNS(svgNS, 'svg');
+            svg.setAttribute('xmlns', svgNS);
+            svg.setAttribute('viewBox', '0 0 300 70');
+            svg.setAttribute('preserveAspectRatio', 'none');
+
+            const defs = document.createElementNS(svgNS, 'defs');
+            const grd = document.createElementNS(svgNS, 'radialGradient');
+            const gid = 'fg_' + side + '_' + Math.random().toString(36).slice(2);
+            grd.setAttribute('id', gid);
+            grd.setAttribute('cx', '50%'); grd.setAttribute('cy', '100%'); grd.setAttribute('r', '80%');
+            [[0,'#ffef00'],[35,'#ff8c00'],[70,'#ff3800'],[100,'#ff380000']].forEach(([o,c]) => {
+                const s = document.createElementNS(svgNS,'stop');
+                s.setAttribute('offset', o+'%'); s.setAttribute('stop-color', c); grd.appendChild(s);
+            });
+            defs.appendChild(grd); svg.appendChild(defs);
+
+            const flames = [
+                'M0,70 C10,40 20,10 30,0 C38,12 42,45 50,70Z',
+                'M40,70 C52,30 60,5 72,0 C80,15 84,42 95,70Z',
+                'M85,70 C94,45 100,20 108,8 C116,20 118,48 128,70Z',
+                'M118,70 C126,38 134,10 144,2 C152,12 155,44 166,70Z',
+                'M155,70 C164,36 172,8 182,0 C190,14 193,45 204,70Z',
+                'M194,70 C202,42 210,14 220,4 C228,16 230,46 242,70Z',
+                'M232,70 C241,38 250,10 260,2 C268,14 270,45 282,70Z',
+                'M270,70 C278,42 284,18 294,6 C300,20 300,55 300,70Z'
+            ];
+            flames.forEach(d => {
+                const p = document.createElementNS(svgNS,'path');
+                p.setAttribute('d', d); p.setAttribute('fill', 'url(#'+gid+')'); p.setAttribute('opacity','0.95');
+                svg.appendChild(p);
+            });
+            return svg;
+        }
+
+        function attachFlames(slot) {
+            const cls = (side, extra) => {
+                const div = document.createElement('div');
+                div.className = 'flame-svg-' + side;
+                Object.assign(div.style, extra || {});
+                div.appendChild(buildFlamesSVG(side));
+                return div;
+            };
+            slot.querySelector('.podium-card').style.position = 'relative';
+            slot.appendChild(cls('top'));
+            slot.appendChild(cls('bottom'));
+            slot.appendChild(cls('left'));
+            slot.appendChild(cls('right'));
+        }
+
         async function load() {
             try {
                 const res = await fetch(API_URL);
@@ -322,7 +413,7 @@
                     const lData = await fetchLichessData(p.username);
                     if (lData) { p.elo = lData.elo; p.winrate = lData.winrate; p.country = lData.country; }
                 }
-                render(); 
+                render();
             } catch(e) { console.error("Error", e); }
         }
 
@@ -334,7 +425,7 @@
             const crowns = ['🥈', '👑', '🥉'];
             let html = `<div class="podium-wrap">`;
             visualOrder.forEach((p, i) => {
-                const realPos = sorted.indexOf(p); 
+                const realPos = sorted.indexOf(p);
                 const crown = crowns[i];
                 const flag = p.country ? `<img src="https://flagcdn.com/w20/${p.country}.png" alt="flag">` : '';
                 html += `
@@ -352,15 +443,15 @@
             });
             html += `</div>`;
             root.innerHTML = html;
+
+            /* Añadir llamas al primer puesto */
+            const firstSlot = document.getElementById('podium-slot-0');
+            if (firstSlot) attachFlames(firstSlot);
+
             setTimeout(() => {
-                [1, 0, 2].forEach((idx, i) => { 
+                [1, 0, 2].forEach((idx, i) => {
                     const el = document.getElementById(`podium-slot-${idx}`);
-                    if (el) {
-                        setTimeout(() => {
-                            el.style.opacity = '1';
-                            el.style.animation = 'popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both';
-                        }, i * 200);
-                    }
+                    if (el) setTimeout(() => { el.style.opacity = '1'; el.style.transition = 'opacity 0.4s'; }, i * 200);
                 });
             }, 100);
         }
@@ -379,7 +470,7 @@
                     return playerTier && playerTier.name === tier.name;
                 });
                 if (tierPlayers.length > 0) {
-                    html += `<div class="tier-section"><div style="font-family:'Orbitron'; font-size:1.5rem; color:#ff4d00; margin-bottom:1rem; border-left:5px solid #ff4d00; padding-left:10px;">${tier.icon} ${tier.name}</div><div class="players-grid">`;
+                    html += `<div style="margin-bottom:2rem;"><div style="font-family:'Orbitron'; font-size:1.5rem; color:#ff4d00; margin-bottom:1rem; border-left:5px solid #ff4d00; padding-left:10px;">${tier.icon} ${tier.name}</div>`;
                     tierPlayers.forEach(p => {
                         const pos = sorted.indexOf(p) + 1;
                         const flag = p.country ? `<img src="https://flagcdn.com/w20/${p.country}.png" alt="flag">` : '';
@@ -387,7 +478,7 @@
                             <div class="player-card">
                                 <div style="font-family:'Orbitron'; font-size:1.8rem; font-weight:900; color:#444;">#${pos}</div>
                                 <div class="list-avatar">${p.piece || DEFAULT_PIECE}</div>
-                                <div class="pinfo">
+                                <div>
                                     <div style="font-size:1.5rem; font-weight:900;">${flag} ${p.username}</div>
                                     <div style="color:#ffae00; font-weight:700;">ELO ${p.elo || '---'} | ${p.winrate || 0}% WR</div>
                                 </div>
@@ -395,7 +486,7 @@
                             </div>
                         `;
                     });
-                    html += `</div></div>`;
+                    html += `</div>`;
                 }
             });
             root.innerHTML = html;
@@ -404,7 +495,7 @@
         function onSearch() { render(); }
         async function refreshRanking() {
             const btn = document.getElementById('refreshBtn');
-            btn.classList.add('spinning'); await load(); btn.classList.remove('spinning');
+            btn.disabled = true; await load(); btn.disabled = false;
         }
 
         function checkAdmin() {
