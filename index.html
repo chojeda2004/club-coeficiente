@@ -543,21 +543,36 @@ async function fetchLichessData(username) {
     } catch(e) { return null; }
 }
 
-// Consulta en lote: hasta 300 usuarios en una sola petición POST
+// Consulta individual completa (ELO + count + country)
+async function fetchLichessOne(username) {
+    const key = username.toLowerCase();
+    try {
+        const res = await fetch(`https://lichess.org/api/user/${username}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        lichessCache[key] = parseLichessUser(data);
+    } catch(e) {}
+}
+
+// Todas las peticiones en paralelo con Promise.all
 async function fetchLichessBatch(usernames) {
     if (!usernames.length) return;
-    try {
-        const res = await fetch('https://lichess.org/api/users', {
-            method : 'POST',
-            headers: { 'Content-Type': 'text/plain' },
-            body   : usernames.join(',')
-        });
-        if (!res.ok) return;
-        const list = await res.json();
-        list.forEach(data => {
-            lichessCache[data.username.toLowerCase()] = parseLichessUser(data);
-        });
-    } catch(e) { console.error('Lichess batch error:', e); }
+    await Promise.all(usernames.map(u => fetchLichessOne(u)));
+}
+
+function applyLichessCache() {
+    players.forEach(p => {
+        const lData = lichessCache[p.username.toLowerCase()];
+        if (lData) {
+            p.elo     = lData.elo;
+            p.winrate = lData.winrate;
+            p.country = lData.country;
+            p.total   = lData.total;
+            p.wins    = lData.wins;
+            p.losses  = lData.losses;
+            p.draws   = lData.draws;
+        }
+    });
 }
 
 async function load() {
@@ -573,26 +588,11 @@ async function load() {
                 elo      : Number(p.elo) || 0
             }))
             .filter(p => p.username);
-        render(); // mostrar ranking mientras cargan los stats
+        render();
 
-        // Una sola petición batch para todos los jugadores
-        const usernames = players.map(p => p.username);
-        await fetchLichessBatch(usernames);
-
-        // Aplicar los datos al array de jugadores
-        players.forEach(p => {
-            const lData = lichessCache[p.username.toLowerCase()];
-            if (lData) {
-                p.elo     = lData.elo;
-                p.winrate = lData.winrate;
-                p.country = lData.country;
-                p.total   = lData.total;
-                p.wins    = lData.wins;
-                p.losses  = lData.losses;
-                p.draws   = lData.draws;
-            }
-        });
-        render(); // re-renderizar con stats completos
+        await fetchLichessBatch(players.map(p => p.username));
+        applyLichessCache();
+        render();
     } catch(e) { console.error(e); }
 }
 
@@ -686,10 +686,7 @@ async function bulkRefreshStats(){
     try {
         players.forEach(p => delete lichessCache[p.username.toLowerCase()]);
         await fetchLichessBatch(players.map(p => p.username));
-        players.forEach(p => {
-            const lData = lichessCache[p.username.toLowerCase()];
-            if (lData) { p.elo=lData.elo; p.winrate=lData.winrate; p.country=lData.country; p.total=lData.total; p.wins=lData.wins; p.losses=lData.losses; p.draws=lData.draws; }
-        });
+        applyLichessCache();
         render(); renderAdmin();
     } finally { btn.innerText="⚡ SINCRONIZACIÓN TOTAL ⚡"; btn.disabled=false; }
 }
