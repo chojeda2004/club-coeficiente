@@ -6,212 +6,77 @@
     <title>Club Coeficiente - Ranking FUEGO ETERNO</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&display=swap');
-
-        :root {
-            --bg-main: #0a0a0f;
-            --fire-color: #ff4d00;
-            --fire-glow: #ffae00;
-            --text-main: #f8fafc;
-        }
-
         * { box-sizing: border-box; margin: 0; padding: 0; }
-
         body {
             background: #050505;
-            background-attachment: fixed;
             font-family: 'Rajdhani', sans-serif;
-            color: var(--text-main);
+            color: #f8fafc;
             min-height: 100vh;
             overflow-x: hidden;
         }
-
         .bg-elements { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
         .grid-pattern { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,77,0,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,77,0,0.05) 1px, transparent 1px); background-size: 50px 50px; }
-
         .wrap { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 2rem 1rem; }
 
-        /* ── Animaciones ── */
-        @keyframes flameWaver {
-            0%   { transform: scaleY(1)    skewX(0deg);   opacity: 0.85; }
-            20%  { transform: scaleY(1.08) skewX(-3deg);  opacity: 1;    }
-            40%  { transform: scaleY(0.95) skewX(3deg);   opacity: 0.9;  }
-            60%  { transform: scaleY(1.05) skewX(-2deg);  opacity: 1;    }
-            80%  { transform: scaleY(0.98) skewX(2deg);   opacity: 0.88; }
-            100% { transform: scaleY(1)    skewX(0deg);   opacity: 0.85; }
+        .action-bar {
+            display: grid; grid-template-columns: 1fr auto; gap: 15px;
+            margin-bottom: 4rem;
+            background: rgba(20,20,20,0.9); padding: 20px;
+            border-radius: 20px; border: 2px solid #ff4d00;
+            box-shadow: 0 0 20px rgba(255,77,0,0.3);
         }
+        .search-box-v2 input {
+            width: 100%; background: #000; border: 2px solid #333;
+            border-radius: 12px; padding: 15px 25px; color: #ffae00;
+            font-family: 'Orbitron', sans-serif; font-size: 1.1rem; outline: none;
+        }
+        .search-box-v2 input:focus { border-color: #ff4d00; }
+        .mega-refresh-btn {
+            background: #ff4d00; color: #000; border: none; padding: 0 30px;
+            border-radius: 12px; cursor: pointer; font-family: 'Orbitron', sans-serif;
+            font-weight: 900; display: flex; align-items: center; gap: 10px;
+        }
+        .mega-refresh-btn:hover { background: #ffae00; }
 
-        /* Llama que rodea la tarjeta — pseudo-elementos en el wrapper */
-        .podium-1 { position: relative; }
+        /* ── Podio ── */
+        .podium-wrap { display: flex; align-items: flex-end; justify-content: center; gap: 2rem; min-height: 480px; margin-bottom: 5rem; }
+        .podium-slot { flex: 1; max-width: 250px; position: relative; opacity: 0; transition: opacity 0.4s; }
 
-        /* Capa de fuego exterior — blob grande que "envuelve" */
-        .podium-1 .flame-ring {
+        /* Wrapper que contiene canvas + card para el #1 */
+        .fire-frame-wrap { position: relative; display: inline-block; width: 100%; }
+        .fire-canvas {
             position: absolute;
-            inset: -18px;
-            border-radius: 36px;
-            z-index: 0;
-            pointer-events: none;
-            overflow: hidden;
-        }
-        /* llamas SVG animadas en el canvas */
-        .podium-1 .flame-ring canvas {
-            width: 100%; height: 100%;
-            display: block;
-        }
-
-        /* Resplandor de borde pulsante */
-        @keyframes borderFirePulse {
-            0%   { box-shadow: 0 0 0px 3px #ff4d00, 0 0 20px 6px #ff6a00, 0 0 40px 10px #ffae0055; }
-            50%  { box-shadow: 0 0 0px 5px #ffae00, 0 0 30px 10px #ff4d00, 0 0 60px 20px #ffae0077; }
-            100% { box-shadow: 0 0 0px 3px #ff4d00, 0 0 20px 6px #ff6a00, 0 0 40px 10px #ffae0055; }
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 10;
+            border-radius: 24px;
         }
 
         .podium-card {
-            background: #000;
-            border: 2px solid #333;
-            border-radius: 24px;
-            padding: 2.5rem 1rem;
-            text-align: center;
-            position: relative;
-            z-index: 5;
-            transition: transform 0.3s;
+            background: #000; border: 2px solid #333;
+            border-radius: 24px; padding: 2.5rem 1rem;
+            text-align: center; position: relative; z-index: 5;
         }
-
-        .podium-1 .podium-card {
-            border-color: #ff4d00;
-            animation: borderFirePulse 1.8s ease-in-out infinite;
-        }
-
-        /* Llamas SVG dibujadas encima de los bordes */
-        .flame-svg-top {
-            position: absolute;
-            top: -55px; left: -5%;
-            width: 110%; height: 70px;
-            z-index: 6;
-            pointer-events: none;
-            animation: flameWaver 0.6s ease-in-out infinite alternate;
-            transform-origin: bottom center;
-        }
-        .flame-svg-bottom {
-            position: absolute;
-            bottom: -55px; left: -5%;
-            width: 110%; height: 70px;
-            z-index: 6;
-            pointer-events: none;
-            transform: scaleY(-1);
-            animation: flameWaver 0.5s ease-in-out infinite alternate-reverse;
-            transform-origin: top center;
-        }
-        .flame-svg-left {
-            position: absolute;
-            left: -55px; top: -5%;
-            width: 70px; height: 110%;
-            z-index: 6;
-            pointer-events: none;
-            transform: rotate(-90deg);
-            animation: flameWaver 0.7s ease-in-out infinite alternate;
-            transform-origin: right center;
-        }
-        .flame-svg-right {
-            position: absolute;
-            right: -55px; top: -5%;
-            width: 70px; height: 110%;
-            z-index: 6;
-            pointer-events: none;
-            transform: rotate(90deg);
-            animation: flameWaver 0.65s ease-in-out infinite alternate-reverse;
-            transform-origin: left center;
-        }
+        .podium-1 .podium-card { border-color: #ff6000; }
 
         .avatar-mega {
-            width: 90px; height: 90px;
-            margin: 0 auto 1.5rem;
-            background: #111;
-            border: 3px solid #ff4d00;
-            border-radius: 20px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 4rem;
+            width: 90px; height: 90px; margin: 0 auto 1.5rem;
+            background: #111; border: 3px solid #ff4d00;
+            border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 4rem;
         }
         .podium-1 .avatar-mega { width: 120px; height: 120px; font-size: 5.5rem; border-color: #ffae00; }
 
-        /* ── Barra de Acción ── */
-        .action-bar {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 15px;
-            margin-bottom: 4rem;
-            background: rgba(20, 20, 20, 0.9);
-            padding: 20px;
-            border-radius: 20px;
-            border: 2px solid #ff4d00;
-            box-shadow: 0 0 20px rgba(255, 77, 0, 0.3);
-        }
-
-        .search-box-v2 input {
-            width: 100%;
-            background: #000;
-            border: 2px solid #333;
-            border-radius: 12px;
-            padding: 15px 25px;
-            color: #ffae00;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.1rem;
-            outline: none;
-            transition: border-color 0.3s;
-        }
-        .search-box-v2 input:focus { border-color: #ff4d00; box-shadow: 0 0 15px rgba(255,77,0,0.5); }
-
-        .mega-refresh-btn {
-            background: #ff4d00;
-            color: #000;
-            border: none;
-            padding: 0 30px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 900;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: 0.2s;
-        }
-        .mega-refresh-btn:hover { background: #ffae00; transform: scale(1.05); }
-
-        /* ── Podio ── */
-        .podium-wrap { display: flex; align-items: flex-end; justify-content: center; gap: 2rem; min-height: 450px; margin-bottom: 5rem; }
-        .podium-slot { flex: 1; max-width: 250px; position: relative; opacity: 0; }
-
         /* ── Ranking List ── */
         .player-card {
-            display: grid;
-            grid-template-columns: 60px 80px 1fr auto;
-            align-items: center;
-            gap: 1.5rem;
-            background: rgba(15, 23, 42, 0.9);
-            border: 1px solid #222;
-            border-radius: 16px;
-            padding: 1.2rem 2rem;
-            margin-bottom: 1rem;
-            transition: 0.2s;
+            display: grid; grid-template-columns: 60px 80px 1fr auto;
+            align-items: center; gap: 1.5rem;
+            background: rgba(15,23,42,0.9); border: 1px solid #222;
+            border-radius: 16px; padding: 1.2rem 2rem; margin-bottom: 1rem; transition: 0.2s;
         }
-        .player-card:hover {
-            border-color: #ff4d00;
-            background: #000;
-            transform: scale(1.02);
-            box-shadow: 0 0 30px rgba(255, 77, 0, 0.2);
-        }
-
-        .list-avatar {
-            width: 65px; height: 65px;
-            background: #000;
-            border: 2px solid #444;
-            border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 2.8rem;
-        }
-        .player-card:hover .list-avatar { border-color: #ff4d00; color: #ffae00; }
-
+        .player-card:hover { border-color: #ff4d00; background: #000; transform: scale(1.02); box-shadow: 0 0 30px rgba(255,77,0,0.2); }
+        .list-avatar { width: 65px; height: 65px; background: #000; border: 2px solid #444; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 2.8rem; }
+        .player-card:hover .list-avatar { border-color: #ff4d00; }
         .pts-mega { font-family: 'Orbitron', sans-serif; font-size: 2.5rem; font-weight: 900; color: #fff; }
-        .player-card:hover .pts-mega { color: #ffae00; text-shadow: 0 0 15px #ff4d00; }
+        .player-card:hover .pts-mega { color: #ffae00; }
 
         /* ── Admin ── */
         .admin-panel { background: #000; border: 4px solid #ff4d00; border-radius: 30px; padding: 2rem; margin-top: 4rem; }
@@ -225,336 +90,333 @@
     </style>
 </head>
 <body>
-    <div class="bg-elements"><div class="grid-pattern"></div></div>
+<div class="bg-elements"><div class="grid-pattern"></div></div>
+<div class="wrap">
+    <header style="text-align:center; margin-bottom:3rem;">
+        <h1 style="font-family:'Orbitron',sans-serif; font-size:clamp(2.5rem,10vw,5rem); font-weight:900; color:#fff; text-shadow:0 0 20px #ff4d00; letter-spacing:10px;">CLUB COEFICIENTE</h1>
+        <p style="color:#ff4d00; font-family:'Orbitron'; letter-spacing:8px; font-weight:900;">RANKING FUEGO ETERNO</p>
+    </header>
 
-    <div class="wrap">
-        <header style="text-align:center; margin-bottom:3rem;">
-            <h1 style="font-family:'Orbitron',sans-serif; font-size:clamp(2.5rem,10vw,5rem); font-weight:900; color:#fff; text-shadow:0 0 20px #ff4d00; letter-spacing:10px;">CLUB COEFICIENTE</h1>
-            <p style="color:#ff4d00; font-family:'Orbitron'; letter-spacing:8px; font-weight:900;">RANKING FUEGO ETERNO</p>
-        </header>
-
-        <div class="action-bar">
-            <div class="search-box-v2">
-                <input type="text" id="searchInput" placeholder="BUSCAR JUGADOR..." oninput="onSearch()">
-            </div>
-            <button id="refreshBtn" class="mega-refresh-btn" onclick="refreshRanking()">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"></path></svg>
-                RECARGAR
-            </button>
+    <div class="action-bar">
+        <div class="search-box-v2">
+            <input type="text" id="searchInput" placeholder="BUSCAR JUGADOR..." oninput="onSearch()">
         </div>
-
-        <div id="podiumRoot"></div>
-        <div id="rankingRoot"></div>
-
-        <div id="adminPanel" style="display:none;" class="admin-panel">
-            <h2 style="font-family:'Orbitron'; color:#ff4d00; margin-bottom:2rem; text-align:center;">NÚCLEO DE MANDO</h2>
-            <button onclick="bulkRefreshStats()" id="bulkRefreshBtn" style="width:100%; padding:20px; background:#ffae00; border:none; font-family:'Orbitron'; font-weight:900; font-size:1.5rem; cursor:pointer; margin-bottom:2rem; border-radius:15px;">
-                ⚡ SINCRONIZACIÓN TOTAL ⚡
-            </button>
-            <table style="width:100%; color:#fff; border-collapse:collapse;">
-                <thead>
-                    <tr style="border-bottom:3px solid #ff4d00; text-align:left;">
-                        <th style="padding:15px;">GUERRERO</th>
-                        <th>PIEZA</th>
-                        <th>PODER</th>
-                        <th>X</th>
-                    </tr>
-                </thead>
-                <tbody id="adminTableBody"></tbody>
-            </table>
-            <div style="margin-top:2rem; padding:1.5rem; background:rgba(255,77,0,0.1); border-radius:20px; border:1px solid #ff4d00;">
-                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr auto; gap:10px;">
-                    <input type="text" id="newUsername" placeholder="USER" style="background:#000; color:#fff; border:1px solid #ff4d00; padding:10px;">
-                    <select id="newPiece" style="background:#000; color:#fff; border:1px solid #ff4d00;">
-                        <option value="♟">♟ PEÓN</option>
-                        <option value="♞">♞ CABALLO</option>
-                        <option value="♝">♝ ALFIL</option>
-                        <option value="♜">♜ TORRE</option>
-                        <option value="♛">♛ REINA</option>
-                        <option value="♚">♚ REY</option>
-                    </select>
-                    <input type="number" id="newScore" placeholder="PTS" style="background:#000; color:#fff; border:1px solid #ff4d00;">
-                    <button onclick="addPlayer()" style="background:#ff4d00; color:#000; border:none; padding:0 20px; font-weight:900; cursor:pointer;">AÑADIR</button>
-                </div>
-            </div>
-            <button id="saveBtn" onclick="syncWithSheet()" style="width:100%; margin-top:2rem; padding:20px; background:#ff4d00; color:#000; font-family:'Orbitron'; font-weight:900; font-size:1.2rem; border:none; border-radius:15px; cursor:pointer;">
-                💾 GUARDAR EN EL NÚCLEO
-            </button>
-            <button onclick="closeAdmin()" style="width:100%; margin-top:1rem; background:none; color:#ff4d00; border:none; cursor:pointer; font-weight:900;">CERRAR</button>
-        </div>
+        <button id="refreshBtn" class="mega-refresh-btn" onclick="refreshRanking()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"></path></svg>
+            RECARGAR
+        </button>
     </div>
 
-    <div class="admin-btn" onclick="checkAdmin()">⚙️</div>
+    <div id="podiumRoot"></div>
+    <div id="rankingRoot"></div>
 
-    <!-- SVG de llamas reutilizable (oculto, se clona en JS) -->
-    <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
-      <symbol id="flame-strip" viewBox="0 0 300 70" preserveAspectRatio="none">
-        <!-- fila de llamas de distintos tamaños -->
-        <defs>
-          <radialGradient id="fg1" cx="50%" cy="100%" r="80%">
-            <stop offset="0%" stop-color="#ffef00"/>
-            <stop offset="35%" stop-color="#ff8c00"/>
-            <stop offset="70%" stop-color="#ff3800"/>
-            <stop offset="100%" stop-color="#ff380000"/>
-          </radialGradient>
-        </defs>
-        <!-- llamas como paths bezier -->
-        <path d="M0,70 C10,40 20,10 30,0 C38,12 42,45 50,70Z" fill="url(#fg1)" opacity="0.95"/>
-        <path d="M40,70 C52,30 60,5 72,0 C80,15 84,42 95,70Z" fill="url(#fg1)" opacity="0.9"/>
-        <path d="M85,70 C94,45 100,20 108,8 C116,20 118,48 128,70Z" fill="url(#fg1)" opacity="0.95"/>
-        <path d="M118,70 C126,38 134,10 144,2 C152,12 155,44 166,70Z" fill="url(#fg1)" opacity="0.88"/>
-        <path d="M155,70 C164,36 172,8 182,0 C190,14 193,45 204,70Z" fill="url(#fg1)" opacity="0.93"/>
-        <path d="M194,70 C202,42 210,14 220,4 C228,16 230,46 242,70Z" fill="url(#fg1)" opacity="0.9"/>
-        <path d="M232,70 C241,38 250,10 260,2 C268,14 270,45 282,70Z" fill="url(#fg1)" opacity="0.95"/>
-        <path d="M270,70 C278,42 284,18 294,6 C300,20 300,55 300,70Z" fill="url(#fg1)" opacity="0.88"/>
-      </symbol>
-    </svg>
+    <div id="adminPanel" style="display:none;" class="admin-panel">
+        <h2 style="font-family:'Orbitron'; color:#ff4d00; margin-bottom:2rem; text-align:center;">NÚCLEO DE MANDO</h2>
+        <button onclick="bulkRefreshStats()" id="bulkRefreshBtn" style="width:100%; padding:20px; background:#ffae00; border:none; font-family:'Orbitron'; font-weight:900; font-size:1.5rem; cursor:pointer; margin-bottom:2rem; border-radius:15px;">⚡ SINCRONIZACIÓN TOTAL ⚡</button>
+        <table style="width:100%; color:#fff; border-collapse:collapse;">
+            <thead><tr style="border-bottom:3px solid #ff4d00; text-align:left;"><th style="padding:15px;">GUERRERO</th><th>PIEZA</th><th>PODER</th><th>X</th></tr></thead>
+            <tbody id="adminTableBody"></tbody>
+        </table>
+        <div style="margin-top:2rem; padding:1.5rem; background:rgba(255,77,0,0.1); border-radius:20px; border:1px solid #ff4d00;">
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr auto; gap:10px;">
+                <input type="text" id="newUsername" placeholder="USER" style="background:#000; color:#fff; border:1px solid #ff4d00; padding:10px;">
+                <select id="newPiece" style="background:#000; color:#fff; border:1px solid #ff4d00;">
+                    <option value="♟">♟ PEÓN</option><option value="♞">♞ CABALLO</option>
+                    <option value="♝">♝ ALFIL</option><option value="♜">♜ TORRE</option>
+                    <option value="♛">♛ REINA</option><option value="♚">♚ REY</option>
+                </select>
+                <input type="number" id="newScore" placeholder="PTS" style="background:#000; color:#fff; border:1px solid #ff4d00;">
+                <button onclick="addPlayer()" style="background:#ff4d00; color:#000; border:none; padding:0 20px; font-weight:900; cursor:pointer;">AÑADIR</button>
+            </div>
+        </div>
+        <button id="saveBtn" onclick="syncWithSheet()" style="width:100%; margin-top:2rem; padding:20px; background:#ff4d00; color:#000; font-family:'Orbitron'; font-weight:900; font-size:1.2rem; border:none; border-radius:15px; cursor:pointer;">💾 GUARDAR EN EL NÚCLEO</button>
+        <button onclick="closeAdmin()" style="width:100%; margin-top:1rem; background:none; color:#ff4d00; border:none; cursor:pointer; font-weight:900;">CERRAR</button>
+    </div>
+</div>
+<div class="admin-btn" onclick="checkAdmin()">⚙️</div>
 
-    <script>
-        const API_URL = 'https://script.google.com/macros/s/AKfycbydXprmWOwO_RjLcFubXdkxkPJmgVv73UJ-BjySMzOAwrzTaTm47-iu-zPZAZv0pQ6uAw/exec';
-        const DEFAULT_PIECE = '♟';
-        const CHESS_PIECES = ['♟', '♞', '♝', '♜', '♛', '♚'];
+<script>
+const API_URL = 'https://script.google.com/macros/s/AKfycbydXprmWOwO_RjLcFubXdkxkPJmgVv73UJ-BjySMzOAwrzTaTm47-iu-zPZAZv0pQ6uAw/exec';
+const DEFAULT_PIECE = '♟';
+const CHESS_PIECES = ['♟','♞','♝','♜','♛','♚'];
+let players = [];
+const lichessCache = {};
+const TIERS = [
+    { name:'Gran Maestro', icon:'👑', min:150 },
+    { name:'Maestro',      icon:'⭐', min:96  },
+    { name:'Experto',      icon:'🔥', min:75  },
+    { name:'Amateur',      icon:'⚡', min:55  },
+    { name:'Principiante', icon:'🔰', min:0   }
+];
 
-        let players = [];
-        const lichessCache = {};
+/* ══════════════════════════════════════
+   FIRE BORDER — canvas particle system
+   ══════════════════════════════════════ */
+let fireAnimId = null;
 
-        const TIERS = [
-            { name: 'Gran Maestro', icon: '👑', min: 150 },
-            { name: 'Maestro',      icon: '⭐', min: 96  },
-            { name: 'Experto',      icon: '🔥', min: 75  },
-            { name: 'Amateur',      icon: '⚡', min: 55  },
-            { name: 'Principiante', icon: '🔰', min: 0   }
-        ];
+function startFireBorder(canvas) {
+    const ctx = canvas.getContext('2d');
+    let W, H;
 
-        async function fetchLichessData(username) {
-            const key = username.toLowerCase();
-            if (lichessCache[key]) return lichessCache[key];
-            try {
-                const res = await fetch(`https://lichess.org/api/user/${username}`);
-                if (!res.ok) return null;
-                const data = await res.json();
-                const perfs = data.perfs || {};
-                const elo = perfs.rapid?.rating || perfs.blitz?.rating || perfs.bullet?.rating || 0;
-                const result = {
-                    elo,
-                    country: data.profile?.country?.toLowerCase() || '',
-                    winrate: data.count?.all > 0 ? Math.round((data.count.win / data.count.all) * 100) : 0
-                };
-                lichessCache[key] = result;
-                return result;
-            } catch(e) { return null; }
+    function resize() {
+        W = canvas.offsetWidth;
+        H = canvas.offsetHeight;
+        canvas.width  = W;
+        canvas.height = H;
+    }
+    resize();
+    const ro = new ResizeObserver(resize);
+    ro.observe(canvas.parentElement);
+
+    // Partículas que corren a lo largo del perímetro
+    const BORDER = 18;       // grosor del "carril" de fuego
+    const COUNT  = 220;      // cantidad de partículas
+
+    function perimeterPoint(t) {
+        // t ∈ [0,1) recorre el perímetro en sentido horario
+        const r = 20; // border-radius
+        const top    = W - 2*r;
+        const right  = H - 2*r;
+        const bottom = W - 2*r;
+        const left   = H - 2*r;
+        const arcs   = Math.PI * r;       // cuarto de circunferencia × 4
+        const total  = 2*(top+right) + 4*arcs;
+        let d = t * total;
+
+        // top edge (izq → der)
+        if (d < top) return { x: r + d, y: 0 };
+        d -= top;
+        // top-right arc
+        if (d < arcs) { const a = -Math.PI/2 + (d/arcs)*(Math.PI/2); return { x: W-r+Math.cos(a)*r, y: r+Math.sin(a)*r }; }
+        d -= arcs;
+        // right edge (arr → abj)
+        if (d < right) return { x: W, y: r + d };
+        d -= right;
+        // bottom-right arc
+        if (d < arcs) { const a = (d/arcs)*(Math.PI/2); return { x: W-r+Math.cos(a)*r, y: H-r+Math.sin(a)*r }; }
+        d -= arcs;
+        // bottom edge (der → izq)
+        if (d < bottom) return { x: W-r-d, y: H };
+        d -= bottom;
+        // bottom-left arc
+        if (d < arcs) { const a = Math.PI/2 + (d/arcs)*(Math.PI/2); return { x: r+Math.cos(a)*r, y: H-r+Math.sin(a)*r }; }
+        d -= arcs;
+        // left edge (abj → arr)
+        if (d < left) return { x: 0, y: H-r-d };
+        d -= left;
+        // top-left arc
+        const a = Math.PI + (d/arcs)*(Math.PI/2);
+        return { x: r+Math.cos(a)*r, y: r+Math.sin(a)*r };
+    }
+
+    // Normal hacia el interior en cada punto del perímetro
+    function perimeterNormal(t) {
+        const eps = 0.002;
+        const a = perimeterPoint((t - eps + 1) % 1);
+        const b = perimeterPoint((t + eps) % 1);
+        const dx = b.x - a.x, dy = b.y - a.y;
+        const len = Math.sqrt(dx*dx+dy*dy) || 1;
+        // normal apuntando hacia adentro
+        return { nx: dy/len, ny: -dx/len };
+    }
+
+    class Particle {
+        constructor() { this.reset(true); }
+        reset(rand) {
+            this.t      = rand ? Math.random() : this.t;           // posición en perímetro
+            this.speed  = 0.0003 + Math.random() * 0.0004;        // velocidad de avance
+            const pt    = perimeterPoint(this.t);
+            const nm    = perimeterNormal(this.t);
+            this.x      = pt.x + nm.nx * (Math.random() * BORDER * 0.4);
+            this.y      = pt.y + nm.ny * (Math.random() * BORDER * 0.4);
+            this.vx     = nm.nx * (0.3 + Math.random() * 0.7);   // deriva hacia interior
+            this.vy     = nm.ny * (0.3 + Math.random() * 0.7) - 0.8; // siempre un poco hacia arriba
+            this.life   = 0;
+            this.maxLife = 35 + Math.random() * 45;
+            this.size   = 3 + Math.random() * 6;
+            this.hue    = 20 + Math.random() * 30;                // naranja-amarillo
         }
-
-        /* ─── Llamas SVG en los 4 lados ─── */
-        function buildFlamesSVG(side) {
-            const svgNS = 'http://www.w3.org/2000/svg';
-            const svg = document.createElementNS(svgNS, 'svg');
-            svg.setAttribute('xmlns', svgNS);
-            svg.setAttribute('viewBox', '0 0 300 70');
-            svg.setAttribute('preserveAspectRatio', 'none');
-
-            const defs = document.createElementNS(svgNS, 'defs');
-            const grd = document.createElementNS(svgNS, 'radialGradient');
-            const gid = 'fg_' + side + '_' + Math.random().toString(36).slice(2);
-            grd.setAttribute('id', gid);
-            grd.setAttribute('cx', '50%'); grd.setAttribute('cy', '100%'); grd.setAttribute('r', '80%');
-            [[0,'#ffef00'],[35,'#ff8c00'],[70,'#ff3800'],[100,'#ff380000']].forEach(([o,c]) => {
-                const s = document.createElementNS(svgNS,'stop');
-                s.setAttribute('offset', o+'%'); s.setAttribute('stop-color', c); grd.appendChild(s);
-            });
-            defs.appendChild(grd); svg.appendChild(defs);
-
-            const flames = [
-                'M0,70 C10,40 20,10 30,0 C38,12 42,45 50,70Z',
-                'M40,70 C52,30 60,5 72,0 C80,15 84,42 95,70Z',
-                'M85,70 C94,45 100,20 108,8 C116,20 118,48 128,70Z',
-                'M118,70 C126,38 134,10 144,2 C152,12 155,44 166,70Z',
-                'M155,70 C164,36 172,8 182,0 C190,14 193,45 204,70Z',
-                'M194,70 C202,42 210,14 220,4 C228,16 230,46 242,70Z',
-                'M232,70 C241,38 250,10 260,2 C268,14 270,45 282,70Z',
-                'M270,70 C278,42 284,18 294,6 C300,20 300,55 300,70Z'
-            ];
-            flames.forEach(d => {
-                const p = document.createElementNS(svgNS,'path');
-                p.setAttribute('d', d); p.setAttribute('fill', 'url(#'+gid+')'); p.setAttribute('opacity','0.95');
-                svg.appendChild(p);
-            });
-            return svg;
+        update() {
+            this.t   = (this.t + this.speed) % 1;
+            const pt = perimeterPoint(this.t);
+            const nm = perimeterNormal(this.t);
+            // reposicionar base sobre el perímetro y añadir deriva
+            this.x   = pt.x + nm.nx * 3 + this.vx * (this.life * 0.4);
+            this.y   = pt.y + nm.ny * 3 + this.vy * (this.life * 0.4);
+            this.vy -= 0.04;   // flotación
+            this.vx += (Math.random()-0.5) * 0.05; // turbulencia lateral
+            this.life++;
+            if (this.life > this.maxLife) this.reset(false);
         }
+        draw(ctx) {
+            const progress = this.life / this.maxLife;
+            const alpha    = progress < 0.2 ? progress/0.2 : 1 - (progress-0.2)/0.8;
+            const size     = this.size * (1 - progress * 0.4);
+            const grad = ctx.createRadialGradient(this.x,this.y,0, this.x,this.y,size*2.5);
+            grad.addColorStop(0,   `hsla(${this.hue+20},100%,90%,${alpha})`);
+            grad.addColorStop(0.3, `hsla(${this.hue},100%,60%,${alpha*0.9})`);
+            grad.addColorStop(0.7, `hsla(${this.hue-15},100%,40%,${alpha*0.6})`);
+            grad.addColorStop(1,   `hsla(${this.hue-20},100%,20%,0)`);
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, size*2.5, 0, Math.PI*2);
+            ctx.fillStyle = grad;
+            ctx.fill();
+        }
+    }
 
-        function attachFlames(slot) {
-            const cls = (side, extra) => {
-                const div = document.createElement('div');
-                div.className = 'flame-svg-' + side;
-                Object.assign(div.style, extra || {});
-                div.appendChild(buildFlamesSVG(side));
-                return div;
-            };
-            slot.querySelector('.podium-card').style.position = 'relative';
-            slot.appendChild(cls('top'));
-            slot.appendChild(cls('bottom'));
-            slot.appendChild(cls('left'));
-            slot.appendChild(cls('right'));
-        }
+    const particles = Array.from({length: COUNT}, () => new Particle());
 
-        async function load() {
-            try {
-                const res = await fetch(API_URL);
-                const data = await res.json();
-                players = data.map(p => ({
-                    ...p,
-                    username: p.username || p.usuario || '',
-                    score: Number(p.score || p.puntos) || 0,
-                    piece: p.piece || p.pieza || DEFAULT_PIECE,
-                    elo: Number(p.elo) || 0
-                })).filter(p => p.username);
-                render();
-                for (let p of players) {
-                    const lData = await fetchLichessData(p.username);
-                    if (lData) { p.elo = lData.elo; p.winrate = lData.winrate; p.country = lData.country; }
-                }
-                render();
-            } catch(e) { console.error("Error", e); }
-        }
+    function frame() {
+        ctx.clearRect(0, 0, W, H);
+        // glow base sobre el borde
+        ctx.save();
+        ctx.shadowColor = '#ff6000';
+        ctx.shadowBlur  = 18;
+        ctx.strokeStyle = 'rgba(255,120,0,0.25)';
+        ctx.lineWidth   = BORDER;
+        ctx.beginPath();
+        ctx.roundRect(BORDER/2, BORDER/2, W-BORDER, H-BORDER, 22);
+        ctx.stroke();
+        ctx.restore();
 
-        function renderPodium(sorted) {
-            const root = document.getElementById('podiumRoot');
-            if (sorted.length < 3) { root.innerHTML = ''; return; }
-            const top = sorted.slice(0, 3);
-            const visualOrder = [top[1], top[0], top[2]];
-            const crowns = ['🥈', '👑', '🥉'];
-            let html = `<div class="podium-wrap">`;
-            visualOrder.forEach((p, i) => {
-                const realPos = sorted.indexOf(p);
-                const crown = crowns[i];
-                const flag = p.country ? `<img src="https://flagcdn.com/w20/${p.country}.png" alt="flag">` : '';
-                html += `
-                    <div class="podium-slot podium-${realPos + 1}" id="podium-slot-${realPos}" style="opacity:0;">
-                        <div class="podium-card">
-                            <span style="font-size:3rem; display:block; margin-bottom:10px;">${crown}</span>
-                            <div class="avatar-mega">${p.piece || DEFAULT_PIECE}</div>
-                            <div style="font-size:1.4rem; font-weight:900;">${flag} ${p.username}</div>
-                            <div class="pts-mega" style="color:#ffae00;">${p.score}</div>
-                            <div style="color:#ff4d00; font-weight:700; margin-top:10px;">ELO ${p.elo || '---'}</div>
-                        </div>
-                        <div style="font-family:'Orbitron'; font-size:2rem; font-weight:900; margin-top:15px; color:#ff4d00; text-align:center;">#${realPos + 1}</div>
-                    </div>
-                `;
-            });
-            html += `</div>`;
-            root.innerHTML = html;
+        particles.forEach(p => { p.update(); p.draw(ctx); });
+        fireAnimId = requestAnimationFrame(frame);
+    }
+    if (fireAnimId) cancelAnimationFrame(fireAnimId);
+    fireAnimId = requestAnimationFrame(frame);
+}
 
-            /* Añadir llamas al primer puesto */
-            const firstSlot = document.getElementById('podium-slot-0');
-            if (firstSlot) attachFlames(firstSlot);
+/* ════════════════════════ DATA & RENDER ════════════════════════ */
+async function fetchLichessData(username) {
+    const key = username.toLowerCase();
+    if (lichessCache[key]) return lichessCache[key];
+    try {
+        const res  = await fetch(`https://lichess.org/api/user/${username}`);
+        if (!res.ok) return null;
+        const data = await res.json();
+        const perfs = data.perfs || {};
+        const elo  = perfs.rapid?.rating || perfs.blitz?.rating || perfs.bullet?.rating || 0;
+        const result = { elo, country: data.profile?.country?.toLowerCase() || '', winrate: data.count?.all > 0 ? Math.round((data.count.win/data.count.all)*100) : 0 };
+        lichessCache[key] = result;
+        return result;
+    } catch(e) { return null; }
+}
 
-            setTimeout(() => {
-                [1, 0, 2].forEach((idx, i) => {
-                    const el = document.getElementById(`podium-slot-${idx}`);
-                    if (el) setTimeout(() => { el.style.opacity = '1'; el.style.transition = 'opacity 0.4s'; }, i * 200);
-                });
-            }, 100);
+async function load() {
+    try {
+        const res  = await fetch(API_URL);
+        const data = await res.json();
+        players = data.map(p => ({
+            ...p,
+            username: p.username || p.usuario || '',
+            score:    Number(p.score || p.puntos) || 0,
+            piece:    p.piece || p.pieza || DEFAULT_PIECE,
+            elo:      Number(p.elo) || 0
+        })).filter(p => p.username);
+        render();
+        for (let p of players) {
+            const lData = await fetchLichessData(p.username);
+            if (lData) { p.elo = lData.elo; p.winrate = lData.winrate; p.country = lData.country; }
         }
+        render();
+    } catch(e) { console.error(e); }
+}
 
-        function render() {
-            const sorted = [...players].sort((a, b) => b.score - a.score);
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = sorted.filter(p => p.username.toLowerCase().includes(query));
-            if (!query) renderPodium(sorted);
-            else document.getElementById('podiumRoot').innerHTML = '';
-            const root = document.getElementById('rankingRoot');
-            let html = '';
-            TIERS.forEach(tier => {
-                const tierPlayers = filtered.filter(p => {
-                    const playerTier = TIERS.find(t => p.score >= t.min);
-                    return playerTier && playerTier.name === tier.name;
-                });
-                if (tierPlayers.length > 0) {
-                    html += `<div style="margin-bottom:2rem;"><div style="font-family:'Orbitron'; font-size:1.5rem; color:#ff4d00; margin-bottom:1rem; border-left:5px solid #ff4d00; padding-left:10px;">${tier.icon} ${tier.name}</div>`;
-                    tierPlayers.forEach(p => {
-                        const pos = sorted.indexOf(p) + 1;
-                        const flag = p.country ? `<img src="https://flagcdn.com/w20/${p.country}.png" alt="flag">` : '';
-                        html += `
-                            <div class="player-card">
-                                <div style="font-family:'Orbitron'; font-size:1.8rem; font-weight:900; color:#444;">#${pos}</div>
-                                <div class="list-avatar">${p.piece || DEFAULT_PIECE}</div>
-                                <div>
-                                    <div style="font-size:1.5rem; font-weight:900;">${flag} ${p.username}</div>
-                                    <div style="color:#ffae00; font-weight:700;">ELO ${p.elo || '---'} | ${p.winrate || 0}% WR</div>
-                                </div>
-                                <div class="pts-mega">${p.score}</div>
-                            </div>
-                        `;
-                    });
-                    html += `</div>`;
-                }
-            });
-            root.innerHTML = html;
-        }
+function renderPodium(sorted) {
+    const root = document.getElementById('podiumRoot');
+    if (sorted.length < 3) { root.innerHTML = ''; return; }
+    const top = sorted.slice(0,3);
+    const visualOrder = [top[1], top[0], top[2]];
+    const crowns = ['🥈','👑','🥉'];
+    let html = `<div class="podium-wrap">`;
+    visualOrder.forEach((p, i) => {
+        const realPos = sorted.indexOf(p);
+        const crown   = crowns[i];
+        const flag    = p.country ? `<img src="https://flagcdn.com/w20/${p.country}.png" alt="">` : '';
+        const isFirst = realPos === 0;
+        html += `
+            <div class="podium-slot podium-${realPos+1}" id="podium-slot-${realPos}">
+                ${isFirst ? `<div class="fire-frame-wrap" id="fire-wrap">` : ``}
+                <div class="podium-card">
+                    <span style="font-size:3rem;display:block;margin-bottom:10px;">${crown}</span>
+                    <div class="avatar-mega">${p.piece||DEFAULT_PIECE}</div>
+                    <div style="font-size:1.4rem;font-weight:900;">${flag} ${p.username}</div>
+                    <div class="pts-mega" style="color:#ffae00;">${p.score}</div>
+                    <div style="color:#ff4d00;font-weight:700;margin-top:10px;">ELO ${p.elo||'---'}</div>
+                </div>
+                ${isFirst ? `<canvas class="fire-canvas" id="fireCanvas"></canvas></div>` : ``}
+                <div style="font-family:'Orbitron';font-size:2rem;font-weight:900;margin-top:15px;color:#ff4d00;text-align:center;">#${realPos+1}</div>
+            </div>`;
+    });
+    html += `</div>`;
+    root.innerHTML = html;
 
-        function onSearch() { render(); }
-        async function refreshRanking() {
-            const btn = document.getElementById('refreshBtn');
-            btn.disabled = true; await load(); btn.disabled = false;
-        }
+    // Iniciar animación de fuego
+    requestAnimationFrame(() => {
+        const canvas = document.getElementById('fireCanvas');
+        if (canvas) startFireBorder(canvas);
+    });
 
-        function checkAdmin() {
-            const pass = prompt("ACCESO:");
-            if (pass === '73777127') {
-                document.getElementById('adminPanel').style.display = 'block';
-                renderAdmin();
-                document.getElementById('adminPanel').scrollIntoView({ behavior: 'smooth' });
-            }
-        }
-        function closeAdmin() { document.getElementById('adminPanel').style.display = 'none'; }
-        function renderAdmin() {
-            const tbody = document.getElementById('adminTableBody');
-            tbody.innerHTML = '';
-            players.forEach((p, index) => {
-                const tr = document.createElement('tr');
-                let pieceOptions = CHESS_PIECES.map(piece => `<option value="${piece}" ${p.piece === piece ? 'selected' : ''}>${piece}</option>`).join('');
-                tr.innerHTML = `
-                    <td style="padding:15px;"><strong>${p.username}</strong></td>
-                    <td><select onchange="updatePlayerPiece(${index}, this.value)" style="background:#000; color:#fff; border:1px solid #ff4d00;">${pieceOptions}</select></td>
-                    <td><input type="number" value="${p.score}" onchange="updatePlayerScore(${index}, this.value)" style="width:70px; background:#000; color:#fff; border:1px solid #ff4d00;"></td>
-                    <td><button onclick="removePlayer(${index})" style="background:#ff4d00; color:#000; border:none; padding:5px 10px; cursor:pointer; font-weight:900;">X</button></td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-        function updatePlayerScore(index, value) { players[index].score = Number(value); render(); }
-        function updatePlayerPiece(index, value) { players[index].piece = value; render(); }
-        function addPlayer() {
-            const user = document.getElementById('newUsername').value.trim();
-            const piece = document.getElementById('newPiece').value;
-            const score = Number(document.getElementById('newScore').value) || 0;
-            if (!user) return;
-            players.push({ username: user, piece: piece, score: score });
-            render(); renderAdmin();
-        }
-        function removePlayer(index) { if (confirm("¿ELIMINAR?")) { players.splice(index, 1); render(); renderAdmin(); } }
-        async function bulkRefreshStats() {
-            const btn = document.getElementById('bulkRefreshBtn');
-            btn.innerText = "⚡ SINCRONIZANDO..."; btn.disabled = true;
-            try {
-                for (let p of players) {
-                    delete lichessCache[p.username.toLowerCase()];
-                    const lData = await fetchLichessData(p.username);
-                    if (lData) { p.elo = lData.elo; p.winrate = lData.winrate; }
-                }
-                render();
-            } finally { btn.innerText = "⚡ SINCRONIZACIÓN TOTAL ⚡"; btn.disabled = false; }
-        }
-        async function syncWithSheet() {
-            const btn = document.getElementById('saveBtn');
-            btn.innerText = "⏳ SUBIENDO..."; btn.disabled = true;
-            try {
-                const dataToSave = players.map(p => ({ username: p.username, score: p.score, piece: p.piece }));
-                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(dataToSave) });
-                alert("GUARDADO.");
-            } finally { btn.innerText = "💾 GUARDAR EN EL NÚCLEO"; btn.disabled = false; }
-        }
-        load();
-    </script>
+    // Fade-in
+    setTimeout(() => {
+        [1,0,2].forEach((idx,i) => {
+            const el = document.getElementById(`podium-slot-${idx}`);
+            if (el) setTimeout(() => { el.style.opacity = '1'; }, i*200);
+        });
+    }, 100);
+}
+
+function render() {
+    const sorted   = [...players].sort((a,b) => b.score - a.score);
+    const query    = document.getElementById('searchInput').value.toLowerCase();
+    const filtered = sorted.filter(p => p.username.toLowerCase().includes(query));
+    if (!query) renderPodium(sorted);
+    else document.getElementById('podiumRoot').innerHTML = '';
+    const root = document.getElementById('rankingRoot');
+    let html = '';
+    TIERS.forEach(tier => {
+        const tp = filtered.filter(p => { const pt = TIERS.find(t => p.score >= t.min); return pt && pt.name === tier.name; });
+        if (!tp.length) return;
+        html += `<div style="margin-bottom:2rem;"><div style="font-family:'Orbitron';font-size:1.5rem;color:#ff4d00;margin-bottom:1rem;border-left:5px solid #ff4d00;padding-left:10px;">${tier.icon} ${tier.name}</div>`;
+        tp.forEach(p => {
+            const pos  = sorted.indexOf(p) + 1;
+            const flag = p.country ? `<img src="https://flagcdn.com/w20/${p.country}.png" alt="">` : '';
+            html += `<div class="player-card">
+                <div style="font-family:'Orbitron';font-size:1.8rem;font-weight:900;color:#444;">#${pos}</div>
+                <div class="list-avatar">${p.piece||DEFAULT_PIECE}</div>
+                <div>
+                    <div style="font-size:1.5rem;font-weight:900;">${flag} ${p.username}</div>
+                    <div style="color:#ffae00;font-weight:700;">ELO ${p.elo||'---'} | ${p.winrate||0}% WR</div>
+                </div>
+                <div class="pts-mega">${p.score}</div>
+            </div>`;
+        });
+        html += `</div>`;
+    });
+    root.innerHTML = html;
+}
+
+function onSearch() { render(); }
+async function refreshRanking() { const btn=document.getElementById('refreshBtn'); btn.disabled=true; await load(); btn.disabled=false; }
+function checkAdmin() { const pass=prompt("ACCESO:"); if(pass==='73777127'){document.getElementById('adminPanel').style.display='block';renderAdmin();document.getElementById('adminPanel').scrollIntoView({behavior:'smooth'});} }
+function closeAdmin() { document.getElementById('adminPanel').style.display='none'; }
+function renderAdmin() {
+    const tbody=document.getElementById('adminTableBody'); tbody.innerHTML='';
+    players.forEach((p,index) => {
+        const tr=document.createElement('tr');
+        let opts=CHESS_PIECES.map(pc=>`<option value="${pc}" ${p.piece===pc?'selected':''}>${pc}</option>`).join('');
+        tr.innerHTML=`<td style="padding:15px;"><strong>${p.username}</strong></td><td><select onchange="updatePlayerPiece(${index},this.value)" style="background:#000;color:#fff;border:1px solid #ff4d00;">${opts}</select></td><td><input type="number" value="${p.score}" onchange="updatePlayerScore(${index},this.value)" style="width:70px;background:#000;color:#fff;border:1px solid #ff4d00;"></td><td><button onclick="removePlayer(${index})" style="background:#ff4d00;color:#000;border:none;padding:5px 10px;cursor:pointer;font-weight:900;">X</button></td>`;
+        tbody.appendChild(tr);
+    });
+}
+function updatePlayerScore(i,v) { players[i].score=Number(v); render(); }
+function updatePlayerPiece(i,v) { players[i].piece=v; render(); }
+function addPlayer() { const u=document.getElementById('newUsername').value.trim(),pc=document.getElementById('newPiece').value,s=Number(document.getElementById('newScore').value)||0; if(!u)return; players.push({username:u,piece:pc,score:s}); render();renderAdmin(); }
+function removePlayer(i) { if(confirm("¿ELIMINAR?")){players.splice(i,1);render();renderAdmin();} }
+async function bulkRefreshStats() { const btn=document.getElementById('bulkRefreshBtn'); btn.innerText="⚡ SINCRONIZANDO...";btn.disabled=true; try{for(let p of players){delete lichessCache[p.username.toLowerCase()];const lData=await fetchLichessData(p.username);if(lData){p.elo=lData.elo;p.winrate=lData.winrate;}}render();}finally{btn.innerText="⚡ SINCRONIZACIÓN TOTAL ⚡";btn.disabled=false;} }
+async function syncWithSheet() { const btn=document.getElementById('saveBtn');btn.innerText="⏳ SUBIENDO...";btn.disabled=true; try{await fetch(API_URL,{method:'POST',mode:'no-cors',body:JSON.stringify(players.map(p=>({username:p.username,score:p.score,piece:p.piece})))});alert("GUARDADO.");}finally{btn.innerText="💾 GUARDAR EN EL NÚCLEO";btn.disabled=false;} }
+
+load();
+</script>
 </body>
 </html>
