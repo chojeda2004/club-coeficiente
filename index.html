@@ -84,8 +84,7 @@
             to   { opacity: 1; transform: translateY(0); }
         }
         .anim-in {
-            opacity: 0;
-            animation: fadeSlideUp 0.55s cubic-bezier(0.22,1,0.36,1) forwards;
+            animation: fadeSlideUp 0.55s cubic-bezier(0.22,1,0.36,1) both;
         }
         header { animation: fadeSlideDown 0.6s cubic-bezier(0.22,1,0.36,1) both; }
 
@@ -536,6 +535,7 @@
 
         let players = [], loggedIn = false, searchQuery = '';
         let selectedPieceAdd = DEFAULT_PIECE;
+        let firstRender = true; // solo animar en la primera carga
 
         // ── Datos de Lichess extendidos (games + winrate) ─────────────────
         // Cache para no pedir 2 veces el mismo usuario en la misma sesión
@@ -659,7 +659,8 @@
         async function refreshRanking() {
             const btn = document.getElementById('refreshBtn');
             btn.classList.add('spinning'); btn.disabled = true;
-            Object.keys(lichessCache).forEach(k => delete lichessCache[k]); // limpiar caché
+            Object.keys(lichessCache).forEach(k => delete lichessCache[k]);
+            firstRender = true; // volver a animar al refrescar manualmente
             await load();
             btn.classList.remove('spinning'); btn.disabled = false;
         }
@@ -767,10 +768,11 @@
                         : '';
 
                     cardIndex++;
-                    const delay = Math.min(cardIndex * 60, 600); // máx 600ms de delay
+                    const delay = firstRender ? Math.min(cardIndex * 60, 600) : 0;
+                    const animClass = firstRender ? 'anim-in' : '';
 
                     html += `
-                        <div class="player-card anim-in" style="animation-delay:${delay}ms">
+                        <div class="player-card ${animClass}" style="animation-delay:${delay}ms;animation-fill-mode:both">
                             <div class="rank-num">${p.pos}</div>
                             <div class="avatar">${piece}</div>
                             <div class="pinfo">
@@ -790,6 +792,7 @@
                 html += `</div></div>`;
             });
             root.innerHTML = html;
+            firstRender = false;
             if (loggedIn) renderAdmin(sorted);
         }
 
