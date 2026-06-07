@@ -32,6 +32,7 @@
             overflow-x: hidden;
         }
 
+        /* ── Fondo ── */
         .bg-elements { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
         .glow-orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.4; animation: pulse 10s infinite alternate; }
         .orb-1 { width: 500px; height: 500px; background: #4f46e5; top: -100px; right: -100px; }
@@ -42,6 +43,7 @@
 
         .wrap { position: relative; z-index: 1; max-width: 1000px; margin: 0 auto; padding: 2rem 1rem; }
 
+        /* ── Header ── */
         header { text-align: center; margin-bottom: 3rem; }
         .header-content {
             background: rgba(15, 23, 42, 0.6);
@@ -72,6 +74,163 @@
         }
         .sub-title { font-size: 1.1rem; color: var(--accent-primary); font-weight: 600; text-transform: uppercase; letter-spacing: 6px; }
 
+        /* ── ANIMACIÓN DE ENTRADA ── */
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(28px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeSlideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .anim-in {
+            opacity: 0;
+            animation: fadeSlideUp 0.55s cubic-bezier(0.22,1,0.36,1) forwards;
+        }
+        header { animation: fadeSlideDown 0.6s cubic-bezier(0.22,1,0.36,1) both; }
+
+        /* ── PODIO TOP 3 ── */
+        .podium-section {
+            margin-bottom: 3rem;
+        }
+        .podium-title {
+            text-align: center;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+        .podium-wrap {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 1rem;
+        }
+        /* orden visual: 2 - 1 - 3 */
+        .podium-slot { display: flex; flex-direction: column; align-items: center; flex: 1; max-width: 200px; }
+        .podium-slot:nth-child(1) { order: 1; }
+        .podium-slot:nth-child(2) { order: 0; }
+        .podium-slot:nth-child(3) { order: 2; }
+
+        .podium-card {
+            width: 100%;
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 1.2rem 1rem 1rem;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        .podium-card:hover { transform: translateY(-6px); }
+
+        /* brillo superior según posición */
+        .podium-card::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; height: 3px;
+        }
+        .podium-1 .podium-card::before { background: linear-gradient(90deg, #fbbf24, #f59e0b, #fbbf24); box-shadow: 0 0 20px #fbbf24; }
+        .podium-2 .podium-card::before { background: linear-gradient(90deg, #94a3b8, #cbd5e1, #94a3b8); }
+        .podium-3 .podium-card::before { background: linear-gradient(90deg, #b45309, #d97706, #b45309); }
+
+        .podium-1 .podium-card { border-color: rgba(251,191,36,0.35); box-shadow: 0 0 30px rgba(251,191,36,0.15); }
+        .podium-2 .podium-card { border-color: rgba(148,163,184,0.25); }
+        .podium-3 .podium-card { border-color: rgba(180,83,9,0.25); }
+
+        .podium-crown {
+            font-size: 1.8rem;
+            display: block;
+            margin-bottom: 0.3rem;
+            filter: drop-shadow(0 0 8px rgba(251,191,36,0.6));
+            animation: floatCrown 3s ease-in-out infinite;
+        }
+        @keyframes floatCrown { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        .podium-2 .podium-crown, .podium-3 .podium-crown { animation: none; font-size: 1.3rem; }
+
+        .podium-avatar {
+            width: 60px; height: 60px; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2.2rem; margin: 0 auto 0.7rem;
+            border: 2px solid rgba(255,255,255,0.15);
+        }
+        .podium-1 .podium-avatar { background: rgba(251,191,36,0.2); border-color: rgba(251,191,36,0.5); width: 70px; height: 70px; font-size: 2.6rem; }
+        .podium-2 .podium-avatar { background: rgba(148,163,184,0.15); border-color: rgba(148,163,184,0.35); }
+        .podium-3 .podium-avatar { background: rgba(180,83,9,0.15); border-color: rgba(180,83,9,0.35); }
+
+        .podium-name {
+            font-size: 1rem; font-weight: 700; color: #fff;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            max-width: 100%;
+        }
+        .podium-1 .podium-name { font-size: 1.1rem; }
+
+        .podium-score {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.4rem; font-weight: 900;
+            margin: 0.3rem 0 0.1rem;
+        }
+        .podium-1 .podium-score { color: #fbbf24; font-size: 1.7rem; }
+        .podium-2 .podium-score { color: #cbd5e1; }
+        .podium-3 .podium-score { color: #d97706; }
+
+        .podium-elo { font-size: 0.78rem; color: var(--text-muted); }
+        .podium-winrate {
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            display: flex; align-items: center; justify-content: center; gap: 0.4rem;
+        }
+        .winrate-pill {
+            background: rgba(16,185,129,0.2);
+            border: 1px solid rgba(16,185,129,0.3);
+            color: #10b981;
+            border-radius: 20px;
+            padding: 1px 8px;
+            font-size: 0.72rem; font-weight: 700;
+        }
+        .games-pill {
+            background: rgba(56,189,248,0.1);
+            border: 1px solid rgba(56,189,248,0.2);
+            color: var(--accent-primary);
+            border-radius: 20px;
+            padding: 1px 8px;
+            font-size: 0.72rem; font-weight: 700;
+        }
+
+        /* base del podio */
+        .podium-base {
+            width: 100%;
+            border-radius: 0 0 10px 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900; font-size: 1.5rem;
+            color: rgba(255,255,255,0.5);
+            margin-top: 0.6rem;
+        }
+        .podium-1 .podium-base { height: 60px; background: linear-gradient(180deg, rgba(251,191,36,0.25), rgba(251,191,36,0.05)); border: 1px solid rgba(251,191,36,0.2); border-radius: 10px; color: #fbbf24; }
+        .podium-2 .podium-base { height: 42px; background: linear-gradient(180deg, rgba(148,163,184,0.15), rgba(148,163,184,0.03)); border: 1px solid rgba(148,163,184,0.15); border-radius: 10px; }
+        .podium-3 .podium-base { height: 28px; background: linear-gradient(180deg, rgba(180,83,9,0.15), rgba(180,83,9,0.03)); border: 1px solid rgba(180,83,9,0.15); border-radius: 10px; color: #d97706; }
+
+        /* partículas del 1er lugar */
+        @keyframes sparkle {
+            0%   { opacity: 0; transform: translateY(0) scale(0); }
+            50%  { opacity: 1; }
+            100% { opacity: 0; transform: translateY(-40px) scale(1.5); }
+        }
+        .spark {
+            position: absolute; width: 4px; height: 4px; border-radius: 50%;
+            background: #fbbf24; pointer-events: none;
+            animation: sparkle 2s ease-out infinite;
+        }
+        .spark:nth-child(1) { left: 20%; top: 30%; animation-delay: 0s; }
+        .spark:nth-child(2) { left: 75%; top: 20%; animation-delay: 0.7s; }
+        .spark:nth-child(3) { left: 50%; top: 50%; animation-delay: 1.4s; background: #818cf8; }
+
+        /* ── Tiers ── */
         .tier-section { margin-bottom: 2.5rem; }
         .tier-header {
             display: flex; align-items: center; gap: 1rem;
@@ -89,6 +248,7 @@
 
         .players-grid { display: flex; flex-direction: column; gap: 0.75rem; }
 
+        /* ── Cards de jugador ── */
         .player-card {
             display: grid;
             grid-template-columns: 60px 60px 1fr auto;
@@ -128,9 +288,18 @@
         .tier-learner .avatar    { background: rgba(100,116,139,0.15); border-color: rgba(100,116,139,0.4); }
 
         .pinfo .pname { font-size: 1.2rem; font-weight: 700; color: #fff; }
-        .pmeta { display: flex; align-items: center; gap: 1rem; font-size: 0.85rem; color: var(--text-muted); }
+        .pmeta { display: flex; align-items: center; gap: 0.75rem; font-size: 0.82rem; color: var(--text-muted); flex-wrap: wrap; }
         .pelo { color: var(--accent-primary); font-weight: 600; }
         .pchess { color: var(--accent-secondary); text-decoration: none; }
+
+        /* stat pills en la card */
+        .stat-pill {
+            display: inline-flex; align-items: center; gap: 3px;
+            border-radius: 20px; padding: 1px 7px;
+            font-size: 0.72rem; font-weight: 700;
+        }
+        .stat-wins { background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.25); color: #10b981; }
+        .stat-games { background: rgba(56,189,248,0.1); border: 1px solid rgba(56,189,248,0.2); color: var(--accent-primary); }
 
         .score-wrap { text-align: right; }
         .score-wrap .pts {
@@ -140,6 +309,7 @@
         }
         .score-wrap .lbl { font-size: 0.7rem; text-transform: uppercase; color: var(--text-muted); }
 
+        /* ── Refresh btn ── */
         .refresh-btn {
             display: flex; align-items: center; gap: 0.5rem;
             margin: 0 auto 2rem;
@@ -156,6 +326,7 @@
         .refresh-btn.spinning svg { animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
+        /* ── Admin ── */
         .admin-toggle { text-align: center; margin-top: 4rem; }
         .admin-btn {
             background: rgba(15,23,42,0.6);
@@ -216,6 +387,7 @@
         }
         .saving-indicator.show { opacity: 1; }
 
+        /* ── Búsqueda ── */
         .search-wrap { position: relative; margin-bottom: 1.5rem; }
         .search-wrap svg { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; }
         .search-input {
@@ -231,6 +403,7 @@
         .search-input:focus { border-color: rgba(56, 189, 248, 0.5); }
         .search-clear { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; display: none; }
 
+        /* ── Selector de pieza ── */
         .piece-selector { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
         .piece-btn {
             width: 44px; height: 44px; border-radius: 8px; border: 2px solid rgba(255,255,255,0.1);
@@ -244,6 +417,10 @@
             .player-card { grid-template-columns: 40px 50px 1fr; gap: 1rem; }
             .score-wrap { grid-column: 1 / -1; padding-left: 105px; display: flex; align-items: baseline; gap: 0.5rem; }
             .arow { grid-template-columns: 40px 44px 1fr auto; }
+            .podium-wrap { gap: 0.5rem; }
+            .podium-name { font-size: 0.85rem; }
+            .podium-score { font-size: 1.1rem; }
+            .podium-1 .podium-score { font-size: 1.3rem; }
         }
     </style>
 </head>
@@ -273,6 +450,9 @@
             <input class="search-input" id="searchInput" type="text" placeholder="Buscar jugador por nombre..." oninput="onSearch(this.value)">
             <button class="search-clear" id="searchClear" onclick="clearSearch()">✕</button>
         </div>
+
+        <!-- PODIO: se inyecta aquí -->
+        <div id="podiumRoot"></div>
 
         <div id="rankingRoot"></div>
 
@@ -325,48 +505,72 @@
     <div class="saving-indicator" id="savingIndicator">✓ Guardado en la nube</div>
 
     <script>
-        const PASS = '73777127';
+        const PASS    = '73777127';
         const API_URL = 'https://script.google.com/macros/s/AKfycbydXprmWOwO_RjLcFubXdkxkPJmgVv73UJ-BjySMzOAwrzTaTm47-iu-zPZAZv0pQ6uAw/exec';
 
-        const PIECES = ['♟','♞','♝','♜','♛','♚','♙','♘','♗','♖','♕','♔'];
+        const PIECES      = ['♟','♞','♝','♜','♛','♚','♙','♘','♗','♖','♕','♔'];
         const DEFAULT_PIECE = '♟';
-
-        // FIX 1: Tabla de codepoints para normalizar piezas que lleguen corruptas del backend
         const PIECE_CODEPOINTS = {
-            '9823': '♟', '9822': '♞', '9821': '♝', '9820': '♜', '9819': '♛', '9818': '♚',
-            '9817': '♙', '9816': '♘', '9815': '♗', '9814': '♖', '9813': '♕', '9812': '♔'
+            '9823':'♟','9822':'♞','9821':'♝','9820':'♜','9819':'♛','9818':'♚',
+            '9817':'♙','9816':'♘','9815':'♗','9814':'♖','9813':'♕','9812':'♔'
         };
 
-        // FIX 2: Convierte una pieza a su representación segura en unicode escape para enviar al backend
         function pieceToSafe(piece) {
             if (!piece) return DEFAULT_PIECE;
-            // Enviar como U+XXXX string para que el backend no corrompa el caracter
             const cp = piece.codePointAt(0);
-            return 'U+' + cp.toString(16).toUpperCase().padStart(4, '0');
+            return 'U+' + cp.toString(16).toUpperCase().padStart(4,'0');
         }
-
-        // FIX 3: Convierte de vuelta del formato seguro a caracter de pieza
         function safeToPiece(val) {
             if (!val) return DEFAULT_PIECE;
-            // Si ya es un caracter de pieza directamente
             if (PIECES.includes(val)) return val;
-            // Si viene como "U+XXXX"
-            if (val.startsWith('U+')) {
+            if (typeof val === 'string' && val.startsWith('U+')) {
                 const cp = parseInt(val.slice(2), 16);
                 return String.fromCodePoint(cp);
             }
-            // Si viene como codepoint numérico en string
             if (PIECE_CODEPOINTS[val]) return PIECE_CODEPOINTS[val];
-            // Si viene como numero directamente
             const num = parseInt(val);
             if (!isNaN(num) && PIECE_CODEPOINTS[String(num)]) return PIECE_CODEPOINTS[String(num)];
-            // Intento directo: si el string tiene longitud de 1-2 chars puede ser el simbolo
-            if (val.length <= 2) return val;
+            if (typeof val === 'string' && val.length <= 2) return val;
             return DEFAULT_PIECE;
         }
 
         let players = [], loggedIn = false, searchQuery = '';
         let selectedPieceAdd = DEFAULT_PIECE;
+
+        // ── Datos de Lichess extendidos (games + winrate) ─────────────────
+        // Cache para no pedir 2 veces el mismo usuario en la misma sesión
+        const lichessCache = {};
+
+        async function fetchLichessData(username) {
+            if (lichessCache[username.toLowerCase()]) return lichessCache[username.toLowerCase()];
+            try {
+                const res = await fetch(`https://lichess.org/api/user/${username}`, {
+                    headers: { 'Accept': 'application/json' }
+                });
+                if (!res.ok) return null;
+                const data = await res.json();
+
+                let elo = 0;
+                const perfs = data.perfs || {};
+                const order = ['rapid','blitz','bullet','classical','correspondence'];
+                for (const mode of order) {
+                    if (perfs[mode] && perfs[mode].rating) { elo = perfs[mode].rating; break; }
+                }
+
+                let country = '';
+                if (data.profile && data.profile.country) country = data.profile.country.toLowerCase();
+
+                // Partidas totales y winrate
+                const gs = data.count || {};
+                const totalGames = gs.all || 0;
+                const wins       = gs.win || 0;
+                const winrate    = totalGames > 0 ? Math.round((wins / totalGames) * 100) : 0;
+
+                const result = { username: data.username, elo, country, totalGames, winrate };
+                lichessCache[username.toLowerCase()] = result;
+                return result;
+            } catch(e) { return null; }
+        }
 
         function selectPiece(btn, ctx) {
             const container = document.getElementById(ctx === 'add' ? 'pieceSelectorAdd' : `pieceSelectorEdit_${ctx}`);
@@ -381,7 +585,6 @@
             document.getElementById('searchClear').style.display = searchQuery ? 'block' : 'none';
             render();
         }
-
         function clearSearch() {
             document.getElementById('searchInput').value = '';
             onSearch('');
@@ -394,7 +597,6 @@
             { name: 'Amateur',      cls: 'tier-amateur',     icon: '⚡', min: 55  },
             { name: 'Principiante', cls: 'tier-learner',     icon: '🔰', min: 0   }
         ];
-
         function getTier(score) {
             for (const t of TIERS) { if (score >= t.min) return t; }
             return TIERS[TIERS.length - 1];
@@ -402,34 +604,45 @@
 
         async function load() {
             try {
-                const res = await fetch(API_URL);
+                const res  = await fetch(API_URL);
                 const data = await res.json();
                 players = data.map(r => ({
-                    id:       String(r.id),
-                    username: r.username,
-                    // FIX: usar safeToPiece para manejar cualquier formato que devuelva el backend
-                    piece:    safeToPiece(r.piece),
-                    elo:      Number(r.elo) || 0,
-                    score:    Number(r.score) || 0,
-                    country:  r.country || ''
+                    id:         String(r.id),
+                    username:   r.username,
+                    piece:      safeToPiece(r.piece),
+                    elo:        Number(r.elo)   || 0,
+                    score:      Number(r.score) || 0,
+                    country:    r.country || '',
+                    totalGames: Number(r.totalGames) || 0,
+                    winrate:    Number(r.winrate)    || 0
                 }));
             } catch(e) {
                 console.error('Error cargando datos:', e);
                 players = [];
             }
             render();
+            // Cargar stats de Lichess en background y re-renderizar
+            fetchAllStats();
+        }
+
+        // Carga stats de Lichess para todos sin bloquear el render inicial
+        async function fetchAllStats() {
+            for (const p of players) {
+                const data = await fetchLichessData(p.username);
+                if (data) {
+                    p.totalGames = data.totalGames;
+                    p.winrate    = data.winrate;
+                }
+                await new Promise(r => setTimeout(r, 150));
+            }
+            render();
         }
 
         async function save(player) {
             try {
-                // FIX: serializar la pieza como formato seguro antes de enviar
-                const payload = {
-                    ...player,
-                    piece: pieceToSafe(player.piece)
-                };
+                const payload = { ...player, piece: pieceToSafe(player.piece) };
                 await fetch(API_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
+                    method: 'POST', mode: 'no-cors',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
@@ -445,19 +658,80 @@
 
         async function refreshRanking() {
             const btn = document.getElementById('refreshBtn');
-            btn.classList.add('spinning');
-            btn.disabled = true;
+            btn.classList.add('spinning'); btn.disabled = true;
+            Object.keys(lichessCache).forEach(k => delete lichessCache[k]); // limpiar caché
             await load();
-            btn.classList.remove('spinning');
-            btn.disabled = false;
+            btn.classList.remove('spinning'); btn.disabled = false;
         }
 
+        // ── PODIO ────────────────────────────────────────────────────────
+        function renderPodium(sorted) {
+            const podiumRoot = document.getElementById('podiumRoot');
+            if (sorted.length < 2) { podiumRoot.innerHTML = ''; return; }
+
+            const top = sorted.slice(0, Math.min(3, sorted.length));
+            // Si hay menos de 3 mostramos lo que hay
+            const crowns = ['👑','🥈','🥉'];
+            const classes = ['podium-1','podium-2','podium-3'];
+
+            // Orden de slots: [2do, 1ro, 3ro] para el efecto visual de podio
+            const order = top.length === 1 ? [top[0]]
+                        : top.length === 2 ? [top[1], top[0]]
+                        : [top[1], top[0], top[2]];
+
+            const slots = order.map((p, i) => {
+                const realPos = top.indexOf(p);          // 0=1ro, 1=2do, 2=3ro
+                const cls     = classes[realPos];
+                const crown   = crowns[realPos];
+                const sparkles = realPos === 0
+                    ? '<span class="spark"></span><span class="spark"></span><span class="spark"></span>'
+                    : '';
+                const flag = p.country
+                    ? `<img src="https://flagcdn.com/16x12/${p.country}.png" style="border-radius:2px;vertical-align:middle;margin-right:4px;">`
+                    : '';
+                const wr = p.winrate > 0
+                    ? `<span class="winrate-pill">${p.winrate}% wins</span>`
+                    : '';
+                const gms = p.totalGames > 0
+                    ? `<span class="games-pill">${p.totalGames.toLocaleString()} partidas</span>`
+                    : '';
+
+                return `
+                <div class="podium-slot ${cls}">
+                    <div class="podium-card">
+                        ${sparkles}
+                        <span class="podium-crown">${crown}</span>
+                        <div class="podium-avatar">${p.piece || DEFAULT_PIECE}</div>
+                        <div class="podium-name">${flag}${p.username}</div>
+                        <div class="podium-score">${p.score}</div>
+                        <div class="podium-elo">ELO ${p.elo || '---'}</div>
+                        ${(wr || gms) ? `<div class="podium-winrate">${wr}${gms}</div>` : ''}
+                    </div>
+                    <div class="podium-base">${realPos + 1}</div>
+                </div>`;
+            }).join('');
+
+            podiumRoot.innerHTML = `
+                <div class="podium-section anim-in" style="animation-delay:0.1s">
+                    <p class="podium-title">— Top del Club —</p>
+                    <div class="podium-wrap">${slots}</div>
+                </div>`;
+        }
+
+        // ── RENDER PRINCIPAL ─────────────────────────────────────────────
         function render() {
-            const sorted = [...players].sort((a, b) => b.score - a.score);
+            const sorted   = [...players].sort((a, b) => b.score - a.score);
             const filtered = searchQuery
                 ? sorted.filter(p => p.username.toLowerCase().includes(searchQuery))
                 : sorted;
             const root = document.getElementById('rankingRoot');
+
+            // Podio solo si no hay búsqueda activa
+            if (!searchQuery) {
+                renderPodium(sorted);
+            } else {
+                document.getElementById('podiumRoot').innerHTML = '';
+            }
 
             if (!filtered.length) {
                 root.innerHTML = `<div style="text-align:center;padding:4rem;color:var(--text-muted)">${searchQuery ? 'No se encontró ningún jugador.' : 'Aún no hay competidores registrados.'}</div>`;
@@ -465,32 +739,46 @@
                 return;
             }
 
+            // Jugadores que ya aparecen en el podio (top 3) se muestran igual en el ranking pero sin destacarlos doble
             const groups = {};
             TIERS.forEach(t => groups[t.cls] = []);
             filtered.forEach(p => {
                 const pos = sorted.indexOf(p) + 1;
-                const t = getTier(p.score);
+                const t   = getTier(p.score);
                 groups[t.cls].push({ ...p, pos, tier: t });
             });
 
             let html = '';
+            let cardIndex = 0;
             TIERS.forEach(t => {
                 const g = groups[t.cls];
                 if (!g.length) return;
                 html += `<div class="tier-section ${t.cls}"><div class="tier-header">${t.icon} ${t.name}</div><div class="players-grid">`;
                 g.forEach(p => {
                     const piece = p.piece || DEFAULT_PIECE;
+                    const flag  = p.country
+                        ? `<img src="https://flagcdn.com/20x15/${p.country}.png" alt="${p.country}" style="border-radius:2px;vertical-align:middle;margin-right:6px;">`
+                        : '';
+                    const wrPill  = p.winrate > 0
+                        ? `<span class="stat-pill stat-wins">⚡${p.winrate}% wins</span>`
+                        : '';
+                    const gmsPill = p.totalGames > 0
+                        ? `<span class="stat-pill stat-games">♟ ${p.totalGames.toLocaleString()} partidas</span>`
+                        : '';
+
+                    cardIndex++;
+                    const delay = Math.min(cardIndex * 60, 600); // máx 600ms de delay
+
                     html += `
-                        <div class="player-card">
+                        <div class="player-card anim-in" style="animation-delay:${delay}ms">
                             <div class="rank-num">${p.pos}</div>
                             <div class="avatar">${piece}</div>
                             <div class="pinfo">
-                                <div class="pname">
-                                    ${p.country ? `<img src="https://flagcdn.com/20x15/${p.country}.png" alt="${p.country}" style="border-radius:2px;vertical-align:middle;margin-right:6px;">` : ''}${p.username}
-                                </div>
+                                <div class="pname">${flag}${p.username}</div>
                                 <div class="pmeta">
                                     <span class="pelo">ELO ${p.elo || '---'}</span>
-                                    <a class="pchess" href="https://lichess.org/@/${p.username}" target="_blank">Perfil Lichess</a>
+                                    <a class="pchess" href="https://lichess.org/@/${p.username}" target="_blank">Lichess</a>
+                                    ${wrPill}${gmsPill}
                                 </div>
                             </div>
                             <div class="score-wrap">
@@ -505,6 +793,7 @@
             if (loggedIn) renderAdmin(sorted);
         }
 
+        // ── Admin ────────────────────────────────────────────────────────
         function renderAdmin(sorted) {
             const ar = document.getElementById('adminRows');
             ar.innerHTML = `<h4 style="margin:1.5rem 0 1rem;font-family:'Orbitron';font-size:0.8rem;color:var(--text-muted)">Lista de Competidores</h4>` +
@@ -514,39 +803,12 @@
                         <div class="avatar-mini">${p.piece || DEFAULT_PIECE}</div>
                         <div>
                             <div style="font-weight:600">${p.username}</div>
-                            <div style="font-size:0.8rem;color:var(--text-muted)">${p.score} pts | ELO ${p.elo || 'N/A'}</div>
+                            <div style="font-size:0.8rem;color:var(--text-muted)">${p.score} pts | ELO ${p.elo || 'N/A'} | ${p.totalGames || 0} partidas | ${p.winrate || 0}% wins</div>
                         </div>
                         <button class="btn-action" style="padding:0.4rem 0.8rem;font-size:0.6rem;width:auto;background:#f59e0b" onclick="editScore('${p.id}', ${p.score})">✏️</button>
                         <button class="btn-action" style="padding:0.4rem 0.8rem;font-size:0.6rem;width:auto;" onclick="updatePlayerData('${p.id}')">↻</button>
                         <button class="btn-action" style="padding:0.4rem 0.8rem;font-size:0.6rem;width:auto;background:#ef4444" onclick="del('${p.id}')">✕</button>
                     </div>`).join('');
-        }
-
-        async function fetchLichessData(username) {
-            try {
-                const res = await fetch(`https://lichess.org/api/user/${username}`, {
-                    headers: { 'Accept': 'application/json' }
-                });
-                if (!res.ok) return null;
-                const data = await res.json();
-
-                let elo = 0;
-                const perfs = data.perfs || {};
-                const order = ['rapid','blitz','bullet','classical','correspondence'];
-                for (const mode of order) {
-                    if (perfs[mode] && perfs[mode].rating) {
-                        elo = perfs[mode].rating;
-                        break;
-                    }
-                }
-
-                let country = '';
-                if (data.profile && data.profile.country) {
-                    country = data.profile.country.toLowerCase();
-                }
-
-                return { username: data.username, elo, country };
-            } catch(e) { return null; }
         }
 
         async function addPlayer() {
@@ -555,31 +817,21 @@
             const msg    = document.getElementById('addMsg');
             const loader = document.getElementById('loader');
             const btn    = document.getElementById('addBtn');
-
             if (!link) { msg.style.color = '#ef4444'; msg.textContent = 'Pega un enlace de Lichess'; return; }
-
             let username = link.replace(/\/$/, '').split('/').pop().replace('@','');
-
-            loader.style.display = 'block';
-            btn.disabled = true;
-            msg.textContent = '';
-
+            loader.style.display = 'block'; btn.disabled = true; msg.textContent = '';
             const data = await fetchLichessData(username);
             if (!data) {
                 msg.style.color = '#ef4444';
                 msg.textContent = 'Error: Usuario no encontrado o perfil privado en Lichess.';
-                loader.style.display = 'none';
-                btn.disabled = false;
-                return;
+                loader.style.display = 'none'; btn.disabled = false; return;
             }
-
             const newPlayer = {
-                id: Date.now().toString(),
-                username: data.username,
-                piece: selectedPieceAdd,   // se convierte a safe en save()
-                elo: data.elo,
-                score,
-                country: data.country || ''
+                id: Date.now().toString(), username: data.username,
+                piece: selectedPieceAdd, elo: data.elo, score,
+                country: data.country || '',
+                totalGames: data.totalGames || 0,
+                winrate: data.winrate || 0
             };
             players.push(newPlayer);
             await save(newPlayer);
@@ -588,8 +840,7 @@
             document.getElementById('fScore').value = '';
             msg.style.color = '#10b981';
             msg.textContent = '¡Vinculado y guardado en la nube!';
-            loader.style.display = 'none';
-            btn.disabled = false;
+            loader.style.display = 'none'; btn.disabled = false;
         }
 
         async function updatePlayerData(id) {
@@ -597,9 +848,10 @@
             if (!p) return;
             const data = await fetchLichessData(p.username);
             if (data) {
-                // FIX: solo actualizar elo y country, NUNCA tocar piece
                 p.elo = data.elo;
-                p.country = data.country || p.country || '';
+                p.country    = data.country    || p.country || '';
+                p.totalGames = data.totalGames || 0;
+                p.winrate    = data.winrate    || 0;
                 await save(p);
                 render();
             }
@@ -614,9 +866,10 @@
             for (const p of players) {
                 const data = await fetchLichessData(p.username);
                 if (data) {
-                    // FIX: solo actualizar elo y country, NUNCA tocar piece
-                    p.elo = data.elo;
-                    p.country = data.country || p.country || '';
+                    p.elo        = data.elo;
+                    p.country    = data.country    || p.country || '';
+                    p.totalGames = data.totalGames || 0;
+                    p.winrate    = data.winrate    || 0;
                     await save(p);
                 }
                 count++;
