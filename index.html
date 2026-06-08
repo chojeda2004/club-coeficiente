@@ -24,228 +24,54 @@
         .podium-1 .podium-card { border-color: #ff6000; }
         .avatar-mega { width: 90px; height: 90px; margin: 0 auto 1.5rem; background: #111; border: 3px solid #ff4d00; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 4rem; }
         .podium-1 .avatar-mega { width: 120px; height: 120px; font-size: 5.5rem; border-color: #ffae00; }
-
-        /* ── BASE CARD ── */
         .player-card { display: grid; grid-template-columns: 60px 80px 1fr auto; align-items: center; gap: 1.5rem; background: rgba(15,23,42,0.9); border: 1px solid #222; border-radius: 16px; padding: 1.2rem 2rem; margin-bottom: 1rem; transition: 0.2s; position: relative; overflow: hidden; }
         .player-card:hover { border-color: #ff4d00; background: #000; transform: scale(1.02); box-shadow: 0 0 30px rgba(255,77,0,0.2); }
         .list-avatar { width: 65px; height: 65px; background: #000; border: 2px solid #444; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 2.8rem; }
         .player-card:hover .list-avatar { border-color: #ff4d00; }
         .pts-mega { font-family: 'Orbitron', sans-serif; font-size: 2.5rem; font-weight: 900; color: #fff; }
         .player-card:hover .pts-mega { color: #ffae00; }
-
-        /* ══════════════════════════════════════
-           TIER CARD BACKGROUNDS
-        ══════════════════════════════════════ */
-
-        /* ── AMATEUR — madera elegante ── */
-        .player-card.card-amateur {
-            background:
-                linear-gradient(135deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.15) 100%),
-                repeating-linear-gradient(
-                    105deg,
-                    #3b2006 0px, #5c3210 2px, #3b2006 4px,
-                    #4a2a0c 12px, #6e4018 14px, #4a2a0c 16px,
-                    #3b2006 28px, #5c3210 30px, #3b2006 32px
-                );
-            border: 1px solid #8b5e2a;
-            box-shadow: 0 4px 20px rgba(90,50,10,0.4), inset 0 1px 0 rgba(200,140,60,0.25);
-        }
-        .player-card.card-amateur:hover {
-            border-color: #c87830;
-            box-shadow: 0 6px 28px rgba(120,70,20,0.6), inset 0 1px 0 rgba(200,140,60,0.35);
-            transform: scale(1.02);
-        }
+        .player-card.card-amateur { background: linear-gradient(135deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.15) 100%), repeating-linear-gradient(105deg, #3b2006 0px, #5c3210 2px, #3b2006 4px, #4a2a0c 12px, #6e4018 14px, #4a2a0c 16px, #3b2006 28px, #5c3210 30px, #3b2006 32px); border: 1px solid #8b5e2a; box-shadow: 0 4px 20px rgba(90,50,10,0.4), inset 0 1px 0 rgba(200,140,60,0.25); }
+        .player-card.card-amateur:hover { border-color: #c87830; box-shadow: 0 6px 28px rgba(120,70,20,0.6), inset 0 1px 0 rgba(200,140,60,0.35); transform: scale(1.02); }
         .player-card.card-amateur .pts-mega { color: #d4a055; }
         .player-card.card-amateur:hover .pts-mega { color: #f0be70; }
         .player-card.card-amateur .list-avatar { border-color: #6a3c10; }
         .player-card.card-amateur:hover .list-avatar { border-color: #c87830; }
-
-        /* ── EXPERTO — plata elegante ── */
-        .player-card.card-experto {
-            background:
-                linear-gradient(135deg, rgba(180,190,210,0.12) 0%, rgba(100,110,130,0.08) 50%, rgba(180,190,210,0.12) 100%),
-                linear-gradient(160deg, #1a1e26 0%, #252b36 40%, #1a1e26 70%, #1e2330 100%);
-            border: 1px solid #4a5a70;
-            box-shadow:
-                0 4px 24px rgba(150,170,200,0.25),
-                0 0 40px rgba(180,200,230,0.08),
-                inset 0 1px 0 rgba(220,230,250,0.3),
-                inset 0 -1px 0 rgba(100,120,150,0.2);
-        }
-        .player-card.card-experto::before {
-            content: ''; position: absolute; inset: 0;
-            background: linear-gradient(105deg,
-                transparent 0%, rgba(200,215,235,0.07) 30%,
-                rgba(200,215,235,0.15) 50%, rgba(200,215,235,0.07) 70%, transparent 100%);
-            pointer-events: none; z-index: 0;
-        }
-        .player-card.card-experto:hover {
-            border-color: #8090aa;
-            box-shadow:
-                0 6px 36px rgba(160,185,215,0.45),
-                0 0 60px rgba(180,200,230,0.2),
-                inset 0 1px 0 rgba(220,235,255,0.5);
-            transform: scale(1.02);
-        }
+        .player-card.card-experto { background: linear-gradient(135deg, rgba(180,190,210,0.12) 0%, rgba(100,110,130,0.08) 50%, rgba(180,190,210,0.12) 100%), linear-gradient(160deg, #1a1e26 0%, #252b36 40%, #1a1e26 70%, #1e2330 100%); border: 1px solid #4a5a70; box-shadow: 0 4px 24px rgba(150,170,200,0.25), 0 0 40px rgba(180,200,230,0.08), inset 0 1px 0 rgba(220,230,250,0.3), inset 0 -1px 0 rgba(100,120,150,0.2); }
+        .player-card.card-experto::before { content: ''; position: absolute; inset: 0; background: linear-gradient(105deg, transparent 0%, rgba(200,215,235,0.07) 30%, rgba(200,215,235,0.15) 50%, rgba(200,215,235,0.07) 70%, transparent 100%); pointer-events: none; z-index: 0; }
+        .player-card.card-experto:hover { border-color: #8090aa; box-shadow: 0 6px 36px rgba(160,185,215,0.45), 0 0 60px rgba(180,200,230,0.2), inset 0 1px 0 rgba(220,235,255,0.5); transform: scale(1.02); }
         .player-card.card-experto .pts-mega { color: #c8d8f0; }
         .player-card.card-experto:hover .pts-mega { color: #e0eeff; }
         .player-card.card-experto .list-avatar { border-color: #4a5a70; }
         .player-card.card-experto:hover .list-avatar { border-color: #8090aa; }
-
-        /* ── MAESTRO — oro elegante ── */
-        .player-card.card-maestro {
-            background:
-                linear-gradient(135deg, rgba(255,200,50,0.1) 0%, rgba(180,130,0,0.06) 50%, rgba(255,200,50,0.1) 100%),
-                linear-gradient(160deg, #1a1500 0%, #26200a 40%, #1a1500 70%, #201a04 100%);
-            border: 1px solid #7a5c08;
-            box-shadow:
-                0 4px 24px rgba(220,180,30,0.3),
-                0 0 50px rgba(220,180,30,0.1),
-                inset 0 1px 0 rgba(255,220,80,0.4),
-                inset 0 -1px 0 rgba(160,120,10,0.3);
-        }
-        .player-card.card-maestro::before {
-            content: ''; position: absolute; inset: 0;
-            background: linear-gradient(105deg,
-                transparent 0%, rgba(255,210,60,0.06) 30%,
-                rgba(255,210,60,0.18) 50%, rgba(255,210,60,0.06) 70%, transparent 100%);
-            pointer-events: none; z-index: 0;
-        }
-        .player-card.card-maestro:hover {
-            border-color: #c8980a;
-            box-shadow:
-                0 6px 36px rgba(240,195,40,0.55),
-                0 0 80px rgba(240,195,40,0.25),
-                inset 0 1px 0 rgba(255,230,90,0.55);
-            transform: scale(1.02);
-        }
+        .player-card.card-maestro { background: linear-gradient(135deg, rgba(255,200,50,0.1) 0%, rgba(180,130,0,0.06) 50%, rgba(255,200,50,0.1) 100%), linear-gradient(160deg, #1a1500 0%, #26200a 40%, #1a1500 70%, #201a04 100%); border: 1px solid #7a5c08; box-shadow: 0 4px 24px rgba(220,180,30,0.3), 0 0 50px rgba(220,180,30,0.1), inset 0 1px 0 rgba(255,220,80,0.4), inset 0 -1px 0 rgba(160,120,10,0.3); }
+        .player-card.card-maestro::before { content: ''; position: absolute; inset: 0; background: linear-gradient(105deg, transparent 0%, rgba(255,210,60,0.06) 30%, rgba(255,210,60,0.18) 50%, rgba(255,210,60,0.06) 70%, transparent 100%); pointer-events: none; z-index: 0; }
+        .player-card.card-maestro:hover { border-color: #c8980a; box-shadow: 0 6px 36px rgba(240,195,40,0.55), 0 0 80px rgba(240,195,40,0.25), inset 0 1px 0 rgba(255,230,90,0.55); transform: scale(1.02); }
         .player-card.card-maestro .pts-mega { color: #f0c830; }
         .player-card.card-maestro:hover .pts-mega { color: #ffe060; }
         .player-card.card-maestro .list-avatar { border-color: #7a5c08; }
         .player-card.card-maestro:hover .list-avatar { border-color: #c8980a; }
-
-        /* ── GRAN MAESTRO — diamante, aura que ciega ── */
-        .player-card.card-gran-maestro {
-            background:
-                linear-gradient(135deg,
-                    rgba(150,240,255,0.12) 0%, rgba(200,150,255,0.08) 25%,
-                    rgba(150,240,255,0.05) 50%, rgba(255,180,255,0.1) 75%,
-                    rgba(150,240,255,0.12) 100%),
-                linear-gradient(160deg, #08101a 0%, #0d1520 40%, #08101a 70%, #0a1218 100%);
-            border: 1px solid #60b8e8;
-            box-shadow:
-                0 0 20px rgba(130,220,255,0.6),
-                0 0 50px rgba(160,180,255,0.45),
-                0 0 100px rgba(200,150,255,0.3),
-                0 0 180px rgba(130,220,255,0.2),
-                inset 0 1px 0 rgba(200,240,255,0.6),
-                inset 0 -1px 0 rgba(100,180,255,0.3);
-            animation: diamondPulse 2.5s ease-in-out infinite;
-        }
-        .player-card.card-gran-maestro::before {
-            content: ''; position: absolute; inset: -2px; border-radius: 18px;
-            background: linear-gradient(120deg, #00eeff, #aa60ff, #ff80ff, #00eeff, #80ffff, #aa60ff);
-            background-size: 300% 300%;
-            animation: gmBorderShimmer 3s linear infinite;
-            z-index: -1; opacity: 0.7;
-        }
-        .player-card.card-gran-maestro::after {
-            content: ''; position: absolute; inset: 0;
-            background: linear-gradient(105deg,
-                transparent 0%, rgba(180,240,255,0.12) 30%,
-                rgba(255,200,255,0.25) 50%, rgba(180,240,255,0.12) 70%, transparent 100%);
-            animation: gmShimmerSlide 2s linear infinite;
-            pointer-events: none; z-index: 1;
-        }
-        @keyframes diamondPulse {
-            0%, 100% {
-                box-shadow:
-                    0 0 20px rgba(130,220,255,0.6), 0 0 50px rgba(160,180,255,0.45),
-                    0 0 100px rgba(200,150,255,0.3), 0 0 180px rgba(130,220,255,0.2);
-            }
-            50% {
-                box-shadow:
-                    0 0 30px rgba(130,220,255,0.9), 0 0 80px rgba(160,180,255,0.75),
-                    0 0 160px rgba(200,150,255,0.55), 0 0 280px rgba(130,220,255,0.35);
-            }
-        }
-        @keyframes gmBorderShimmer {
-            0%   { background-position: 0% 50%; }
-            100% { background-position: 300% 50%; }
-        }
-        @keyframes gmShimmerSlide {
-            0%   { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-        .player-card.card-gran-maestro:hover {
-            box-shadow:
-                0 0 40px rgba(130,220,255,1),
-                0 0 100px rgba(180,160,255,0.85),
-                0 0 200px rgba(200,150,255,0.65),
-                0 0 350px rgba(130,220,255,0.45);
-            transform: scale(1.02);
-        }
-        .player-card.card-gran-maestro .pts-mega {
-            color: #aaf0ff;
-            text-shadow: 0 0 10px #80e8ff, 0 0 20px #60d0ff;
-        }
-        .player-card.card-gran-maestro:hover .pts-mega {
-            color: #d0f8ff;
-            text-shadow: 0 0 15px #80e8ff, 0 0 35px #60d0ff, 0 0 60px #40b8ff;
-        }
+        .player-card.card-gran-maestro { background: linear-gradient(135deg, rgba(150,240,255,0.12) 0%, rgba(200,150,255,0.08) 25%, rgba(150,240,255,0.05) 50%, rgba(255,180,255,0.1) 75%, rgba(150,240,255,0.12) 100%), linear-gradient(160deg, #08101a 0%, #0d1520 40%, #08101a 70%, #0a1218 100%); border: 1px solid #60b8e8; box-shadow: 0 0 20px rgba(130,220,255,0.6), 0 0 50px rgba(160,180,255,0.45), 0 0 100px rgba(200,150,255,0.3), 0 0 180px rgba(130,220,255,0.2), inset 0 1px 0 rgba(200,240,255,0.6), inset 0 -1px 0 rgba(100,180,255,0.3); animation: diamondPulse 2.5s ease-in-out infinite; }
+        .player-card.card-gran-maestro::before { content: ''; position: absolute; inset: -2px; border-radius: 18px; background: linear-gradient(120deg, #00eeff, #aa60ff, #ff80ff, #00eeff, #80ffff, #aa60ff); background-size: 300% 300%; animation: gmBorderShimmer 3s linear infinite; z-index: -1; opacity: 0.7; }
+        .player-card.card-gran-maestro::after { content: ''; position: absolute; inset: 0; background: linear-gradient(105deg, transparent 0%, rgba(180,240,255,0.12) 30%, rgba(255,200,255,0.25) 50%, rgba(180,240,255,0.12) 70%, transparent 100%); animation: gmShimmerSlide 2s linear infinite; pointer-events: none; z-index: 1; }
+        @keyframes diamondPulse { 0%, 100% { box-shadow: 0 0 20px rgba(130,220,255,0.6), 0 0 50px rgba(160,180,255,0.45), 0 0 100px rgba(200,150,255,0.3), 0 0 180px rgba(130,220,255,0.2); } 50% { box-shadow: 0 0 30px rgba(130,220,255,0.9), 0 0 80px rgba(160,180,255,0.75), 0 0 160px rgba(200,150,255,0.55), 0 0 280px rgba(130,220,255,0.35); } }
+        @keyframes gmBorderShimmer { 0% { background-position: 0% 50%; } 100% { background-position: 300% 50%; } }
+        @keyframes gmShimmerSlide { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+        .player-card.card-gran-maestro:hover { box-shadow: 0 0 40px rgba(130,220,255,1), 0 0 100px rgba(180,160,255,0.85), 0 0 200px rgba(200,150,255,0.65), 0 0 350px rgba(130,220,255,0.45); transform: scale(1.02); }
+        .player-card.card-gran-maestro .pts-mega { color: #aaf0ff; text-shadow: 0 0 10px #80e8ff, 0 0 20px #60d0ff; }
+        .player-card.card-gran-maestro:hover .pts-mega { color: #d0f8ff; text-shadow: 0 0 15px #80e8ff, 0 0 35px #60d0ff, 0 0 60px #40b8ff; }
         .player-card.card-gran-maestro .list-avatar { border-color: #3090c0; background: #08101a; }
         .player-card.card-gran-maestro:hover .list-avatar { border-color: #80d0ff; }
-
-        /* ── END TIER BACKGROUNDS ── */
-
         .admin-panel { background: #000; border: 4px solid #ff4d00; border-radius: 30px; padding: 2rem; margin-top: 4rem; }
         .admin-btn { position: fixed; bottom: 20px; right: 20px; opacity: 0.5; cursor: pointer; font-size: 30px; z-index: 100; }
-
-        .link-register {
-            background: rgba(255,77,0,0.07);
-            border: 2px solid #ff4d00;
-            border-radius: 20px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-        }
-        .link-register h3 {
-            font-family: 'Orbitron', sans-serif;
-            color: #ffae00;
-            margin-bottom: 1rem;
-            font-size: 1rem;
-            letter-spacing: 3px;
-        }
+        .link-register { background: rgba(255,77,0,0.07); border: 2px solid #ff4d00; border-radius: 20px; padding: 1.5rem; margin-bottom: 2rem; }
+        .link-register h3 { font-family: 'Orbitron', sans-serif; color: #ffae00; margin-bottom: 1rem; font-size: 1rem; letter-spacing: 3px; }
         .link-row { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; align-items: center; }
-        .link-row input {
-            background: #000; color: #fff;
-            border: 1px solid #ff4d00;
-            border-radius: 10px;
-            padding: 12px 16px;
-            font-size: 1rem;
-            font-family: 'Rajdhani', sans-serif;
-            outline: none;
-        }
+        .link-row input { background: #000; color: #fff; border: 1px solid #ff4d00; border-radius: 10px; padding: 12px 16px; font-size: 1rem; font-family: 'Rajdhani', sans-serif; outline: none; }
         .link-row input:focus { border-color: #ffae00; }
-        .fetch-btn {
-            background: #ff4d00; color: #000; border: none;
-            padding: 12px 20px; border-radius: 10px;
-            font-family: 'Orbitron', sans-serif; font-weight: 900;
-            cursor: pointer; font-size: 0.85rem; white-space: nowrap;
-        }
+        .fetch-btn { background: #ff4d00; color: #000; border: none; padding: 12px 20px; border-radius: 10px; font-family: 'Orbitron', sans-serif; font-weight: 900; cursor: pointer; font-size: 0.85rem; white-space: nowrap; }
         .fetch-btn:hover { background: #ffae00; }
         .fetch-btn:disabled { background: #555; color: #333; cursor: not-allowed; }
-
-        .preview-card {
-            display: none;
-            margin-top: 1.2rem;
-            background: #0a0a0a;
-            border: 1px solid #ff4d00;
-            border-radius: 14px;
-            padding: 1.2rem 1.5rem;
-            gap: 1.5rem;
-            align-items: center;
-            flex-wrap: wrap;
-        }
+        .preview-card { display: none; margin-top: 1.2rem; background: #0a0a0a; border: 1px solid #ff4d00; border-radius: 14px; padding: 1.2rem 1.5rem; gap: 1.5rem; align-items: center; flex-wrap: wrap; }
         .preview-card.visible { display: flex; }
         .preview-avatar { font-size: 3rem; background: #111; border: 2px solid #ffae00; border-radius: 12px; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; }
         .preview-info { flex: 1; }
@@ -256,10 +82,8 @@
         .preview-score-input { background: #000; color: #ffae00; border: 1px solid #ff4d00; border-radius: 8px; padding: 8px 12px; width: 80px; font-family: 'Orbitron', sans-serif; font-size: 1.1rem; text-align: center; }
         .add-confirm-btn { background: #00c853; color: #000; border: none; border-radius: 10px; padding: 10px 20px; font-family: 'Orbitron', sans-serif; font-weight: 900; cursor: pointer; font-size: 0.9rem; }
         .add-confirm-btn:hover { background: #69f0ae; }
-
         .fetch-error { color: #ff4444; font-family: 'Orbitron', sans-serif; font-size: 0.85rem; margin-top: 10px; display: none; }
         .fetch-error.visible { display: block; }
-
         @media (max-width: 768px) {
             .podium-wrap { flex-direction: column; align-items: center; min-height: auto; }
             .player-card { grid-template-columns: 40px 60px 1fr; padding: 1rem; }
@@ -269,9 +93,7 @@
     </style>
 </head>
 <body>
-<div class="bg-elements">
-    <div class="grid-pattern"></div>
-</div>
+<div class="bg-elements"><div class="grid-pattern"></div></div>
 
 <div class="wrap">
     <header style="text-align:center; margin-bottom:3rem;">
@@ -298,10 +120,10 @@
         <div class="link-register">
             <h3>⚡ REGISTRAR POR LINK DE LICHESS</h3>
             <div class="link-row">
-                <input type="text" id="lichessLinkInput" placeholder="https://lichess.org/@/NombreJugador" />
+                <input type="text" id="lichessLinkInput" placeholder="https://lichess.org/@/NombreJugador  —  o solo el nombre de usuario" />
                 <button class="fetch-btn" id="fetchBtn" onclick="fetchFromLink()">BUSCAR</button>
             </div>
-            <div class="fetch-error" id="fetchError">Usuario no encontrado. Verifica el link.</div>
+            <div class="fetch-error" id="fetchError"></div>
 
             <div class="preview-card" id="previewCard">
                 <div class="preview-avatar" id="previewAvatar">♟</div>
@@ -324,13 +146,7 @@
 
         <table style="width:100%; color:#fff; border-collapse:collapse;">
             <thead><tr style="border-bottom:3px solid #ff4d00; text-align:left;">
-                <th style="padding:15px;">JUGADOR</th>
-                <th>ELO</th>
-                <th>WR</th>
-                <th>PARTIDAS</th>
-                <th>PIEZA</th>
-                <th>PTS</th>
-                <th>X</th>
+                <th style="padding:15px;">JUGADOR</th><th>ELO</th><th>WR</th><th>PARTIDAS</th><th>PIEZA</th><th>PTS</th><th>X</th>
             </tr></thead>
             <tbody id="adminTableBody"></tbody>
         </table>
@@ -344,13 +160,16 @@
 <script>
 const API_URL = 'https://script.google.com/macros/s/AKfycbydXprmWOwO_RjLcFubXdkxkPJmgVv73UJ-BjySMzOAwrzTaTm47-iu-zPZAZv0pQ6uAw/exec';
 const DEFAULT_PIECE = '♟';
-const CHESS_PIECES = ['♟','♞','♝','♜','♛','♚'];
+const CHESS_PIECES  = ['♟','♞','♝','♜','♛','♚'];
 
-// Todos los modos de Lichess ordenados por relevancia
+// ─── PROXY para evitar bloqueo CORS al abrir el archivo localmente ───
+// Si el archivo está en un servidor propio, puedes quitar el proxy y usar la URL directa.
+const LICHESS_BASE = 'https://corsproxy.io/?url=https://lichess.org/api/user/';
+
 const LICHESS_MODES = [
-    'rapid', 'blitz', 'bullet', 'classical', 'correspondence',
-    'ultraBullet', 'chess960', 'crazyhouse', 'antichess',
-    'atomic', 'horde', 'kingOfTheHill', 'racingKings', 'threeCheck'
+    'rapid','blitz','bullet','classical','correspondence',
+    'ultraBullet','chess960','crazyhouse','antichess',
+    'atomic','horde','kingOfTheHill','racingKings','threeCheck'
 ];
 
 let players = [];
@@ -364,28 +183,21 @@ const TIERS = [
     { name:'Amateur',      icon:'⚡', min:55  },
     { name:'Principiante', icon:'🔰', min:0   }
 ];
-
 const TIER_CLASS = {
-    'Gran Maestro': 'card-gran-maestro',
-    'Maestro':      'card-maestro',
-    'Experto':      'card-experto',
-    'Amateur':      'card-amateur',
-    'Principiante': ''
+    'Gran Maestro':'card-gran-maestro',
+    'Maestro':'card-maestro',
+    'Experto':'card-experto',
+    'Amateur':'card-amateur',
+    'Principiante':''
 };
 
-/* ══════════════════ LICHESS DATA ══════════════════ */
+/* ══════════════════ LICHESS ══════════════════ */
 
-/**
- * Parsea la respuesta de la API de Lichess.
- * Recorre TODOS los modos y toma el ELO del modo con más partidas jugadas.
- * Esto resuelve el caso de jugadores que solo juegan variantes o modos no estándar.
- */
 function parseLichessUser(data) {
     const perfs = data.perfs || {};
+    let elo = 0, bestGames = 0;
 
-    let elo = 0;
-    let bestGames = 0;
-
+    // Toma el ELO del modo donde el jugador tiene más partidas
     for (const mode of LICHESS_MODES) {
         const perf = perfs[mode];
         if (perf && typeof perf.games === 'number' && perf.games > bestGames) {
@@ -393,12 +205,10 @@ function parseLichessUser(data) {
             elo = perf.rating || 0;
         }
     }
-
-    // Si ningún modo tiene partidas, intentar tomar cualquier rating disponible
-    if (elo === 0) {
+    // Fallback: cualquier rating aunque no tenga partidas registradas
+    if (!elo) {
         for (const mode of LICHESS_MODES) {
-            const perf = perfs[mode];
-            if (perf && perf.rating) { elo = perf.rating; break; }
+            if (perfs[mode]?.rating) { elo = perfs[mode].rating; break; }
         }
     }
 
@@ -412,59 +222,52 @@ function parseLichessUser(data) {
         country : data.profile?.country?.toLowerCase() || '',
         winrate : total > 0 ? Math.round((wins / total) * 100) : 0,
         total, wins, losses, draws,
-        notFound: false,
-        disabled: false
+        notFound: false, disabled: false
     };
 }
 
-/**
- * Consulta individual a Lichess con manejo completo de errores:
- * - 404: usuario no existe
- * - disabled / tosViolation: cuenta suspendida o baneada
- * - Error de red: se ignora silenciosamente sin borrar datos previos
- */
-async function fetchLichessOne(username) {
-    const key = username.toLowerCase();
-    try {
-        const res = await fetch(`https://lichess.org/api/user/${username}`, {
-            headers: { 'Accept': 'application/json' }
-        });
-
-        if (res.status === 404) {
-            lichessCache[key] = {
-                elo: 0, winrate: 0, total: 0,
-                wins: 0, losses: 0, draws: 0,
-                country: '', notFound: true, disabled: false
-            };
-            return;
+// Llama a Lichess pasando por el proxy
+async function lichessFetch(username) {
+    // Intenta primero sin proxy (funciona si está en servidor),
+    // y si falla por CORS cae al proxy automáticamente.
+    const urls = [
+        `https://lichess.org/api/user/${username}`,
+        `${LICHESS_BASE}${username}`
+    ];
+    for (const url of urls) {
+        try {
+            const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+            if (res.status === 404)  return { status: 404 };
+            if (res.status === 200)  return { status: 200, data: await res.json() };
+        } catch(e) {
+            // CORS bloqueó esta URL, intentar la siguiente
+            continue;
         }
-
-        if (!res.ok) {
-            console.warn(`[Lichess] HTTP ${res.status} para ${username}`);
-            return;
-        }
-
-        const data = await res.json();
-
-        // Cuenta cerrada o baneada por ToS
-        if (data.disabled || data.tosViolation) {
-            lichessCache[key] = {
-                elo: 0, winrate: 0, total: 0,
-                wins: 0, losses: 0, draws: 0,
-                country: '', notFound: false, disabled: true
-            };
-            return;
-        }
-
-        lichessCache[key] = parseLichessUser(data);
-
-    } catch(e) {
-        console.warn(`[Lichess] Error de red para ${username}:`, e);
-        // No sobreescribir caché existente si ya teníamos datos
     }
+    return { status: 0 }; // sin conexión
 }
 
-// Todas las peticiones en paralelo
+async function fetchLichessOne(username) {
+    const key = username.toLowerCase();
+    const result = await lichessFetch(username);
+
+    if (result.status === 404) {
+        lichessCache[key] = { elo:0,winrate:0,total:0,wins:0,losses:0,draws:0,country:'',notFound:true,disabled:false };
+        return;
+    }
+    if (result.status === 0) {
+        console.warn(`[Lichess] Sin respuesta para ${username}`);
+        return;
+    }
+
+    const data = result.data;
+    if (data.disabled || data.tosViolation) {
+        lichessCache[key] = { elo:0,winrate:0,total:0,wins:0,losses:0,draws:0,country:'',notFound:false,disabled:true };
+        return;
+    }
+    lichessCache[key] = parseLichessUser(data);
+}
+
 async function fetchLichessBatch(usernames) {
     if (!usernames.length) return;
     await Promise.all(usernames.map(u => fetchLichessOne(u)));
@@ -472,46 +275,33 @@ async function fetchLichessBatch(usernames) {
 
 function applyLichessCache() {
     players.forEach(p => {
-        const lData = lichessCache[p.username.toLowerCase()];
-        if (lData) {
-            p.elo      = lData.elo;
-            p.winrate  = lData.winrate;
-            p.country  = lData.country;
-            p.total    = lData.total;
-            p.wins     = lData.wins;
-            p.losses   = lData.losses;
-            p.draws    = lData.draws;
-            p.notFound = lData.notFound || false;
-            p.disabled = lData.disabled || false;
-        }
+        const d = lichessCache[p.username.toLowerCase()];
+        if (d) Object.assign(p, d);
     });
 }
 
-/**
- * Devuelve el texto de stats para mostrar en la card del ranking.
- * Cubre todos los casos: datos ok, no encontrado, suspendido, sin partidas.
- */
 function getStatsLabel(p) {
-    if (p.notFound)  return '⚠️ Usuario no encontrado en Lichess';
-    if (p.disabled)  return '🚫 Cuenta suspendida en Lichess';
-    if (!p.elo && !p.total) return 'Sin datos de Lichess';
+    if (p.notFound)          return '⚠️ Usuario no encontrado en Lichess';
+    if (p.disabled)          return '🚫 Cuenta suspendida en Lichess';
+    if (!p.elo && !p.total)  return 'Sin datos de Lichess aún';
     return `ELO ${p.elo || '---'} | ${p.winrate || 0}% WR | ${(p.total || 0).toLocaleString()} partidas`;
 }
 
-/* ══════════════════ FETCH FROM LICHESS LINK ══════════════════ */
+/* ══════════════════ FETCH FROM LINK ══════════════════ */
+
 function extractUsername(input) {
     input = input.trim();
-    const match = input.match(/lichess\.org\/@?\/?([\w-]+)/i)
-                || input.match(/^@\/?([^/\s]+)/)
-                || (input.match(/^[\w-]+$/) ? [null, input] : null);
-    return match ? match[1] : null;
+    const m = input.match(/lichess\.org\/@?\/?([\w-]+)/i)
+           || input.match(/^@\/?([^/\s]+)/)
+           || (input.match(/^[\w-]+$/) ? [null, input] : null);
+    return m ? m[1] : null;
 }
 
 async function fetchFromLink() {
-    const input    = document.getElementById('lichessLinkInput').value;
-    const errorEl  = document.getElementById('fetchError');
-    const preview  = document.getElementById('previewCard');
-    const btn      = document.getElementById('fetchBtn');
+    const input   = document.getElementById('lichessLinkInput').value;
+    const errorEl = document.getElementById('fetchError');
+    const preview = document.getElementById('previewCard');
+    const btn     = document.getElementById('fetchBtn');
 
     errorEl.classList.remove('visible');
     preview.classList.remove('visible');
@@ -519,7 +309,7 @@ async function fetchFromLink() {
 
     const username = extractUsername(input);
     if (!username) {
-        errorEl.textContent = 'Link inválido. Pega el link completo del perfil.';
+        errorEl.textContent = 'Link inválido. Pega el link del perfil o solo el nombre de usuario.';
         errorEl.classList.add('visible');
         return;
     }
@@ -527,43 +317,44 @@ async function fetchFromLink() {
     btn.disabled = true; btn.textContent = '...';
 
     try {
-        const res = await fetch(`https://lichess.org/api/user/${username}`, {
-            headers: { 'Accept': 'application/json' }
-        });
+        const result = await lichessFetch(username);
 
-        if (res.status === 404) {
+        if (result.status === 404) {
             errorEl.textContent = 'Usuario no encontrado en Lichess.';
             errorEl.classList.add('visible');
             return;
         }
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (result.status === 0) {
+            errorEl.textContent = 'No se pudo conectar con Lichess. Revisa tu internet.';
+            errorEl.classList.add('visible');
+            return;
+        }
 
-        const data = await res.json();
-
+        const data = result.data;
         if (data.disabled || data.tosViolation) {
             errorEl.textContent = 'Esta cuenta está suspendida en Lichess.';
             errorEl.classList.add('visible');
             return;
         }
 
-        const result = parseLichessUser(data);
-        pendingFetchedPlayer = { username: data.username, ...result };
+        const parsed = parseLichessUser(data);
+        pendingFetchedPlayer = { username: data.username, ...parsed };
 
         const perfs = data.perfs || {};
         document.getElementById('previewAvatar').textContent = DEFAULT_PIECE;
         document.getElementById('previewName').textContent   = data.username;
         document.getElementById('previewStats').textContent  =
-            `ELO ${result.elo || '---'}  |  WR ${result.winrate}%  |  Rapid ${perfs.rapid?.rating || '---'}  Blitz ${perfs.blitz?.rating || '---'}  Bullet ${perfs.bullet?.rating || '---'}`;
+            `ELO ${parsed.elo || '---'} | WR ${parsed.winrate}% | Rapid ${perfs.rapid?.rating || '---'} Blitz ${perfs.blitz?.rating || '---'} Bullet ${perfs.bullet?.rating || '---'}`;
         document.getElementById('previewGames').textContent  =
-            `${result.total.toLocaleString()} partidas jugadas — ${result.wins}W / ${result.draws}D / ${result.losses}L`;
+            `${parsed.total.toLocaleString()} partidas — ${parsed.wins}G / ${parsed.draws}T / ${parsed.losses}P`;
         document.getElementById('previewScore').value = 0;
-
         preview.classList.add('visible');
         document.getElementById('lichessLinkInput').value = '';
 
     } catch(e) {
-        errorEl.textContent = 'Error al conectar con Lichess. Intenta de nuevo.';
+        errorEl.textContent = 'Error inesperado. Intenta de nuevo.';
         errorEl.classList.add('visible');
+        console.error(e);
     } finally {
         btn.disabled = false; btn.textContent = 'BUSCAR';
     }
@@ -573,20 +364,14 @@ function confirmAddFromLink() {
     if (!pendingFetchedPlayer) return;
     const piece = document.getElementById('previewPiece').value;
     const score = Number(document.getElementById('previewScore').value) || 0;
-
     if (players.find(p => p.username.toLowerCase() === pendingFetchedPlayer.username.toLowerCase())) {
-        alert('Este jugador ya está en el ranking.');
-        return;
+        alert('Este jugador ya está en el ranking.'); return;
     }
-
     players.push({ ...pendingFetchedPlayer, piece, score });
-    lichessCache[pendingFetchedPlayer.username.toLowerCase()] = pendingFetchedPlayer;
-
+    lichessCache[pendingFetchedPlayer.username.toLowerCase()] = { ...pendingFetchedPlayer };
     document.getElementById('previewCard').classList.remove('visible');
     pendingFetchedPlayer = null;
-
-    render();
-    renderAdmin();
+    render(); renderAdmin();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -605,18 +390,18 @@ function startFireBorder(canvas) {
     const ro = new ResizeObserver(resize); ro.observe(canvas.parentElement);
     const BORDER = 18, COUNT = 220;
     function perimeterPoint(t) {
-        const r=20, top=W-2*r, right=H-2*r, bottom=W-2*r, left=H-2*r, arcs=Math.PI*r, total=2*(top+right)+4*arcs;
+        const r=20,top=W-2*r,right=H-2*r,bottom=W-2*r,left=H-2*r,arcs=Math.PI*r,total=2*(top+right)+4*arcs;
         let d=t*total;
-        if(d<top) return {x:r+d,y:0}; d-=top;
-        if(d<arcs){const a=-Math.PI/2+(d/arcs)*(Math.PI/2);return{x:W-r+Math.cos(a)*r,y:r+Math.sin(a)*r};} d-=arcs;
-        if(d<right) return{x:W,y:r+d}; d-=right;
-        if(d<arcs){const a=(d/arcs)*(Math.PI/2);return{x:W-r+Math.cos(a)*r,y:H-r+Math.sin(a)*r};} d-=arcs;
-        if(d<bottom) return{x:W-r-d,y:H}; d-=bottom;
-        if(d<arcs){const a=Math.PI/2+(d/arcs)*(Math.PI/2);return{x:r+Math.cos(a)*r,y:H-r+Math.sin(a)*r};} d-=arcs;
-        if(d<left) return{x:0,y:H-r-d}; d-=left;
-        const a=Math.PI+(d/arcs)*(Math.PI/2); return{x:r+Math.cos(a)*r,y:r+Math.sin(a)*r};
+        if(d<top)return{x:r+d,y:0};d-=top;
+        if(d<arcs){const a=-Math.PI/2+(d/arcs)*(Math.PI/2);return{x:W-r+Math.cos(a)*r,y:r+Math.sin(a)*r};}d-=arcs;
+        if(d<right)return{x:W,y:r+d};d-=right;
+        if(d<arcs){const a=(d/arcs)*(Math.PI/2);return{x:W-r+Math.cos(a)*r,y:H-r+Math.sin(a)*r};}d-=arcs;
+        if(d<bottom)return{x:W-r-d,y:H};d-=bottom;
+        if(d<arcs){const a=Math.PI/2+(d/arcs)*(Math.PI/2);return{x:r+Math.cos(a)*r,y:H-r+Math.sin(a)*r};}d-=arcs;
+        if(d<left)return{x:0,y:H-r-d};d-=left;
+        const a=Math.PI+(d/arcs)*(Math.PI/2);return{x:r+Math.cos(a)*r,y:r+Math.sin(a)*r};
     }
-    function perimeterNormal(t) {
+    function perimeterNormal(t){
         const eps=0.002,a=perimeterPoint((t-eps+1)%1),b=perimeterPoint((t+eps)%1);
         const dx=b.x-a.x,dy=b.y-a.y,len=Math.sqrt(dx*dx+dy*dy)||1;
         return{nx:dy/len,ny:-dx/len};
@@ -624,17 +409,17 @@ function startFireBorder(canvas) {
     class Particle {
         constructor(){this.reset(true);}
         reset(rand){
-            this.t=rand?Math.random():this.t; this.speed=0.0003+Math.random()*0.0004;
+            this.t=rand?Math.random():this.t;this.speed=0.0003+Math.random()*0.0004;
             const pt=perimeterPoint(this.t),nm=perimeterNormal(this.t);
-            this.x=pt.x+nm.nx*(Math.random()*BORDER*0.4); this.y=pt.y+nm.ny*(Math.random()*BORDER*0.4);
-            this.vx=nm.nx*(0.3+Math.random()*0.7); this.vy=nm.ny*(0.3+Math.random()*0.7)-0.8;
-            this.life=0; this.maxLife=35+Math.random()*45; this.size=3+Math.random()*6; this.hue=20+Math.random()*30;
+            this.x=pt.x+nm.nx*(Math.random()*BORDER*0.4);this.y=pt.y+nm.ny*(Math.random()*BORDER*0.4);
+            this.vx=nm.nx*(0.3+Math.random()*0.7);this.vy=nm.ny*(0.3+Math.random()*0.7)-0.8;
+            this.life=0;this.maxLife=35+Math.random()*45;this.size=3+Math.random()*6;this.hue=20+Math.random()*30;
         }
         update(){
             this.t=(this.t+this.speed)%1;
             const pt=perimeterPoint(this.t),nm=perimeterNormal(this.t);
-            this.x=pt.x+nm.nx*3+this.vx*(this.life*0.4); this.y=pt.y+nm.ny*3+this.vy*(this.life*0.4);
-            this.vy-=0.04; this.vx+=(Math.random()-0.5)*0.05; this.life++;
+            this.x=pt.x+nm.nx*3+this.vx*(this.life*0.4);this.y=pt.y+nm.ny*3+this.vy*(this.life*0.4);
+            this.vy-=0.04;this.vx+=(Math.random()-0.5)*0.05;this.life++;
             if(this.life>this.maxLife)this.reset(false);
         }
         draw(ctx){
@@ -644,14 +429,14 @@ function startFireBorder(canvas) {
             g.addColorStop(0.3,`hsla(${this.hue},100%,60%,${alpha*0.9})`);
             g.addColorStop(0.7,`hsla(${this.hue-15},100%,40%,${alpha*0.6})`);
             g.addColorStop(1,`hsla(${this.hue-20},100%,20%,0)`);
-            ctx.fillStyle=g; ctx.beginPath(); ctx.arc(this.x,this.y,size,0,Math.PI*2); ctx.fill();
+            ctx.fillStyle=g;ctx.beginPath();ctx.arc(this.x,this.y,size,0,Math.PI*2);ctx.fill();
         }
     }
     const particles=Array.from({length:COUNT},()=>new Particle());
     function frame(){
         ctx.clearRect(0,0,W,H);
-        ctx.save(); ctx.shadowColor='#ff6000'; ctx.shadowBlur=18; ctx.strokeStyle='rgba(255,120,0,0.25)'; ctx.lineWidth=BORDER;
-        ctx.beginPath(); ctx.roundRect(BORDER/2,BORDER/2,W-BORDER,H-BORDER,22); ctx.stroke(); ctx.restore();
+        ctx.save();ctx.shadowColor='#ff6000';ctx.shadowBlur=18;ctx.strokeStyle='rgba(255,120,0,0.25)';ctx.lineWidth=BORDER;
+        ctx.beginPath();ctx.roundRect(BORDER/2,BORDER/2,W-BORDER,H-BORDER,22);ctx.stroke();ctx.restore();
         particles.forEach(p=>{p.update();p.draw(ctx);});
         fireAnimId=requestAnimationFrame(frame);
     }
@@ -676,7 +461,6 @@ async function load() {
             }))
             .filter(p => p.username);
         render();
-
         await fetchLichessBatch(players.map(p => p.username));
         applyLichessCache();
         render();
@@ -691,7 +475,7 @@ function renderPodium(sorted) {
     let html=`<div class="podium-wrap">`;
     visualOrder.forEach((p,i)=>{
         const realPos=sorted.indexOf(p),crown=crowns[i],isFirst=realPos===0;
-        const flag=p.country?`<img src="https://flagcdn.com/w20/${p.country}.png" alt="">`:'' ;
+        const flag=p.country?`<img src="https://flagcdn.com/w20/${p.country}.png" alt="">`:'';
         html+=`<div class="podium-slot podium-${realPos+1}" id="podium-slot-${realPos}">
             ${isFirst?`<div class="fire-frame-wrap" id="fire-wrap">`:''}
             <div class="podium-card">
@@ -705,7 +489,7 @@ function renderPodium(sorted) {
             <div style="font-family:'Orbitron';font-size:2rem;font-weight:900;margin-top:15px;color:#ff4d00;text-align:center;">#${realPos+1}</div>
         </div>`;
     });
-    html+=`</div>`; root.innerHTML=html;
+    html+=`</div>`;root.innerHTML=html;
     requestAnimationFrame(()=>{const c=document.getElementById('fireCanvas');if(c)startFireBorder(c);});
     setTimeout(()=>{[1,0,2].forEach((idx,i)=>{const el=document.getElementById(`podium-slot-${idx}`);if(el)setTimeout(()=>{el.style.opacity='1';},i*200);});},100);
 }
@@ -714,24 +498,23 @@ function render() {
     const sorted=[...players].sort((a,b)=>b.score-a.score);
     const query=document.getElementById('searchInput').value.toLowerCase();
     const filtered=sorted.filter(p=>p.username.toLowerCase().includes(query));
-    if(!query)renderPodium(sorted); else document.getElementById('podiumRoot').innerHTML='';
+    if(!query)renderPodium(sorted);else document.getElementById('podiumRoot').innerHTML='';
     const root=document.getElementById('rankingRoot');
     let html='';
     TIERS.forEach(tier=>{
         const tp=filtered.filter(p=>{const pt=TIERS.find(t=>p.score>=t.min);return pt&&pt.name===tier.name;});
         if(!tp.length)return;
-        const tierCss = TIER_CLASS[tier.name] || '';
+        const tierCss=TIER_CLASS[tier.name]||'';
         html+=`<div style="margin-bottom:2rem;"><div style="font-family:'Orbitron';font-size:1.5rem;color:#ff4d00;margin-bottom:1rem;border-left:5px solid #ff4d00;padding-left:10px;">${tier.icon} ${tier.name}</div>`;
         tp.forEach(p=>{
             const pos=sorted.indexOf(p)+1;
             const flag=p.country?`<img src="https://flagcdn.com/w20/${p.country}.png" alt="">`:'';
-            const statsLabel = getStatsLabel(p);
             html+=`<div class="player-card ${tierCss}">
                 <div style="font-family:'Orbitron';font-size:1.8rem;font-weight:900;color:#444;">#${pos}</div>
                 <div class="list-avatar">${p.piece||DEFAULT_PIECE}</div>
                 <div style="position:relative;z-index:2;">
                     <div style="font-size:1.5rem;font-weight:900;">${flag} ${p.username}</div>
-                    <div style="color:#ffae00;font-weight:700;">${statsLabel}</div>
+                    <div style="color:#ffae00;font-weight:700;">${getStatsLabel(p)}</div>
                 </div>
                 <div class="pts-mega">${p.score}</div>
             </div>`;
@@ -742,11 +525,10 @@ function render() {
 }
 
 function onSearch(){render();}
+
 async function refreshRanking(){
-    const btn=document.getElementById('refreshBtn');
-    btn.disabled=true;
-    await load();
-    btn.disabled=false;
+    const btn=document.getElementById('refreshBtn');btn.disabled=true;
+    await load();btn.disabled=false;
 }
 
 function checkAdmin(){
@@ -760,15 +542,14 @@ function checkAdmin(){
 function closeAdmin(){document.getElementById('adminPanel').style.display='none';}
 
 function renderAdmin(){
-    const tbody=document.getElementById('adminTableBody');
-    tbody.innerHTML='';
+    const tbody=document.getElementById('adminTableBody');tbody.innerHTML='';
     players.forEach((p,index)=>{
         const tr=document.createElement('tr');
         tr.style.borderBottom='1px solid #222';
-        let opts=CHESS_PIECES.map(pc=>`<option value="${pc}" ${p.piece===pc?'selected':''}>${pc}</option>`).join('');
-        const eloDisplay = p.notFound ? '⚠️ N/E' : p.disabled ? '🚫 BAN' : (p.elo || '—');
-        const wrDisplay  = p.notFound || p.disabled ? '—' : `${p.winrate||0}%`;
-        const totalDisplay = p.notFound || p.disabled ? '—' : (p.total||0).toLocaleString();
+        const opts=CHESS_PIECES.map(pc=>`<option value="${pc}" ${p.piece===pc?'selected':''}>${pc}</option>`).join('');
+        const eloDisplay   = p.notFound?'⚠️ N/E':p.disabled?'🚫 BAN':(p.elo||'—');
+        const wrDisplay    = (p.notFound||p.disabled)?'—':`${p.winrate||0}%`;
+        const totalDisplay = (p.notFound||p.disabled)?'—':(p.total||0).toLocaleString();
         tr.innerHTML=`
             <td style="padding:12px;font-weight:900;">${p.username}<br><small style="color:#888;font-weight:400;">${p.country?'🌐 '+p.country.toUpperCase():''}</small></td>
             <td style="color:#ffae00;padding:8px;">${eloDisplay}</td>
@@ -787,40 +568,21 @@ function removePlayer(i){if(confirm("¿ELIMINAR?")){players.splice(i,1);render()
 
 async function bulkRefreshStats(){
     const btn=document.getElementById('bulkRefreshBtn');
-    btn.innerText="⚡ SINCRONIZANDO...";
-    btn.disabled=true;
-    try {
-        // Forzar re-fetch borrando caché
-        players.forEach(p => delete lichessCache[p.username.toLowerCase()]);
-        await fetchLichessBatch(players.map(p => p.username));
-        applyLichessCache();
-        render();
-        renderAdmin();
-    } finally {
-        btn.innerText="⚡ SINCRONIZACIÓN TOTAL ⚡";
-        btn.disabled=false;
-    }
+    btn.innerText="⚡ SINCRONIZANDO...";btn.disabled=true;
+    try{
+        players.forEach(p=>delete lichessCache[p.username.toLowerCase()]);
+        await fetchLichessBatch(players.map(p=>p.username));
+        applyLichessCache();render();renderAdmin();
+    }finally{btn.innerText="⚡ SINCRONIZACIÓN TOTAL ⚡";btn.disabled=false;}
 }
 
 async function syncWithSheet(){
     const btn=document.getElementById('saveBtn');
-    btn.innerText="⏳ SUBIENDO...";
-    btn.disabled=true;
-    try {
-        await fetch(API_URL,{
-            method:'POST',
-            mode:'no-cors',
-            body: JSON.stringify(players.map(p=>({
-                username: p.username,
-                score:    p.score,
-                piece:    p.piece
-            })))
-        });
+    btn.innerText="⏳ SUBIENDO...";btn.disabled=true;
+    try{
+        await fetch(API_URL,{method:'POST',mode:'no-cors',body:JSON.stringify(players.map(p=>({username:p.username,score:p.score,piece:p.piece})))});
         alert("GUARDADO.");
-    } finally {
-        btn.innerText="💾 GUARDAR EN EL NÚCLEO";
-        btn.disabled=false;
-    }
+    }finally{btn.innerText="💾 GUARDAR EN EL NÚCLEO";btn.disabled=false;}
 }
 
 load();
