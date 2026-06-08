@@ -345,6 +345,14 @@
 const API_URL = 'https://script.google.com/macros/s/AKfycbydXprmWOwO_RjLcFubXdkxkPJmgVv73UJ-BjySMzOAwrzTaTm47-iu-zPZAZv0pQ6uAw/exec';
 const DEFAULT_PIECE = '♟';
 const CHESS_PIECES = ['♟','♞','♝','♜','♛','♚'];
+
+// Todos los modos de Lichess ordenados por relevancia
+const LICHESS_MODES = [
+    'rapid', 'blitz', 'bullet', 'classical', 'correspondence',
+    'ultraBullet', 'chess960', 'crazyhouse', 'antichess',
+    'atomic', 'horde', 'kingOfTheHill', 'racingKings', 'threeCheck'
+];
+
 let players = [];
 const lichessCache = {};
 let pendingFetchedPlayer = null;
@@ -357,7 +365,6 @@ const TIERS = [
     { name:'Principiante', icon:'🔰', min:0   }
 ];
 
-// Mapa de clase CSS por tier
 const TIER_CLASS = {
     'Gran Maestro': 'card-gran-maestro',
     'Maestro':      'card-maestro',
@@ -365,6 +372,131 @@ const TIER_CLASS = {
     'Amateur':      'card-amateur',
     'Principiante': ''
 };
+
+/* ══════════════════ LICHESS DATA ══════════════════ */
+
+/**
+ * Parsea la respuesta de la API de Lichess.
+ * Recorre TODOS los modos y toma el ELO del modo con más partidas jugadas.
+ * Esto resuelve el caso de jugadores que solo juegan variantes o modos no estándar.
+ */
+function parseLichessUser(data) {
+    const perfs = data.perfs || {};
+
+    let elo = 0;
+    let bestGames = 0;
+
+    for (const mode of LICHESS_MODES) {
+        const perf = perfs[mode];
+        if (perf && typeof perf.games === 'number' && perf.games > bestGames) {
+            bestGames = perf.games;
+            elo = perf.rating || 0;
+        }
+    }
+
+    // Si ningún modo tiene partidas, intentar tomar cualquier rating disponible
+    if (elo === 0) {
+        for (const mode of LICHESS_MODES) {
+            const perf = perfs[mode];
+            if (perf && perf.rating) { elo = perf.rating; break; }
+        }
+    }
+
+    const total  = data.count?.all  || 0;
+    const wins   = data.count?.win  || 0;
+    const losses = data.count?.loss || 0;
+    const draws  = data.count?.draw || 0;
+
+    return {
+        elo,
+        country : data.profile?.country?.toLowerCase() || '',
+        winrate : total > 0 ? Math.round((wins / total) * 100) : 0,
+        total, wins, losses, draws,
+        notFound: false,
+        disabled: false
+    };
+}
+
+/**
+ * Consulta individual a Lichess con manejo completo de errores:
+ * - 404: usuario no existe
+ * - disabled / tosViolation: cuenta suspendida o baneada
+ * - Error de red: se ignora silenciosamente sin borrar datos previos
+ */
+async function fetchLichessOne(username) {
+    const key = username.toLowerCase();
+    try {
+        const res = await fetch(`https://lichess.org/api/user/${username}`, {
+            headers: { 'Accept': 'application/json' }
+        });
+
+        if (res.status === 404) {
+            lichessCache[key] = {
+                elo: 0, winrate: 0, total: 0,
+                wins: 0, losses: 0, draws: 0,
+                country: '', notFound: true, disabled: false
+            };
+            return;
+        }
+
+        if (!res.ok) {
+            console.warn(`[Lichess] HTTP ${res.status} para ${username}`);
+            return;
+        }
+
+        const data = await res.json();
+
+        // Cuenta cerrada o baneada por ToS
+        if (data.disabled || data.tosViolation) {
+            lichessCache[key] = {
+                elo: 0, winrate: 0, total: 0,
+                wins: 0, losses: 0, draws: 0,
+                country: '', notFound: false, disabled: true
+            };
+            return;
+        }
+
+        lichessCache[key] = parseLichessUser(data);
+
+    } catch(e) {
+        console.warn(`[Lichess] Error de red para ${username}:`, e);
+        // No sobreescribir caché existente si ya teníamos datos
+    }
+}
+
+// Todas las peticiones en paralelo
+async function fetchLichessBatch(usernames) {
+    if (!usernames.length) return;
+    await Promise.all(usernames.map(u => fetchLichessOne(u)));
+}
+
+function applyLichessCache() {
+    players.forEach(p => {
+        const lData = lichessCache[p.username.toLowerCase()];
+        if (lData) {
+            p.elo      = lData.elo;
+            p.winrate  = lData.winrate;
+            p.country  = lData.country;
+            p.total    = lData.total;
+            p.wins     = lData.wins;
+            p.losses   = lData.losses;
+            p.draws    = lData.draws;
+            p.notFound = lData.notFound || false;
+            p.disabled = lData.disabled || false;
+        }
+    });
+}
+
+/**
+ * Devuelve el texto de stats para mostrar en la card del ranking.
+ * Cubre todos los casos: datos ok, no encontrado, suspendido, sin partidas.
+ */
+function getStatsLabel(p) {
+    if (p.notFound)  return '⚠️ Usuario no encontrado en Lichess';
+    if (p.disabled)  return '🚫 Cuenta suspendida en Lichess';
+    if (!p.elo && !p.total) return 'Sin datos de Lichess';
+    return `ELO ${p.elo || '---'} | ${p.winrate || 0}% WR | ${(p.total || 0).toLocaleString()} partidas`;
+}
 
 /* ══════════════════ FETCH FROM LICHESS LINK ══════════════════ */
 function extractUsername(input) {
@@ -386,15 +518,34 @@ async function fetchFromLink() {
     pendingFetchedPlayer = null;
 
     const username = extractUsername(input);
-    if (!username) { errorEl.textContent = 'Link inválido. Pega el link completo del perfil.'; errorEl.classList.add('visible'); return; }
+    if (!username) {
+        errorEl.textContent = 'Link inválido. Pega el link completo del perfil.';
+        errorEl.classList.add('visible');
+        return;
+    }
 
     btn.disabled = true; btn.textContent = '...';
 
     try {
-        const res = await fetch(`https://lichess.org/api/user/${username}`);
-        if (!res.ok) throw new Error('not found');
+        const res = await fetch(`https://lichess.org/api/user/${username}`, {
+            headers: { 'Accept': 'application/json' }
+        });
+
+        if (res.status === 404) {
+            errorEl.textContent = 'Usuario no encontrado en Lichess.';
+            errorEl.classList.add('visible');
+            return;
+        }
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
         const data = await res.json();
-        
+
+        if (data.disabled || data.tosViolation) {
+            errorEl.textContent = 'Esta cuenta está suspendida en Lichess.';
+            errorEl.classList.add('visible');
+            return;
+        }
+
         const result = parseLichessUser(data);
         pendingFetchedPlayer = { username: data.username, ...result };
 
@@ -402,7 +553,7 @@ async function fetchFromLink() {
         document.getElementById('previewAvatar').textContent = DEFAULT_PIECE;
         document.getElementById('previewName').textContent   = data.username;
         document.getElementById('previewStats').textContent  =
-            `ELO ${result.elo || '—'}  |  WR ${result.winrate}%  |  Rapid ${perfs.rapid?.rating || 0}  Blitz ${perfs.blitz?.rating || 0}  Bullet ${perfs.bullet?.rating || 0}`;
+            `ELO ${result.elo || '---'}  |  WR ${result.winrate}%  |  Rapid ${perfs.rapid?.rating || '---'}  Blitz ${perfs.blitz?.rating || '---'}  Bullet ${perfs.bullet?.rating || '---'}`;
         document.getElementById('previewGames').textContent  =
             `${result.total.toLocaleString()} partidas jugadas — ${result.wins}W / ${result.draws}D / ${result.losses}L`;
         document.getElementById('previewScore').value = 0;
@@ -411,7 +562,7 @@ async function fetchFromLink() {
         document.getElementById('lichessLinkInput').value = '';
 
     } catch(e) {
-        errorEl.textContent = 'Usuario no encontrado. Verifica el link.';
+        errorEl.textContent = 'Error al conectar con Lichess. Intenta de nuevo.';
         errorEl.classList.add('visible');
     } finally {
         btn.disabled = false; btn.textContent = 'BUSCAR';
@@ -439,7 +590,9 @@ function confirmAddFromLink() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('lichessLinkInput')?.addEventListener('keydown', e => { if(e.key==='Enter') fetchFromLink(); });
+    document.getElementById('lichessLinkInput')?.addEventListener('keydown', e => {
+        if (e.key === 'Enter') fetchFromLink();
+    });
 });
 
 /* ══════════════════ FIRE BORDER ══════════════════ */
@@ -506,54 +659,7 @@ function startFireBorder(canvas) {
     fireAnimId=requestAnimationFrame(frame);
 }
 
-/* ══════════════════ LICHESS DATA ══════════════════ */
-function parseLichessUser(data) {
-    const perfs = data.perfs || {};
-    const elo   = perfs.rapid?.rating || perfs.blitz?.rating || perfs.bullet?.rating || 0;
-    const total = data.count?.all  || 0;
-    const wins  = data.count?.win  || 0;
-    const losses= data.count?.loss || 0;
-    const draws = data.count?.draw || 0;
-    return {
-        elo,
-        country : data.profile?.country?.toLowerCase() || '',
-        winrate : total > 0 ? Math.round((wins / total) * 100) : 0,
-        total, wins, losses, draws
-    };
-}
-
-// Consulta individual completa (ELO + count + country)
-async function fetchLichessOne(username) {
-    const key = username.toLowerCase();
-    try {
-        const res = await fetch(`https://lichess.org/api/user/${username}`);
-        if (!res.ok) return;
-        const data = await res.json();
-        lichessCache[key] = parseLichessUser(data);
-    } catch(e) {}
-}
-
-// Todas las peticiones en paralelo con Promise.all
-async function fetchLichessBatch(usernames) {
-    if (!usernames.length) return;
-    await Promise.all(usernames.map(u => fetchLichessOne(u)));
-}
-
-function applyLichessCache() {
-    players.forEach(p => {
-        const lData = lichessCache[p.username.toLowerCase()];
-        if (lData) {
-            p.elo     = lData.elo;
-            p.winrate = lData.winrate;
-            p.country = lData.country;
-            p.total   = lData.total;
-            p.wins    = lData.wins;
-            p.losses  = lData.losses;
-            p.draws   = lData.draws;
-        }
-    });
-}
-
+/* ══════════════════ LOAD ══════════════════ */
 async function load() {
     try {
         const res  = await fetch(API_URL);
@@ -564,7 +670,9 @@ async function load() {
                 username : p.username || p.usuario || '',
                 score    : Number(p.score || p.puntos) || 0,
                 piece    : p.piece || p.pieza || DEFAULT_PIECE,
-                elo      : Number(p.elo) || 0
+                elo      : Number(p.elo) || 0,
+                notFound : false,
+                disabled : false
             }))
             .filter(p => p.username);
         render();
@@ -617,12 +725,13 @@ function render() {
         tp.forEach(p=>{
             const pos=sorted.indexOf(p)+1;
             const flag=p.country?`<img src="https://flagcdn.com/w20/${p.country}.png" alt="">`:'';
+            const statsLabel = getStatsLabel(p);
             html+=`<div class="player-card ${tierCss}">
                 <div style="font-family:'Orbitron';font-size:1.8rem;font-weight:900;color:#444;">#${pos}</div>
                 <div class="list-avatar">${p.piece||DEFAULT_PIECE}</div>
                 <div style="position:relative;z-index:2;">
                     <div style="font-size:1.5rem;font-weight:900;">${flag} ${p.username}</div>
-                    <div style="color:#ffae00;font-weight:700;">ELO ${p.elo||'---'} | ${p.winrate||0}% WR | ${(p.total||0).toLocaleString()} partidas</div>
+                    <div style="color:#ffae00;font-weight:700;">${statsLabel}</div>
                 </div>
                 <div class="pts-mega">${p.score}</div>
             </div>`;
@@ -633,22 +742,38 @@ function render() {
 }
 
 function onSearch(){render();}
-async function refreshRanking(){const btn=document.getElementById('refreshBtn');btn.disabled=true;await load();btn.disabled=false;}
+async function refreshRanking(){
+    const btn=document.getElementById('refreshBtn');
+    btn.disabled=true;
+    await load();
+    btn.disabled=false;
+}
 
-function checkAdmin(){const pass=prompt("ACCESO:");if(pass==='73777127'){document.getElementById('adminPanel').style.display='block';renderAdmin();document.getElementById('adminPanel').scrollIntoView({behavior:'smooth'});}}
+function checkAdmin(){
+    const pass=prompt("ACCESO:");
+    if(pass==='73777127'){
+        document.getElementById('adminPanel').style.display='block';
+        renderAdmin();
+        document.getElementById('adminPanel').scrollIntoView({behavior:'smooth'});
+    }
+}
 function closeAdmin(){document.getElementById('adminPanel').style.display='none';}
 
 function renderAdmin(){
-    const tbody=document.getElementById('adminTableBody');tbody.innerHTML='';
+    const tbody=document.getElementById('adminTableBody');
+    tbody.innerHTML='';
     players.forEach((p,index)=>{
         const tr=document.createElement('tr');
         tr.style.borderBottom='1px solid #222';
         let opts=CHESS_PIECES.map(pc=>`<option value="${pc}" ${p.piece===pc?'selected':''}>${pc}</option>`).join('');
+        const eloDisplay = p.notFound ? '⚠️ N/E' : p.disabled ? '🚫 BAN' : (p.elo || '—');
+        const wrDisplay  = p.notFound || p.disabled ? '—' : `${p.winrate||0}%`;
+        const totalDisplay = p.notFound || p.disabled ? '—' : (p.total||0).toLocaleString();
         tr.innerHTML=`
             <td style="padding:12px;font-weight:900;">${p.username}<br><small style="color:#888;font-weight:400;">${p.country?'🌐 '+p.country.toUpperCase():''}</small></td>
-            <td style="color:#ffae00;padding:8px;">${p.elo||'—'}</td>
-            <td style="color:#ffae00;padding:8px;">${p.winrate||0}%</td>
-            <td style="color:#aaa;padding:8px;">${(p.total||0).toLocaleString()}</td>
+            <td style="color:#ffae00;padding:8px;">${eloDisplay}</td>
+            <td style="color:#ffae00;padding:8px;">${wrDisplay}</td>
+            <td style="color:#aaa;padding:8px;">${totalDisplay}</td>
             <td><select onchange="updatePlayerPiece(${index},this.value)" style="background:#000;color:#fff;border:1px solid #ff4d00;font-size:1.2rem;">${opts}</select></td>
             <td><input type="number" value="${p.score}" onchange="updatePlayerScore(${index},this.value)" style="width:65px;background:#000;color:#fff;border:1px solid #ff4d00;padding:4px;"></td>
             <td><button onclick="removePlayer(${index})" style="background:#ff4d00;color:#000;border:none;padding:5px 10px;cursor:pointer;font-weight:900;border-radius:6px;">X</button></td>`;
@@ -661,19 +786,41 @@ function updatePlayerPiece(i,v){players[i].piece=v;render();}
 function removePlayer(i){if(confirm("¿ELIMINAR?")){players.splice(i,1);render();renderAdmin();}}
 
 async function bulkRefreshStats(){
-    const btn=document.getElementById('bulkRefreshBtn');btn.innerText="⚡ SINCRONIZANDO...";btn.disabled=true;
+    const btn=document.getElementById('bulkRefreshBtn');
+    btn.innerText="⚡ SINCRONIZANDO...";
+    btn.disabled=true;
     try {
+        // Forzar re-fetch borrando caché
         players.forEach(p => delete lichessCache[p.username.toLowerCase()]);
         await fetchLichessBatch(players.map(p => p.username));
         applyLichessCache();
-        render(); renderAdmin();
-    } finally { btn.innerText="⚡ SINCRONIZACIÓN TOTAL ⚡"; btn.disabled=false; }
+        render();
+        renderAdmin();
+    } finally {
+        btn.innerText="⚡ SINCRONIZACIÓN TOTAL ⚡";
+        btn.disabled=false;
+    }
 }
 
 async function syncWithSheet(){
-    const btn=document.getElementById('saveBtn');btn.innerText="⏳ SUBIENDO...";btn.disabled=true;
-    try{await fetch(API_URL,{method:'POST',mode:'no-cors',body:JSON.stringify(players.map(p=>({username:p.username,score:p.score,piece:p.piece})))});alert("GUARDADO.");}
-    finally{btn.innerText="💾 GUARDAR EN EL NÚCLEO";btn.disabled=false;}
+    const btn=document.getElementById('saveBtn');
+    btn.innerText="⏳ SUBIENDO...";
+    btn.disabled=true;
+    try {
+        await fetch(API_URL,{
+            method:'POST',
+            mode:'no-cors',
+            body: JSON.stringify(players.map(p=>({
+                username: p.username,
+                score:    p.score,
+                piece:    p.piece
+            })))
+        });
+        alert("GUARDADO.");
+    } finally {
+        btn.innerText="💾 GUARDAR EN EL NÚCLEO";
+        btn.disabled=false;
+    }
 }
 
 load();
