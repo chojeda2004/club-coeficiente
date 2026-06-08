@@ -269,7 +269,10 @@
     </style>
 </head>
 <body>
-<div class="bg-elements"><div class="grid-pattern"></div></div>
+<div class="bg-elements">
+    <div class="grid-pattern"></div>
+</div>
+
 <div class="wrap">
     <header style="text-align:center; margin-bottom:3rem;">
         <h1 style="font-family:'Orbitron',sans-serif; font-size:clamp(2.5rem,10vw,5rem); font-weight:900; color:#fff; text-shadow:0 0 20px #ff4d00; letter-spacing:10px;">CLUB COEFICIENTE</h1>
@@ -391,27 +394,17 @@ async function fetchFromLink() {
         const res = await fetch(`https://lichess.org/api/user/${username}`);
         if (!res.ok) throw new Error('not found');
         const data = await res.json();
+        
+        const result = parseLichessUser(data);
+        pendingFetchedPlayer = { username: data.username, ...result };
 
-        const perfs    = data.perfs || {};
-        const rapid    = perfs.rapid?.rating  || 0;
-        const blitz    = perfs.blitz?.rating  || 0;
-        const bullet   = perfs.bullet?.rating || 0;
-        const elo      = rapid || blitz || bullet;
-        const total    = data.count?.all  || 0;
-        const wins     = data.count?.win  || 0;
-        const losses   = data.count?.loss || 0;
-        const draws    = data.count?.draw || 0;
-        const winrate  = total > 0 ? Math.round((wins / total) * 100) : 0;
-        const country  = data.profile?.country?.toLowerCase() || '';
-
-        pendingFetchedPlayer = { username: data.username, elo, winrate, country, total, wins, losses, draws };
-
+        const perfs = data.perfs || {};
         document.getElementById('previewAvatar').textContent = DEFAULT_PIECE;
         document.getElementById('previewName').textContent   = data.username;
         document.getElementById('previewStats').textContent  =
-            `ELO ${elo || '—'}  |  WR ${winrate}%  |  Rapid ${rapid}  Blitz ${blitz}  Bullet ${bullet}`;
+            `ELO ${result.elo || '—'}  |  WR ${result.winrate}%  |  Rapid ${perfs.rapid?.rating || 0}  Blitz ${perfs.blitz?.rating || 0}  Bullet ${perfs.bullet?.rating || 0}`;
         document.getElementById('previewGames').textContent  =
-            `${total.toLocaleString()} partidas jugadas — ${wins}W / ${draws}D / ${losses}L`;
+            `${result.total.toLocaleString()} partidas jugadas — ${result.wins}W / ${result.draws}D / ${result.losses}L`;
         document.getElementById('previewScore').value = 0;
 
         preview.classList.add('visible');
@@ -498,7 +491,7 @@ function startFireBorder(canvas) {
             g.addColorStop(0.3,`hsla(${this.hue},100%,60%,${alpha*0.9})`);
             g.addColorStop(0.7,`hsla(${this.hue-15},100%,40%,${alpha*0.6})`);
             g.addColorStop(1,`hsla(${this.hue-20},100%,20%,0)`);
-            ctx.beginPath(); ctx.arc(this.x,this.y,size*2.5,0,Math.PI*2); ctx.fillStyle=g; ctx.fill();
+            ctx.fillStyle=g; ctx.beginPath(); ctx.arc(this.x,this.y,size,0,Math.PI*2); ctx.fill();
         }
     }
     const particles=Array.from({length:COUNT},()=>new Particle());
@@ -527,20 +520,6 @@ function parseLichessUser(data) {
         winrate : total > 0 ? Math.round((wins / total) * 100) : 0,
         total, wins, losses, draws
     };
-}
-
-// Consulta individual (usada al registrar por link)
-async function fetchLichessData(username) {
-    const key = username.toLowerCase();
-    if (lichessCache[key]) return lichessCache[key];
-    try {
-        const res = await fetch(`https://lichess.org/api/user/${username}`);
-        if (!res.ok) return null;
-        const data   = await res.json();
-        const result = parseLichessUser(data);
-        lichessCache[key] = result;
-        return result;
-    } catch(e) { return null; }
 }
 
 // Consulta individual completa (ELO + count + country)
