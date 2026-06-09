@@ -435,9 +435,24 @@ function startFireBorder(canvas) {
 //  CARGAR DATOS
 // ════════════════════════════════════════════════════════
 async function load() {
+    const root = document.getElementById('rankingRoot');
+    root.innerHTML = '<div style="text-align:center;color:#ff4d00;font-family:Orbitron;padding:3rem;">⏳ CARGANDO...</div>';
     try {
         const res  = await fetch(API_URL + '?nocache=' + Date.now());
-        const data = await res.json();
+        const text = await res.text();
+        let data;
+        try {
+            data = JSON.parse(text);
+        } catch(parseErr) {
+            root.innerHTML = '<div style="text-align:center;color:#ff4444;font-family:Orbitron;padding:3rem;">❌ ERROR: El servidor no devolvió datos válidos.<br><small style="color:#888;font-size:0.7rem;">' + text.slice(0,200) + '</small></div>';
+            console.error('[load] parse error', parseErr, text.slice(0,300));
+            return;
+        }
+        if (!Array.isArray(data)) {
+            root.innerHTML = '<div style="text-align:center;color:#ff4444;font-family:Orbitron;padding:3rem;">❌ ERROR DEL SERVIDOR:<br><small style="color:#888;font-size:0.7rem;">' + JSON.stringify(data).slice(0,200) + '</small></div>';
+            console.error('[load] not array', data);
+            return;
+        }
         players = data
             .map(p => ({
                 ...p,
@@ -453,7 +468,10 @@ async function load() {
         await fetchLichessBatch(players.map(p => p.username));
         applyLichessCache();
         render();
-    } catch(e) { console.error('[load]', e); }
+    } catch(e) {
+        document.getElementById('rankingRoot').innerHTML = '<div style="text-align:center;color:#ff4444;font-family:Orbitron;padding:3rem;">❌ NO SE PUDO CONECTAR CON EL SERVIDOR<br><small style="color:#888;font-size:0.7rem;">' + e.message + '</small></div>';
+        console.error('[load]', e);
+    }
 }
 
 // ════════════════════════════════════════════════════════
