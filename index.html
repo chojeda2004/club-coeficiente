@@ -456,8 +456,8 @@ async function load() {
         players = data
             .map(p => ({
                 ...p,
-                username : p.username || p.usuario || '',
-                score    : Number(p.score ?? p.puntos) || 0,
+                username : (p.username || p.usuario || p.nombredeusuario || '').trim(),
+                score    : Number(p.score ?? p.puntos ?? p['puntuación'] ?? p.puntuacion) || 0,
                 piece    : p.piece || p.pieza || DEFAULT_PIECE,
                 elo      : Number(p.elo) || 0,
                 notFound : false,
