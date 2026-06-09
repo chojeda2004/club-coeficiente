@@ -358,9 +358,6 @@ async function confirmAddFromLink() {
     document.getElementById('previewCard').classList.remove('visible');
     pendingFetchedPlayer = null;
     render(); renderAdmin();
-    // Guardar automáticamente al añadir
-    await syncWithSheet();
-}
 
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('lichessLinkInput')?.addEventListener('keydown', e => {
@@ -583,10 +580,19 @@ async function bulkRefreshStats(){
 //  El GAS debe leer e= del parámetro y guardar el JSON.
 // ════════════════════════════════════════════════════════
 async function syncWithSheet() {
-    const btn       = document.getElementById('saveBtn');
-    const statusEl  = document.getElementById('saveStatus');
-    btn.innerText   = '⏳ GUARDANDO...';
-    btn.disabled    = true;
+    const btn      = document.getElementById('saveBtn');
+    const statusEl = document.getElementById('saveStatus');
+
+    // SEGURO: nunca guardar si la lista está vacía
+    if (!players || players.length === 0) {
+        statusEl.textContent = '⚠️ Lista vacía, no se guardó';
+        statusEl.className   = 'save-status err';
+        setTimeout(() => { statusEl.textContent = ''; }, 4000);
+        return;
+    }
+
+    btn.innerText        = '⏳ GUARDANDO...';
+    btn.disabled         = true;
     statusEl.textContent = '';
     statusEl.className   = 'save-status';
 
@@ -596,30 +602,31 @@ async function syncWithSheet() {
         piece    : p.piece
     }));
 
-    // Codificamos el JSON como parámetro GET →  ?action=save&data=...
-    const encoded = encodeURIComponent(JSON.stringify(payload));
-    const url     = `${API_URL}?action=save&data=${encoded}`;
-
     try {
-        const res  = await fetch(url);
+        // POST con body JSON — sin límite de tamaño, funciona con GAS
+        const res  = await fetch(API_URL, {
+            method  : 'POST',
+            headers : { 'Content-Type': 'text/plain' },
+            body    : JSON.stringify(payload)
+        });
         const text = await res.text();
         let   ok   = false;
-        try { ok = JSON.parse(text)?.ok === true; } catch(_) { ok = text.includes('ok'); }
+        try { ok = JSON.parse(text)?.ok === true; } catch(_) { ok = text.includes('"ok":true'); }
 
         if (ok) {
-            statusEl.textContent = '✅ GUARDADO';
+            statusEl.textContent = '✅ GUARDADO (' + payload.length + ' jugadores)';
             statusEl.className   = 'save-status ok';
         } else {
-            throw new Error('Respuesta inesperada: ' + text.slice(0, 120));
+            throw new Error(text.slice(0, 200));
         }
     } catch(e) {
         console.error('[syncWithSheet]', e);
-        statusEl.textContent = '❌ ERROR AL GUARDAR';
+        statusEl.textContent = '❌ ERROR: ' + e.message.slice(0, 80);
         statusEl.className   = 'save-status err';
     } finally {
         btn.innerText = '💾 GUARDAR EN EL NÚCLEO';
         btn.disabled  = false;
-        setTimeout(() => { statusEl.textContent = ''; }, 4000);
+        setTimeout(() => { statusEl.textContent = ''; }, 5000);
     }
 }
 
