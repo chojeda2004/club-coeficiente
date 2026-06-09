@@ -84,6 +84,9 @@
         .add-confirm-btn:hover { background: #69f0ae; }
         .fetch-error { color: #ff4444; font-family: 'Orbitron', sans-serif; font-size: 0.85rem; margin-top: 10px; display: none; }
         .fetch-error.visible { display: block; }
+        .save-status { display: inline-block; margin-left: 15px; font-family: 'Orbitron', sans-serif; font-size: 0.9rem; }
+        .save-status.ok  { color: #00c853; }
+        .save-status.err { color: #ff4444; }
         @media (max-width: 768px) {
             .podium-wrap { flex-direction: column; align-items: center; min-height: auto; }
             .player-card { grid-template-columns: 40px 60px 1fr; padding: 1rem; }
@@ -151,21 +154,23 @@
             <tbody id="adminTableBody"></tbody>
         </table>
 
-        <button id="saveBtn" onclick="syncWithSheet()" style="width:100%; margin-top:2rem; padding:20px; background:#ff4d00; color:#000; font-family:'Orbitron'; font-weight:900; font-size:1.2rem; border:none; border-radius:15px; cursor:pointer;">💾 GUARDAR EN EL NÚCLEO</button>
+        <div style="display:flex; align-items:center; margin-top:2rem; flex-wrap:wrap; gap:10px;">
+            <button id="saveBtn" onclick="syncWithSheet()" style="flex:1; min-width:200px; padding:20px; background:#ff4d00; color:#000; font-family:'Orbitron'; font-weight:900; font-size:1.2rem; border:none; border-radius:15px; cursor:pointer;">💾 GUARDAR EN EL NÚCLEO</button>
+            <span id="saveStatus" class="save-status"></span>
+        </div>
         <button onclick="closeAdmin()" style="width:100%; margin-top:1rem; background:none; color:#ff4d00; border:none; cursor:pointer; font-weight:900;">CERRAR</button>
     </div>
 </div>
 <div class="admin-btn" onclick="checkAdmin()">⚙️</div>
 
 <script>
+// ════════════════════════════════════════════════════════
+//  CONFIGURACIÓN
+// ════════════════════════════════════════════════════════
 const API_URL = 'https://script.google.com/macros/s/AKfycbydXprmWOwO_RjLcFubXdkxkPJmgVv73UJ-BjySMzOAwrzTaTm47-iu-zPZAZv0pQ6uAw/exec';
 const DEFAULT_PIECE = '♟';
 const CHESS_PIECES  = ['♟','♞','♝','♜','♛','♚'];
-
-// ─── PROXY para evitar bloqueo CORS al abrir el archivo localmente ───
-// Si el archivo está en un servidor propio, puedes quitar el proxy y usar la URL directa.
-const LICHESS_BASE = 'https://corsproxy.io/?url=https://lichess.org/api/user/';
-
+const LICHESS_BASE  = 'https://corsproxy.io/?url=https://lichess.org/api/user/';
 const LICHESS_MODES = [
     'rapid','blitz','bullet','classical','correspondence',
     'ultraBullet','chess960','crazyhouse','antichess',
@@ -191,13 +196,12 @@ const TIER_CLASS = {
     'Principiante':''
 };
 
-/* ══════════════════ LICHESS ══════════════════ */
-
+// ════════════════════════════════════════════════════════
+//  LICHESS
+// ════════════════════════════════════════════════════════
 function parseLichessUser(data) {
     const perfs = data.perfs || {};
     let elo = 0, bestGames = 0;
-
-    // Toma el ELO del modo donde el jugador tiene más partidas
     for (const mode of LICHESS_MODES) {
         const perf = perfs[mode];
         if (perf && typeof perf.games === 'number' && perf.games > bestGames) {
@@ -205,31 +209,25 @@ function parseLichessUser(data) {
             elo = perf.rating || 0;
         }
     }
-    // Fallback: cualquier rating aunque no tenga partidas registradas
     if (!elo) {
         for (const mode of LICHESS_MODES) {
             if (perfs[mode]?.rating) { elo = perfs[mode].rating; break; }
         }
     }
-
     const total  = data.count?.all  || 0;
     const wins   = data.count?.win  || 0;
     const losses = data.count?.loss || 0;
     const draws  = data.count?.draw || 0;
-
     return {
         elo,
-        country : data.profile?.country?.toLowerCase() || '',
-        winrate : total > 0 ? Math.round((wins / total) * 100) : 0,
+        country  : data.profile?.country?.toLowerCase() || '',
+        winrate  : total > 0 ? Math.round((wins / total) * 100) : 0,
         total, wins, losses, draws,
-        notFound: false, disabled: false
+        notFound : false, disabled: false
     };
 }
 
-// Llama a Lichess pasando por el proxy
 async function lichessFetch(username) {
-    // Intenta primero sin proxy (funciona si está en servidor),
-    // y si falla por CORS cae al proxy automáticamente.
     const urls = [
         `https://lichess.org/api/user/${username}`,
         `${LICHESS_BASE}${username}`
@@ -237,29 +235,21 @@ async function lichessFetch(username) {
     for (const url of urls) {
         try {
             const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
-            if (res.status === 404)  return { status: 404 };
-            if (res.status === 200)  return { status: 200, data: await res.json() };
-        } catch(e) {
-            // CORS bloqueó esta URL, intentar la siguiente
-            continue;
-        }
+            if (res.status === 404) return { status: 404 };
+            if (res.status === 200) return { status: 200, data: await res.json() };
+        } catch(e) { continue; }
     }
-    return { status: 0 }; // sin conexión
+    return { status: 0 };
 }
 
 async function fetchLichessOne(username) {
     const key = username.toLowerCase();
     const result = await lichessFetch(username);
-
     if (result.status === 404) {
         lichessCache[key] = { elo:0,winrate:0,total:0,wins:0,losses:0,draws:0,country:'',notFound:true,disabled:false };
         return;
     }
-    if (result.status === 0) {
-        console.warn(`[Lichess] Sin respuesta para ${username}`);
-        return;
-    }
-
+    if (result.status === 0) { console.warn(`[Lichess] Sin respuesta para ${username}`); return; }
     const data = result.data;
     if (data.disabled || data.tosViolation) {
         lichessCache[key] = { elo:0,winrate:0,total:0,wins:0,losses:0,draws:0,country:'',notFound:false,disabled:true };
@@ -281,14 +271,15 @@ function applyLichessCache() {
 }
 
 function getStatsLabel(p) {
-    if (p.notFound)          return '⚠️ Usuario no encontrado en Lichess';
-    if (p.disabled)          return '🚫 Cuenta suspendida en Lichess';
-    if (!p.elo && !p.total)  return 'Sin datos de Lichess aún';
+    if (p.notFound)         return '⚠️ Usuario no encontrado en Lichess';
+    if (p.disabled)         return '🚫 Cuenta suspendida en Lichess';
+    if (!p.elo && !p.total) return 'Sin datos de Lichess aún';
     return `ELO ${p.elo || '---'} | ${p.winrate || 0}% WR | ${(p.total || 0).toLocaleString()} partidas`;
 }
 
-/* ══════════════════ FETCH FROM LINK ══════════════════ */
-
+// ════════════════════════════════════════════════════════
+//  FETCH FROM LINK
+// ════════════════════════════════════════════════════════
 function extractUsername(input) {
     input = input.trim();
     const m = input.match(/lichess\.org\/@?\/?([\w-]+)/i)
@@ -318,23 +309,18 @@ async function fetchFromLink() {
 
     try {
         const result = await lichessFetch(username);
-
         if (result.status === 404) {
             errorEl.textContent = 'Usuario no encontrado en Lichess.';
-            errorEl.classList.add('visible');
-            return;
+            errorEl.classList.add('visible'); return;
         }
         if (result.status === 0) {
             errorEl.textContent = 'No se pudo conectar con Lichess. Revisa tu internet.';
-            errorEl.classList.add('visible');
-            return;
+            errorEl.classList.add('visible'); return;
         }
-
         const data = result.data;
         if (data.disabled || data.tosViolation) {
             errorEl.textContent = 'Esta cuenta está suspendida en Lichess.';
-            errorEl.classList.add('visible');
-            return;
+            errorEl.classList.add('visible'); return;
         }
 
         const parsed = parseLichessUser(data);
@@ -350,7 +336,6 @@ async function fetchFromLink() {
         document.getElementById('previewScore').value = 0;
         preview.classList.add('visible');
         document.getElementById('lichessLinkInput').value = '';
-
     } catch(e) {
         errorEl.textContent = 'Error inesperado. Intenta de nuevo.';
         errorEl.classList.add('visible');
@@ -360,7 +345,8 @@ async function fetchFromLink() {
     }
 }
 
-function confirmAddFromLink() {
+// Al añadir jugador: guarda automáticamente en el Sheet
+async function confirmAddFromLink() {
     if (!pendingFetchedPlayer) return;
     const piece = document.getElementById('previewPiece').value;
     const score = Number(document.getElementById('previewScore').value) || 0;
@@ -372,6 +358,8 @@ function confirmAddFromLink() {
     document.getElementById('previewCard').classList.remove('visible');
     pendingFetchedPlayer = null;
     render(); renderAdmin();
+    // Guardar automáticamente al añadir
+    await syncWithSheet();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -380,7 +368,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-/* ══════════════════ FIRE BORDER ══════════════════ */
+// ════════════════════════════════════════════════════════
+//  FIRE BORDER
+// ════════════════════════════════════════════════════════
 let fireAnimId = null;
 function startFireBorder(canvas) {
     const ctx = canvas.getContext('2d');
@@ -444,16 +434,18 @@ function startFireBorder(canvas) {
     fireAnimId=requestAnimationFrame(frame);
 }
 
-/* ══════════════════ LOAD ══════════════════ */
+// ════════════════════════════════════════════════════════
+//  CARGAR DATOS
+// ════════════════════════════════════════════════════════
 async function load() {
     try {
-        const res  = await fetch(API_URL);
+        const res  = await fetch(API_URL + '?nocache=' + Date.now());
         const data = await res.json();
         players = data
             .map(p => ({
                 ...p,
                 username : p.username || p.usuario || '',
-                score    : Number(p.score || p.puntos) || 0,
+                score    : Number(p.score ?? p.puntos) || 0,
                 piece    : p.piece || p.pieza || DEFAULT_PIECE,
                 elo      : Number(p.elo) || 0,
                 notFound : false,
@@ -464,10 +456,12 @@ async function load() {
         await fetchLichessBatch(players.map(p => p.username));
         applyLichessCache();
         render();
-    } catch(e) { console.error(e); }
+    } catch(e) { console.error('[load]', e); }
 }
 
-/* ══════════════════ RENDER ══════════════════ */
+// ════════════════════════════════════════════════════════
+//  RENDER
+// ════════════════════════════════════════════════════════
 function renderPodium(sorted) {
     const root=document.getElementById('podiumRoot');
     if(sorted.length<3){root.innerHTML='';return;}
@@ -531,6 +525,9 @@ async function refreshRanking(){
     await load();btn.disabled=false;
 }
 
+// ════════════════════════════════════════════════════════
+//  ADMIN
+// ════════════════════════════════════════════════════════
 function checkAdmin(){
     const pass=prompt("ACCESO:");
     if(pass==='73777127'){
@@ -576,13 +573,54 @@ async function bulkRefreshStats(){
     }finally{btn.innerText="⚡ SINCRONIZACIÓN TOTAL ⚡";btn.disabled=false;}
 }
 
-async function syncWithSheet(){
-    const btn=document.getElementById('saveBtn');
-    btn.innerText="⏳ SUBIENDO...";btn.disabled=true;
-    try{
-        await fetch(API_URL,{method:'POST',mode:'no-cors',body:JSON.stringify(players.map(p=>({username:p.username,score:p.score,piece:p.piece})))});
-        alert("GUARDADO.");
-    }finally{btn.innerText="💾 GUARDAR EN EL NÚCLEO";btn.disabled=false;}
+// ════════════════════════════════════════════════════════
+//  GUARDAR EN GOOGLE SHEET  ← FIX PRINCIPAL
+//
+//  Google Apps Script no acepta fetch() con mode:'no-cors'
+//  porque necesita manejar la redirección 302.
+//  Solución: enviar los datos como parámetro GET en la URL,
+//  lo cual SÍ funciona con el doGet() del GAS.
+//  El GAS debe leer e= del parámetro y guardar el JSON.
+// ════════════════════════════════════════════════════════
+async function syncWithSheet() {
+    const btn       = document.getElementById('saveBtn');
+    const statusEl  = document.getElementById('saveStatus');
+    btn.innerText   = '⏳ GUARDANDO...';
+    btn.disabled    = true;
+    statusEl.textContent = '';
+    statusEl.className   = 'save-status';
+
+    const payload = players.map(p => ({
+        username : p.username,
+        score    : p.score,
+        piece    : p.piece
+    }));
+
+    // Codificamos el JSON como parámetro GET →  ?action=save&data=...
+    const encoded = encodeURIComponent(JSON.stringify(payload));
+    const url     = `${API_URL}?action=save&data=${encoded}`;
+
+    try {
+        const res  = await fetch(url);
+        const text = await res.text();
+        let   ok   = false;
+        try { ok = JSON.parse(text)?.ok === true; } catch(_) { ok = text.includes('ok'); }
+
+        if (ok) {
+            statusEl.textContent = '✅ GUARDADO';
+            statusEl.className   = 'save-status ok';
+        } else {
+            throw new Error('Respuesta inesperada: ' + text.slice(0, 120));
+        }
+    } catch(e) {
+        console.error('[syncWithSheet]', e);
+        statusEl.textContent = '❌ ERROR AL GUARDAR';
+        statusEl.className   = 'save-status err';
+    } finally {
+        btn.innerText = '💾 GUARDAR EN EL NÚCLEO';
+        btn.disabled  = false;
+        setTimeout(() => { statusEl.textContent = ''; }, 4000);
+    }
 }
 
 load();
