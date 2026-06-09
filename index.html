@@ -350,14 +350,27 @@ async function confirmAddFromLink() {
     if (!pendingFetchedPlayer) return;
     const piece = document.getElementById('previewPiece').value;
     const score = Number(document.getElementById('previewScore').value) || 0;
+
     if (players.find(p => p.username.toLowerCase() === pendingFetchedPlayer.username.toLowerCase())) {
-        alert('Este jugador ya está en el ranking.'); return;
+        alert('Este jugador ya está en el ranking.');
+        return;
     }
+
     players.push({ ...pendingFetchedPlayer, piece, score });
     lichessCache[pendingFetchedPlayer.username.toLowerCase()] = { ...pendingFetchedPlayer };
+
     document.getElementById('previewCard').classList.remove('visible');
     pendingFetchedPlayer = null;
-    render(); renderAdmin();
+
+    render();
+    renderAdmin();
+
+    try {
+        await syncWithSheet();
+    } catch(e) {
+        console.error(e);
+    }
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('lichessLinkInput')?.addEventListener('keydown', e => {
